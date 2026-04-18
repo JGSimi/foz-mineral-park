@@ -21,7 +21,7 @@ export function PageHero({
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
       <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
       <div
-        className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(ellipse_at_top,rgba(244,234,209,0.08),transparent_55%)]"
+        className="page-hero-overlay absolute inset-x-0 top-0 -z-10 h-full"
         aria-hidden="true"
       />
       <Container

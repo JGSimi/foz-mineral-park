@@ -13,7 +13,7 @@ export function Logo({ className, tone = "light" }: LogoProps) {
       <svg
         viewBox="0 0 40 40"
         aria-hidden="true"
-        className="size-10 shrink-0 drop-shadow-[0_4px_14px_rgba(200,147,71,0.35)]"
+        className="logo-glow size-10 shrink-0"
       >
         <defs>
           <linearGradient id="logo-imperial" x1="0" y1="0" x2="1" y2="1">

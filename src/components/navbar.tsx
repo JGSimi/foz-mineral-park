@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -17,36 +18,47 @@ const links = [
   { href: "/contato", label: "Contato" },
 ];
 
+const HIDE_THRESHOLD = 140;
+
 export function Navbar() {
+  const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    setScrolled(latest > 12);
+
+    if (open) {
+      setHidden(false);
+      return;
+    }
+    if (latest > previous && latest > HIDE_THRESHOLD) {
+      setHidden(true);
+    } else if (latest < previous) {
+      setHidden(false);
+    }
+  });
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
 
   return (
-    <header
+    <motion.header
+      initial={{ y: 0 }}
+      animate={{ y: hidden ? "-110%" : 0 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-500",
+        "fixed inset-x-0 top-0 z-40 w-full transition-colors duration-500",
         scrolled
-          ? "bg-obsidian-950/88 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] backdrop-blur-md"
+          ? "navbar-shadow bg-obsidian-950/88 backdrop-blur-md"
           : "bg-obsidian-950/35 backdrop-blur-sm",
       )}
     >
       <Container className="flex h-16 items-center justify-between sm:h-20">
-        <Link
-          href="/"
-          aria-label="Ir para a página inicial"
-          className="group"
-        >
+        <Link href="/" aria-label="Ir para a página inicial" className="group">
           <Logo tone="dark" />
         </Link>
 
@@ -60,10 +72,7 @@ export function Navbar() {
               href={l.href}
               className="relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] text-pearl-100/80 transition-colors duration-300 hover:text-champagne-300"
             >
-              <span className="relative">
-                {l.label}
-                <span className="absolute left-1/2 -bottom-0.5 h-px w-0 -translate-x-1/2 bg-champagne-300/80 transition-all duration-300 group-[.active]:w-full group-hover:w-full" />
-              </span>
+              {l.label}
             </Link>
           ))}
         </nav>
@@ -89,7 +98,6 @@ export function Navbar() {
         </div>
       </Container>
 
-      {/* filete dourado sutil quando scrollado */}
       <div
         aria-hidden="true"
         className={cn(
@@ -121,6 +129,6 @@ export function Navbar() {
           </div>
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }

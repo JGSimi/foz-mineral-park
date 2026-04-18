@@ -193,13 +193,16 @@ h4 {
 /* Luxo: aurora sutil no fundo dark */
 .bg-aurora {
   background:
-    radial-gradient(1200px 600px at 10% 10%,
-      color-mix(in oklab, var(--color-imperial-500) 25%, transparent),
-      transparent 60%),
-    radial-gradient(900px 500px at 90% 100%,
-      color-mix(in oklab, var(--color-champagne-400) 18%, transparent),
-      transparent 55%),
-    var(--color-obsidian-950);
+    radial-gradient(ellipse 55% 80% at 8% 15%,
+      color-mix(in oklab, var(--color-imperial-500) 18%, transparent) 0%,
+      transparent 70%),
+    radial-gradient(ellipse 45% 70% at 95% 95%,
+      color-mix(in oklab, var(--color-champagne-400) 12%, transparent) 0%,
+      transparent 72%),
+    linear-gradient(135deg,
+      var(--color-obsidian-950) 0%,
+      var(--color-obsidian-900) 60%,
+      var(--color-imperial-950) 100%);
 }
 
 /* Moldura dourada — filete fino tipo joalheria */
@@ -290,6 +293,99 @@ h4 {
     0 0 0 1px rgba(200, 147, 71, 0.12),
     0 20px 50px -10px rgba(0, 0, 0, 0.7),
     0 40px 80px -20px rgba(85, 48, 86, 0.35);
+}
+
+/* =============================================================
+   Button styles (evitam arbitrary values com vírgulas que o
+   Tailwind v4 não aceita em classes inline)
+============================================================= */
+.btn-gold-surface {
+  background-image:
+    linear-gradient(145deg, #f4ead1 0%, #dbb46e 40%, #c89347 60%, #915a25 100%);
+  box-shadow: 0 10px 28px -10px rgba(180, 119, 48, 0.55);
+  transition: box-shadow 0.5s ease-out, transform 0.5s ease-out;
+}
+.btn-gold-surface:hover {
+  box-shadow: 0 20px 50px -12px rgba(180, 119, 48, 0.8);
+}
+
+.btn-primary-surface {
+  background-color: var(--color-obsidian-900);
+  color: var(--color-pearl-100);
+  box-shadow: 0 10px 24px -12px rgba(10, 9, 16, 0.45);
+  transition: background-color 0.4s ease-out, box-shadow 0.5s ease-out,
+    transform 0.5s ease-out;
+}
+.btn-primary-surface:hover {
+  background-color: var(--color-obsidian-800);
+  box-shadow: 0 18px 40px -12px rgba(10, 9, 16, 0.55);
+}
+
+/* Overlay usado sobre fotos em cards (cria moldura escura suave) */
+.card-media-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 8, 0.4) 0%,
+    rgba(5, 5, 8, 0.05) 28%,
+    rgba(5, 5, 8, 0.05) 60%,
+    rgba(5, 5, 8, 0.78) 100%
+  );
+}
+
+/* Overlay da home hero (vídeo) */
+.hero-overlay-main {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 8, 0.85) 0%,
+    rgba(10, 9, 16, 0.78) 40%,
+    rgba(23, 14, 26, 0.92) 100%
+  );
+}
+.hero-overlay-glow {
+  background: radial-gradient(
+    ellipse 60% 50% at 90% 90%,
+    rgba(200, 147, 71, 0.25) 0%,
+    transparent 55%
+  );
+}
+
+/* Overlay das páginas internas (PageHero) */
+.page-hero-overlay {
+  background: radial-gradient(
+    ellipse at top,
+    rgba(244, 234, 209, 0.08),
+    transparent 55%
+  );
+}
+
+/* Overlay horizontal para imagem em bloco split (VisitPlan) */
+.image-split-overlay {
+  background: linear-gradient(
+    110deg,
+    rgba(5, 5, 8, 0.6) 0%,
+    rgba(23, 14, 26, 0.2) 50%,
+    rgba(5, 5, 8, 0.6) 100%
+  );
+}
+
+/* Overlay para hero de atração */
+.attraction-hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 8, 0.88) 0%,
+    rgba(10, 9, 16, 0.8) 50%,
+    rgba(23, 14, 26, 0.92) 100%
+  );
+}
+
+/* Drop-shadow luxuoso para o logotipo */
+.logo-glow {
+  filter: drop-shadow(0 4px 14px rgba(200, 147, 71, 0.35));
+}
+
+/* Sombra sutil da navbar quando scrolled */
+.navbar-shadow {
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.7);
 }
 
 /* Grão fino (pergaminho / veludo) via SVG embutido como base64 */

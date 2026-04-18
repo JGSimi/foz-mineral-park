@@ -47,11 +47,11 @@ function Hero() {
       </div>
       {/* Camada 2: overlay de cor para legibilidade + paleta imperial */}
       <div
-        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(5,5,8,0.85)_0%,rgba(10,9,16,0.78)_40%,rgba(23,14,26,0.92)_100%)]"
+        className="hero-overlay-main absolute inset-0 -z-10"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_90%_90%,rgba(200,147,71,0.25)_0%,transparent_55%)]"
+        className="hero-overlay-glow absolute inset-0 -z-10"
         aria-hidden="true"
       />
       <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
@@ -239,7 +239,7 @@ function Attractions() {
               >
                 <span
                   aria-hidden="true"
-                  className="absolute left-5 top-5 z-10 inline-flex items-center justify-center rounded-full border border-champagne-400/60 bg-pearl-50/90 px-2.5 py-1 font-display text-[0.65rem] uppercase tracking-[0.28em] text-champagne-700 backdrop-blur"
+                  className="absolute left-5 top-5 z-10 inline-flex size-9 items-center justify-center rounded-full border border-champagne-300/70 bg-obsidian-950/85 font-display text-[0.75rem] uppercase tracking-[0.16em] text-champagne-200 shadow-lg backdrop-blur"
                 >
                   {["I", "II", "III"][i] ?? ""}
                 </span>
@@ -252,7 +252,7 @@ function Attractions() {
                     className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
                   />
                   <div
-                    className="absolute inset-0 bg-gradient-to-t from-obsidian-950/70 via-obsidian-950/15 to-transparent"
+                    className="card-media-overlay absolute inset-0"
                     aria-hidden="true"
                   />
                   <div className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-3 py-1 text-[0.65rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
@@ -520,7 +520,7 @@ function VisitPlan() {
                 className="object-cover"
               />
               <div
-                className="absolute inset-0 bg-[linear-gradient(110deg,rgba(5,5,8,0.6)_0%,rgba(23,14,26,0.2)_50%,rgba(5,5,8,0.6)_100%)]"
+                className="image-split-overlay absolute inset-0"
                 aria-hidden="true"
               />
             </div>

@@ -60,7 +60,7 @@ export default async function AttractionPage({
           />
         </div>
         <div
-          className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(5,5,8,0.88)_0%,rgba(10,9,16,0.8)_50%,rgba(23,14,26,0.92)_100%)]"
+          className="attraction-hero-overlay absolute inset-0 -z-10"
           aria-hidden="true"
         />
         <div className="grain absolute inset-0 -z-10" aria-hidden="true" />

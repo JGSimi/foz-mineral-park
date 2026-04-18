@@ -1,21 +1,28 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface HeroVideoProps {
   src: string;
-  poster?: string;
+  poster: string;
   className?: string;
+  posterAlt?: string;
 }
 
 /**
- * Muted autoplay background video with lazy readiness.
+ * Background video that fades in over a static poster once ready.
+ * - Always renders the poster first so there's never a blank/dark flash.
  * - Plays only when element is in view (saves mobile data).
- * - Honors prefers-reduced-motion by falling back to static poster.
- * - Fades in once first frame is ready to avoid flash.
+ * - Honors prefers-reduced-motion by never starting playback.
  */
-export function HeroVideo({ src, poster, className }: HeroVideoProps) {
+export function HeroVideo({
+  src,
+  poster,
+  className,
+  posterAlt = "",
+}: HeroVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -26,9 +33,7 @@ export function HeroVideo({ src, poster, className }: HeroVideoProps) {
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (reduced) {
-      return;
-    }
+    if (reduced) return;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -49,21 +54,30 @@ export function HeroVideo({ src, poster, className }: HeroVideoProps) {
   }, []);
 
   return (
-    <video
-      ref={ref}
-      src={src}
-      poster={poster}
-      muted
-      loop
-      playsInline
-      preload="none"
-      onCanPlay={() => setReady(true)}
-      className={cn(
-        "h-full w-full object-cover transition-opacity duration-700",
-        ready ? "opacity-100" : "opacity-0",
-        className,
-      )}
-      aria-hidden="true"
-    />
+    <div className={cn("relative h-full w-full overflow-hidden", className)}>
+      <Image
+        src={poster}
+        alt={posterAlt}
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <video
+        ref={ref}
+        src={src}
+        poster={poster}
+        muted
+        loop
+        playsInline
+        preload="none"
+        onCanPlay={() => setReady(true)}
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
+          ready ? "opacity-100" : "opacity-0",
+        )}
+        aria-hidden="true"
+      />
+    </div>
   );
 }
