@@ -124,64 +124,37 @@ function Hero() {
 
         <AnimateIn className="relative isolate" y={30} delay={0.12}>
           <div className="absolute -inset-12 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/25 via-transparent to-champagne-400/25 blur-3xl" />
-          <div className="grid grid-cols-[1.4fr_1fr] gap-3 sm:gap-4">
-            <div className="float-a frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark">
-              <Image
-                src={attractionImages["gruta-de-ametista"]}
-                alt="Gruta de Ametista — formações de cristais violetas"
-                fill
-                sizes="(max-width: 768px) 55vw, 280px"
-                placeholder="blur"
-                className="object-cover"
-                priority
-              />
-              <div
-                className="card-media-overlay absolute inset-0"
-                aria-hidden="true"
-              />
-              <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
-                Gruta
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 sm:gap-4">
-              <div className="float-b frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
-                <Image
-                  src={attractionImages["museu-de-minerais"]}
-                  alt="Museu de Minerais — acervo catalogado"
-                  fill
-                  sizes="(max-width: 768px) 40vw, 200px"
-                  placeholder="blur"
-                  className="object-cover"
-                />
-                <div
-                  className="card-media-overlay absolute inset-0"
-                  aria-hidden="true"
-                />
-                <div className="absolute bottom-2 left-2 inline-flex items-center rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
-                  Museu
-                </div>
-              </div>
-              <div className="float-c frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
-                <Image
-                  src={attractionImages["loja-de-pedras"]}
-                  alt="Loja de Pedras — peças lapidadas à mão"
-                  fill
-                  sizes="(max-width: 768px) 40vw, 200px"
-                  placeholder="blur"
-                  className="object-cover"
-                />
-                <div
-                  className="card-media-overlay absolute inset-0"
-                  aria-hidden="true"
-                />
-                <div className="absolute bottom-2 left-2 inline-flex items-center rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
-                  Loja
-                </div>
-              </div>
+          <div className="float-a frame-gold relative overflow-hidden rounded-[32px] shadow-luxe-dark">
+            <Image
+              src={attractionImages["gruta-de-ametista"]}
+              alt="Gruta de Ametista — formações de cristais violetas iluminadas"
+              sizes="(max-width: 768px) 90vw, 480px"
+              placeholder="blur"
+              className="h-auto w-full object-cover"
+              priority
+            />
+            <div
+              className="card-media-overlay absolute inset-0"
+              aria-hidden="true"
+            />
+          </div>
+          <div className="float-b absolute -bottom-8 -left-6 hidden sm:block">
+            <div className="w-52 -rotate-[4deg] rounded-2xl border border-champagne-300/20 bg-obsidian-900/85 p-4 shadow-luxe-dark backdrop-blur">
+              <p className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
+                Destaque
+              </p>
+              <p className="mt-1 font-display text-lg italic text-pearl-100">
+                Gruta de Ametista
+              </p>
+              <p className="text-xs text-pearl-200/70">
+                Experiência sensorial
+              </p>
             </div>
           </div>
-          <div className="absolute -top-6 right-4 hidden rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/80 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur sm:block">
-            Foz do Iguaçu · PR
+          <div className="float-c absolute -top-6 right-6 hidden sm:block">
+            <div className="rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/80 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur">
+              Foz do Iguaçu · PR
+            </div>
           </div>
         </AnimateIn>
       </Container>
