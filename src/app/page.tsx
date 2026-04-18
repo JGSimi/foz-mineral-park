@@ -125,7 +125,7 @@ function Hero() {
         <AnimateIn className="relative isolate" y={30} delay={0.12}>
           <div className="absolute -inset-12 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/25 via-transparent to-champagne-400/25 blur-3xl" />
           <div className="grid grid-cols-[1.4fr_1fr] gap-3 sm:gap-4">
-            <div className="frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark">
+            <div className="float-a frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark">
               <Image
                 src={attractionImages["gruta-de-ametista"]}
                 alt="Gruta de Ametista — formações de cristais violetas"
@@ -144,7 +144,7 @@ function Hero() {
               </div>
             </div>
             <div className="flex flex-col gap-3 sm:gap-4">
-              <div className="frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
+              <div className="float-b frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
                 <Image
                   src={attractionImages["museu-de-minerais"]}
                   alt="Museu de Minerais — acervo catalogado"
@@ -161,7 +161,7 @@ function Hero() {
                   Museu
                 </div>
               </div>
-              <div className="frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
+              <div className="float-c frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
                 <Image
                   src={attractionImages["loja-de-pedras"]}
                   alt="Loja de Pedras — peças lapidadas à mão"
