@@ -5,6 +5,7 @@ import { site } from "@/lib/site";
 import { Container } from "@/components/container";
 import { SectionHeading } from "@/components/section-heading";
 import { ContactForm } from "@/components/contact-form";
+import { PageHero } from "@/components/page-hero";
 
 export const metadata: Metadata = {
   title: "Contato",
@@ -15,73 +16,97 @@ export const metadata: Metadata = {
 export default function ContatoPage() {
   return (
     <>
-      <section className="pt-24 pb-10 sm:pt-32">
-        <Container className="max-w-3xl text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-amethyst-700">
-            Contato
-          </p>
-          <h1 className="mt-3 text-balance text-5xl sm:text-6xl">
-            A gente adora saber que você está vindo.
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-quartz-600">
-            Responde em minutos pelo WhatsApp nos horários comerciais. Para
-            agências e grupos escolares, temos equipe dedicada.
-          </p>
-        </Container>
-      </section>
+      <PageHero
+        eyebrow="Contato"
+        title={
+          <>
+            A gente adora saber que{" "}
+            <em className="italic text-champagne-300">você está vindo</em>.
+          </>
+        }
+        description="Responde em minutos pelo WhatsApp nos horários comerciais. Para agências e grupos escolares, temos equipe dedicada."
+      />
 
-      <section className="py-12">
+      <section className="py-16">
         <Container className="grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-start">
           <ContactForm />
 
-          <aside className="space-y-4 rounded-3xl border border-border bg-quartz-50 p-8">
+          <aside className="space-y-5 rounded-3xl border border-pearl-300 bg-pearl-50 p-8 shadow-luxe">
             <SectionHeading
               eyebrow="Canais diretos"
-              title="Se preferir, fale agora mesmo"
+              title={
+                <>
+                  Se preferir,{" "}
+                  <em className="italic text-champagne-600">fale agora</em>
+                </>
+              }
             />
-            <ul className="space-y-4 pt-2 text-sm text-quartz-700">
-              <li className="flex items-start gap-3">
-                <Phone className="mt-0.5 size-5 shrink-0 text-amethyst-700" />
-                <div>
-                  <p className="font-medium text-foreground">WhatsApp / Telefone</p>
-                  <a
-                    href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}`}
-                    className="hover:underline"
-                  >
-                    {site.contact.phoneDisplay}
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail className="mt-0.5 size-5 shrink-0 text-amethyst-700" />
-                <div>
-                  <p className="font-medium text-foreground">E-mail</p>
-                  <a
-                    href={`mailto:${site.contact.email}`}
-                    className="hover:underline"
-                  >
-                    {site.contact.email}
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-5 shrink-0 text-amethyst-700" />
-                <div>
-                  <p className="font-medium text-foreground">Endereço</p>
-                  <p>{site.address.full}</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock className="mt-0.5 size-5 shrink-0 text-amethyst-700" />
-                <div>
-                  <p className="font-medium text-foreground">Horário</p>
-                  <p>{site.hours.summary}</p>
-                </div>
-              </li>
+            <ul className="space-y-4 pt-2 text-sm text-obsidian-800">
+              <InfoItem
+                icon={Phone}
+                label="WhatsApp · Telefone"
+                value={site.contact.phoneDisplay}
+                href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}`}
+              />
+              <InfoItem
+                icon={Mail}
+                label="E-mail"
+                value={site.contact.email}
+                href={`mailto:${site.contact.email}`}
+              />
+              <InfoItem
+                icon={MapPin}
+                label="Endereço"
+                value={site.address.full}
+              />
+              <InfoItem
+                icon={Clock}
+                label="Horário"
+                value={site.hours.summary}
+                detail={`Última entrada às ${site.hours.lastEntry}`}
+              />
             </ul>
           </aside>
         </Container>
       </section>
     </>
+  );
+}
+
+function InfoItem({
+  icon: Icon,
+  label,
+  value,
+  detail,
+  href,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  detail?: string;
+  href?: string;
+}) {
+  const body = (
+    <>
+      <p className="text-[0.6rem] uppercase tracking-[0.28em] text-champagne-700">
+        {label}
+      </p>
+      <p className="mt-1 font-display text-base text-obsidian-900">{value}</p>
+      {detail && <p className="text-xs text-pearl-600">{detail}</p>}
+    </>
+  );
+  return (
+    <li className="flex items-start gap-3">
+      <Icon className="mt-0.5 size-5 shrink-0 text-champagne-700" />
+      <div>
+        {href ? (
+          <a href={href} className="hover:text-champagne-700">
+            {body}
+          </a>
+        ) : (
+          body
+        )}
+      </div>
+    </li>
   );
 }

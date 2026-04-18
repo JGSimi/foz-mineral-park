@@ -16,63 +16,116 @@ export default function OgImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 80,
-          color: "#fff",
+          color: "#f5efe4",
           fontFamily: "serif",
           background:
-            "radial-gradient(ellipse at 20% 10%, rgba(139,82,240,0.5) 0%, transparent 40%), radial-gradient(ellipse at 85% 80%, rgba(255,176,48,0.4) 0%, transparent 45%), linear-gradient(180deg, #1a0c2e 0%, #17140d 100%)",
+            "radial-gradient(ellipse 80% 60% at 15% 0%, rgba(146,77,142,0.55) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 90% 90%, rgba(200,147,71,0.45) 0%, transparent 55%), linear-gradient(180deg, #050508 0%, #0a0910 40%, #170e1a 100%)",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        {/* Filete dourado no topo */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 80,
+            right: 80,
+            height: 1,
+            background:
+              "linear-gradient(90deg, transparent, rgba(200,147,71,0.9), transparent)",
+          }}
+        />
+        <div
+          style={{ display: "flex", alignItems: "center", gap: 18 }}
+        >
           <div
             style={{
               width: 56,
               height: 56,
               borderRadius: 12,
-              background: "linear-gradient(135deg, #c6a5ff, #8b52f0 55%, #452073)",
+              background:
+                "linear-gradient(135deg, #cc8fc8, #733b71 55%, #170e1a)",
+              border: "1px solid rgba(200,147,71,0.55)",
             }}
           />
-          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-            <span style={{ fontSize: 28, color: "#fff" }}>Foz Mineral</span>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              lineHeight: 1.1,
+            }}
+          >
+            <span style={{ fontSize: 28, color: "#f5efe4" }}>Foz Mineral</span>
             <span
               style={{
-                fontSize: 16,
-                letterSpacing: 6,
+                fontSize: 14,
+                letterSpacing: 10,
                 textTransform: "uppercase",
-                color: "#ffcc5c",
+                color: "#dbb46e",
               }}
             >
-              Park
+              Park · Foz do Iguaçu
             </span>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           <span
             style={{
-              fontSize: 16,
-              letterSpacing: 6,
+              fontSize: 14,
+              letterSpacing: 10,
               textTransform: "uppercase",
-              color: "#ffcc5c",
+              color: "#dbb46e",
             }}
           >
-            Foz do Iguaçu — Paraná
-          </span>
-          <span style={{ fontSize: 84, lineHeight: 1.05, fontWeight: 500 }}>
-            Onde a Terra guarda seus tesouros mais antigos.
+            Paraná · Brasil
           </span>
           <span
             style={{
-              fontSize: 28,
-              color: "#dfccff",
+              fontSize: 84,
+              lineHeight: 1.02,
+              fontWeight: 400,
+              maxWidth: 1050,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Onde a Terra guarda seus
+            <span
+              style={{
+                fontStyle: "italic",
+                color: "#dbb46e",
+                marginLeft: 12,
+              }}
+            >
+              tesouros mais antigos.
+            </span>
+          </span>
+          <span
+            style={{
+              fontSize: 26,
+              color: "#e8d2a2",
               fontFamily: "sans-serif",
               fontWeight: 400,
               maxWidth: 900,
-              lineHeight: 1.4,
+              lineHeight: 1.45,
+              letterSpacing: 0.2,
             }}
           >
-            Gruta de ametista, museu com 1.000+ minerais e loja de peças
+            Gruta de ametista · Museu com 1.000+ minerais · Loja com peças
             lapidadas à mão.
           </span>
         </div>
+        {/* Filete dourado no rodapé */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 80,
+            right: 80,
+            height: 1,
+            background:
+              "linear-gradient(90deg, transparent, rgba(200,147,71,0.7), transparent)",
+          }}
+        />
       </div>
     ),
     size,

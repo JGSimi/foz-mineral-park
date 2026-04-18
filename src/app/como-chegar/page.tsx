@@ -5,6 +5,7 @@ import { site } from "@/lib/site";
 import { Container } from "@/components/container";
 import { Button } from "@/components/button";
 import { SectionHeading } from "@/components/section-heading";
+import { PageHero } from "@/components/page-hero";
 
 export const metadata: Metadata = {
   title: "Como chegar",
@@ -32,42 +33,48 @@ const routes = [
 
 const info = [
   { icon: MapPin, label: "Endereço", value: site.address.full },
-  { icon: Clock, label: "Horário", value: site.hours.summary + ` (última entrada ${site.hours.lastEntry})` },
-  { icon: Accessibility, label: "Acessibilidade", value: "Piso plano, rampas, sinalização tátil e banheiros adaptados." },
+  {
+    icon: Clock,
+    label: "Horário",
+    value: `${site.hours.summary} · última entrada ${site.hours.lastEntry}`,
+  },
+  {
+    icon: Accessibility,
+    label: "Acessibilidade",
+    value:
+      "Piso plano, rampas, sinalização tátil e banheiros adaptados.",
+  },
 ];
 
 export default function ComoChegarPage() {
   return (
     <>
-      <section className="pt-24 pb-12 sm:pt-32">
-        <Container className="max-w-3xl text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-amethyst-700">
-            Como chegar
-          </p>
-          <h1 className="mt-3 text-balance text-5xl sm:text-6xl">
-            No caminho das Cataratas, do Marco e do Parque das Aves.
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-quartz-600">
-            Nosso endereço é fácil: {site.address.street}, Foz do Iguaçu. Aberto
-            todos os dias.
-          </p>
-        </Container>
-      </section>
+      <PageHero
+        eyebrow="Como chegar"
+        title={
+          <>
+            No caminho das Cataratas, do{" "}
+            <em className="italic text-champagne-300">Marco</em> e do Parque das
+            Aves.
+          </>
+        }
+        description={`Nosso endereço é fácil: ${site.address.street}, Foz do Iguaçu. Aberto todos os dias.`}
+      />
 
-      <section className="py-10">
-        <Container className="grid gap-5 md:grid-cols-3">
+      <section className="py-16">
+        <Container className="grid gap-6 md:grid-cols-3">
           {routes.map((r) => (
             <div
               key={r.title}
-              className="rounded-3xl border border-border bg-background p-8"
+              className="rounded-3xl border border-pearl-300 bg-pearl-50 p-8 transition-all duration-500 hover:border-champagne-300 hover:shadow-luxe"
             >
-              <div className="inline-flex size-11 items-center justify-center rounded-full bg-amethyst-100 text-amethyst-700">
+              <div className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-400/40 bg-obsidian-900 text-champagne-300">
                 <r.icon className="size-5" />
               </div>
-              <h2 className="mt-4 font-display text-xl text-foreground">
+              <h2 className="mt-5 font-display text-xl text-obsidian-900">
                 {r.title}
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-quartz-600">
+              <p className="mt-2 text-sm leading-relaxed text-pearl-700">
                 {r.body}
               </p>
             </div>
@@ -77,23 +84,23 @@ export default function ComoChegarPage() {
 
       <section className="py-16">
         <Container>
-          <div className="overflow-hidden rounded-3xl border border-border bg-background">
+          <div className="frame-gold overflow-hidden rounded-3xl border border-transparent bg-pearl-50 shadow-luxe">
             <iframe
               title="Mapa do Foz Mineral Park no Google Maps"
               src="https://www.google.com/maps?q=Av.+das+Cataratas+6025+Foz+do+Iguacu&output=embed"
-              className="aspect-[16/9] w-full border-0"
+              className="aspect-[16/9] w-full border-0 grayscale-[20%] transition-all hover:grayscale-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
-            <div className="grid gap-4 p-6 sm:grid-cols-3">
+            <div className="grid gap-4 p-8 sm:grid-cols-3">
               {info.map((i) => (
                 <div key={i.label} className="flex items-start gap-3">
-                  <i.icon className="mt-0.5 size-5 shrink-0 text-amethyst-700" />
+                  <i.icon className="mt-0.5 size-5 shrink-0 text-champagne-700" />
                   <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-quartz-500">
+                    <p className="text-[0.6rem] uppercase tracking-[0.28em] text-pearl-600">
                       {i.label}
                     </p>
-                    <p className="text-sm text-foreground">{i.value}</p>
+                    <p className="mt-1 text-sm text-obsidian-900">{i.value}</p>
                   </div>
                 </div>
               ))}
@@ -102,15 +109,20 @@ export default function ComoChegarPage() {
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="py-20">
         <Container size="md" className="text-center">
           <SectionHeading
             align="center"
             eyebrow="Pronto para vir"
-            title="Confirme data e horário em minutos"
+            title={
+              <>
+                Confirme data e horário{" "}
+                <em className="italic text-champagne-600">em minutos</em>
+              </>
+            }
           />
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" variant="primary">
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild size="lg" variant="gold">
               <a
                 href={site.social.googleMaps}
                 target="_blank"

@@ -13,12 +13,13 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #c6a5ff, #8b52f0 55%, #452073)",
-          color: "#fff",
-          fontWeight: 700,
+          background: "linear-gradient(135deg, #cc8fc8, #733b71 55%, #170e1a)",
+          color: "#f5efe4",
+          fontWeight: 500,
           fontSize: 18,
           fontFamily: "serif",
-          borderRadius: 8,
+          borderRadius: 7,
+          border: "1px solid rgba(200,147,71,0.6)",
         }}
       >
         Fm

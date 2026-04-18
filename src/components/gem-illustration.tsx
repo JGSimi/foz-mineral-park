@@ -1,25 +1,53 @@
 import { cn } from "@/lib/utils";
 
-type Accent = "amethyst" | "citrine" | "quartz";
+type Accent = "amethyst" | "citrine" | "quartz" | "imperial" | "champagne" | "pearl";
 
-const palettes: Record<Accent, { top: string; mid: string; bottom: string; shine: string }> = {
+const palettes: Record<
+  Accent,
+  { top: string; mid: string; bottom: string; shine: string; bg: string }
+> = {
+  // Aliases antigos mapeados para paleta nova
   amethyst: {
-    top: "#dfccff",
-    mid: "#8b52f0",
-    bottom: "#2e1750",
-    shine: "#f0e6ff",
+    top: "#e1b9de",
+    mid: "#733b71",
+    bottom: "#170e1a",
+    shine: "#f9f2f8",
+    bg: "#2a1c2e",
+  },
+  imperial: {
+    top: "#e1b9de",
+    mid: "#733b71",
+    bottom: "#170e1a",
+    shine: "#f9f2f8",
+    bg: "#2a1c2e",
   },
   citrine: {
-    top: "#ffe299",
-    mid: "#ffb030",
-    bottom: "#954d0c",
-    shine: "#fff9ec",
+    top: "#f4ead1",
+    mid: "#c89347",
+    bottom: "#4a2d18",
+    shine: "#fbf6ed",
+    bg: "#2c1b10",
+  },
+  champagne: {
+    top: "#f4ead1",
+    mid: "#c89347",
+    bottom: "#4a2d18",
+    shine: "#fbf6ed",
+    bg: "#2c1b10",
   },
   quartz: {
-    top: "#e4ded4",
-    mid: "#a79b86",
-    bottom: "#3f392e",
-    shine: "#faf9f7",
+    top: "#ece3d2",
+    mid: "#9f8f73",
+    bottom: "#1d1a14",
+    shine: "#faf6ef",
+    bg: "#0a0910",
+  },
+  pearl: {
+    top: "#ece3d2",
+    mid: "#9f8f73",
+    bottom: "#1d1a14",
+    shine: "#faf6ef",
+    bg: "#0a0910",
   },
 };
 
@@ -30,7 +58,7 @@ interface GemIllustrationProps {
 }
 
 export function GemIllustration({
-  accent = "amethyst",
+  accent = "imperial",
   className,
   title = "Ilustração de gema",
 }: GemIllustrationProps) {
@@ -46,11 +74,11 @@ export function GemIllustration({
     >
       <defs>
         <linearGradient id={`bg-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={p.bottom} stopOpacity="0.6" />
-          <stop offset="100%" stopColor={p.bottom} />
+          <stop offset="0%" stopColor={p.bg} stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#050508" />
         </linearGradient>
-        <radialGradient id={`glow-${id}`} cx="50%" cy="30%" r="60%">
-          <stop offset="0%" stopColor={p.shine} stopOpacity="0.45" />
+        <radialGradient id={`glow-${id}`} cx="50%" cy="30%" r="65%">
+          <stop offset="0%" stopColor={p.shine} stopOpacity="0.55" />
           <stop offset="100%" stopColor={p.shine} stopOpacity="0" />
         </radialGradient>
         <linearGradient id={`face-${id}-a`} x1="0" y1="0" x2="1" y2="1">
@@ -65,63 +93,78 @@ export function GemIllustration({
           <stop offset="0%" stopColor={p.mid} stopOpacity="0.9" />
           <stop offset="100%" stopColor={p.bottom} />
         </linearGradient>
+        <linearGradient id={`gold-edge-${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f4ead1" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#915a25" stopOpacity="0.6" />
+        </linearGradient>
       </defs>
 
       <rect width="400" height="500" fill={`url(#bg-${id})`} />
-      <circle cx="200" cy="190" r="220" fill={`url(#glow-${id})`} />
+      <circle cx="200" cy="190" r="240" fill={`url(#glow-${id})`} />
 
+      {/* Gema principal */}
       <g transform="translate(200 260)">
         <polygon
-          points="-110,-60 -60,-140 60,-140 110,-60 0,140"
+          points="-112,-62 -62,-142 62,-142 112,-62 0,142"
           fill={`url(#face-${id}-a)`}
         />
         <polygon
-          points="0,140 110,-60 60,-140 0,-90"
+          points="0,142 112,-62 62,-142 0,-90"
           fill={`url(#face-${id}-b)`}
-          opacity="0.85"
+          opacity="0.88"
         />
         <polygon
-          points="-110,-60 -60,-140 0,-90 0,140"
+          points="-112,-62 -62,-142 0,-90 0,142"
           fill={`url(#face-${id}-c)`}
-          opacity="0.65"
+          opacity="0.68"
+        />
+        {/* Filetes dourados nas arestas — "lapidação" */}
+        <polyline
+          points="-62,-142 0,-90 62,-142"
+          fill="none"
+          stroke={`url(#gold-edge-${id})`}
+          strokeWidth="1.2"
         />
         <polyline
-          points="-60,-140 0,-90 60,-140"
+          points="-112,-62 0,-90 112,-62"
+          fill="none"
+          stroke={`url(#gold-edge-${id})`}
+          strokeWidth="1.2"
+        />
+        <polyline
+          points="0,-90 0,142"
           fill="none"
           stroke={p.shine}
           strokeOpacity="0.35"
-          strokeWidth="1"
+          strokeWidth="0.8"
         />
-        <polyline
-          points="-110,-60 0,-90 110,-60"
-          fill="none"
-          stroke={p.shine}
-          strokeOpacity="0.35"
-          strokeWidth="1"
+        {/* Pequena luz central */}
+        <circle cx="0" cy="-60" r="3" fill={p.shine} opacity="0.9" />
+      </g>
+
+      {/* Cristais satélites */}
+      <g opacity="0.55">
+        <polygon
+          points="58,420 82,378 112,394 102,440 76,446"
+          fill={`url(#face-${id}-a)`}
         />
-        <polyline
-          points="0,-90 0,140"
-          fill="none"
-          stroke={p.shine}
-          strokeOpacity="0.25"
-          strokeWidth="1"
+        <polygon
+          points="298,438 326,400 352,420 340,462 314,466"
+          fill={`url(#face-${id}-b)`}
+        />
+        <polygon
+          points="28,118 56,88 82,114 70,150 40,150"
+          fill={`url(#face-${id}-c)`}
         />
       </g>
 
-      {/* Cristais secundários */}
-      <g opacity="0.6">
-        <polygon
-          points="60,420 80,380 110,395 100,440 75,445"
-          fill={`url(#face-${id}-a)`}
-        />
-        <polygon
-          points="300,440 325,400 350,420 340,460 315,465"
-          fill={`url(#face-${id}-b)`}
-        />
-        <polygon
-          points="30,120 55,90 80,115 70,150 40,150"
-          fill={`url(#face-${id}-c)`}
-        />
+      {/* Partículas de ouro flutuando */}
+      <g fill="#f4ead1">
+        <circle cx="84" cy="64" r="1.4" opacity="0.9" />
+        <circle cx="340" cy="108" r="1" opacity="0.7" />
+        <circle cx="72" cy="210" r="0.9" opacity="0.55" />
+        <circle cx="330" cy="320" r="1.2" opacity="0.75" />
+        <circle cx="148" cy="70" r="0.8" opacity="0.4" />
       </g>
     </svg>
   );

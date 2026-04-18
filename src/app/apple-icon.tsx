@@ -13,12 +13,13 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #c6a5ff, #8b52f0 55%, #452073)",
-          color: "#fff",
+          background: "linear-gradient(135deg, #cc8fc8, #733b71 55%, #170e1a)",
+          color: "#f5efe4",
           fontFamily: "serif",
-          fontWeight: 500,
+          fontWeight: 400,
           fontSize: 86,
           borderRadius: 40,
+          border: "2px solid rgba(200,147,71,0.65)",
         }}
       >
         Fm

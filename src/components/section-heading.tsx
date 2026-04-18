@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SectionHeadingProps {
-  eyebrow?: string;
-  title: string;
-  description?: string;
+  eyebrow?: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
   align?: "left" | "center";
   tone?: "light" | "dark";
   className?: string;
@@ -28,14 +29,16 @@ export function SectionHeading({
       {eyebrow && (
         <p
           className={cn(
-            "inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em]",
-            tone === "light" ? "text-amethyst-700" : "text-citrine-300",
+            "inline-flex items-center gap-3 text-[0.65rem] uppercase tracking-[0.28em]",
+            tone === "light" ? "text-champagne-700" : "text-champagne-300",
           )}
         >
           <span
             className={cn(
-              "inline-block h-px w-8",
-              tone === "light" ? "bg-amethyst-500" : "bg-citrine-400",
+              "inline-block h-px w-9",
+              tone === "light"
+                ? "bg-gradient-to-r from-transparent via-champagne-500 to-transparent"
+                : "bg-gradient-to-r from-transparent via-champagne-300 to-transparent",
             )}
           />
           {eyebrow}
@@ -43,8 +46,8 @@ export function SectionHeading({
       )}
       <h2
         className={cn(
-          "text-balance text-3xl sm:text-4xl md:text-5xl",
-          tone === "light" ? "text-foreground" : "text-white",
+          "text-balance font-display text-3xl sm:text-4xl md:text-5xl",
+          tone === "light" ? "text-obsidian-900" : "text-pearl-100",
         )}
       >
         {title}
@@ -53,7 +56,7 @@ export function SectionHeading({
         <p
           className={cn(
             "text-pretty text-base sm:text-lg leading-relaxed",
-            tone === "light" ? "text-quartz-600" : "text-quartz-200",
+            tone === "light" ? "text-pearl-700" : "text-pearl-200/85",
           )}
         >
           {description}

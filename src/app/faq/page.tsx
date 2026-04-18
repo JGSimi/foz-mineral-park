@@ -5,6 +5,7 @@ import Script from "next/script";
 import { site } from "@/lib/site";
 import { Container } from "@/components/container";
 import { Button } from "@/components/button";
+import { PageHero } from "@/components/page-hero";
 
 export const metadata: Metadata = {
   title: "Perguntas frequentes",
@@ -60,36 +61,42 @@ const jsonLd = {
 export default function FaqPage() {
   return (
     <>
-      <section className="pt-24 pb-10 sm:pt-32">
-        <Container className="max-w-3xl text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-amethyst-700">
-            FAQ
-          </p>
-          <h1 className="mt-3 text-balance text-5xl sm:text-6xl">
-            Perguntas que a gente recebe todo dia.
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-quartz-600">
-            Não achou o que procura? Fale com a gente — respondemos em minutos
-            no WhatsApp.
-          </p>
-        </Container>
-      </section>
+      <PageHero
+        eyebrow="Perguntas frequentes"
+        title={
+          <>
+            Perguntas que a gente recebe{" "}
+            <em className="italic text-champagne-300">todo dia</em>.
+          </>
+        }
+        description="Não achou o que procura? Fale com a gente — respondemos em minutos no WhatsApp."
+      />
 
-      <section className="py-10">
+      <section className="py-16">
         <Container size="md">
-          <dl className="divide-y divide-border rounded-3xl border border-border bg-background">
-            {faqs.map((f) => (
-              <div key={f.q} className="p-6">
-                <dt className="font-display text-lg text-foreground">{f.q}</dt>
-                <dd className="mt-2 text-sm leading-relaxed text-quartz-600">
-                  {f.a}
-                </dd>
+          <dl className="divide-y divide-pearl-300 overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 shadow-luxe">
+            {faqs.map((f, i) => (
+              <div
+                key={f.q}
+                className="flex gap-5 p-7 transition-colors hover:bg-pearl-100"
+              >
+                <span className="font-display text-sm italic text-champagne-500 pt-1">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <dt className="font-display text-lg text-obsidian-900">
+                    {f.q}
+                  </dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-pearl-700">
+                    {f.a}
+                  </dd>
+                </div>
               </div>
             ))}
           </dl>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild variant="primary" size="lg">
+          <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild variant="gold" size="lg">
               <Link href="/contato">Ainda tenho dúvida</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
