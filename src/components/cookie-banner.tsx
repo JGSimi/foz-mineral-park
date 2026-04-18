@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Button } from "./button";
 
 const CONSENT_KEY = "fmp-consent-v1";
+/** Custom event dispatched after consent (accept or essential-only) */
+export const CONSENT_EVENT = "fmp-consent-resolved";
 
 type Consent = "all" | "essential";
 
@@ -27,6 +29,7 @@ export function CookieBanner() {
         JSON.stringify({ value, ts: new Date().toISOString() }),
       );
     } catch {}
+    window.dispatchEvent(new CustomEvent(CONSENT_EVENT));
     setVisible(false);
   };
 
@@ -36,7 +39,8 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-labelledby="cookie-title"
-      className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-xl overflow-hidden rounded-2xl border border-champagne-300/25 bg-obsidian-950/95 p-6 shadow-luxe-dark backdrop-blur-md sm:inset-x-auto sm:right-5 sm:left-auto"
+      aria-describedby="cookie-body"
+      className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-xl overflow-hidden rounded-2xl border border-champagne-300/25 bg-obsidian-950/95 p-6 shadow-luxe-dark backdrop-blur-md sm:inset-x-auto sm:right-5 sm:left-auto"
     >
       <span
         aria-hidden="true"
@@ -48,7 +52,7 @@ export function CookieBanner() {
       >
         Sua privacidade <em className="italic text-champagne-300">importa</em>.
       </p>
-      <p className="mt-1.5 text-sm text-pearl-200/80">
+      <p id="cookie-body" className="mt-1.5 text-sm text-pearl-200/80">
         Usamos apenas cookies essenciais para o funcionamento do site. Dados
         anônimos de visita ajudam a melhorar a experiência — você escolhe.{" "}
         <Link

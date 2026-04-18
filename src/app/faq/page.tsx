@@ -62,6 +62,7 @@ export default function FaqPage() {
   return (
     <>
       <PageHero
+        accent="imperial"
         eyebrow="Perguntas frequentes"
         title={
           <>
@@ -72,7 +73,7 @@ export default function FaqPage() {
         description="Não achou o que procura? Fale com a gente — respondemos rapidinho no WhatsApp."
       />
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container size="md">
           <dl className="divide-y divide-pearl-300 overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 shadow-luxe">
             {faqs.map((f, i) => (

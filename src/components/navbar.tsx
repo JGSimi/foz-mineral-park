@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
 
@@ -25,6 +25,8 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
@@ -43,6 +45,43 @@ export function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+  }, [open]);
+
+  // Focus trap + keyboard shortcuts para o menu mobile
+  useEffect(() => {
+    if (!open) return;
+    const container = menuRef.current;
+    if (!container) return;
+
+    const focusable = container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled])',
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    // Foco inicial no primeiro link do menu
+    first.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+        triggerRef.current?.focus();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
   return (
@@ -87,9 +126,11 @@ export function Navbar() {
             <Link href="/ingressos">Comprar ingresso</Link>
           </Button>
           <button
+            ref={triggerRef}
             type="button"
             aria-label={open ? "Fechar menu" : "Abrir menu"}
             aria-expanded={open}
+            aria-controls="mobile-menu"
             className="inline-flex size-10 items-center justify-center rounded-full border border-champagne-300/30 text-pearl-100 transition-colors hover:border-champagne-300/60 md:hidden"
             onClick={() => setOpen((v) => !v)}
           >
@@ -107,7 +148,14 @@ export function Navbar() {
       />
 
       {open && (
-        <div className="md:hidden" role="dialog" aria-modal="true">
+        <div
+          ref={menuRef}
+          id="mobile-menu"
+          className="md:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu de navegação"
+        >
           <div className="border-t border-champagne-400/20 bg-obsidian-950/95 backdrop-blur-md">
             <Container className="flex flex-col gap-1 py-5">
               {links.map((l) => (

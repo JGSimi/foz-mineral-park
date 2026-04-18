@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { site } from "@/lib/site";
+import { attractionImages, heroPoster } from "@/lib/images";
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
 import { SectionHeading } from "@/components/section-heading";
@@ -37,11 +38,11 @@ export default function Home() {
 function Hero() {
   return (
     <section className="relative -mt-16 overflow-hidden pb-32 pt-40 sm:-mt-20 sm:pt-52">
-      {/* Camada 1: vídeo */}
+      {/* Camada 1: vídeo (desktop) + foto (sempre) */}
       <div className="absolute inset-0 -z-20" aria-hidden="true">
         <HeroVideo
           src={site.hero.video}
-          poster={site.hero.poster}
+          poster={heroPoster}
           className="scale-105"
         />
       </div>
@@ -123,31 +124,63 @@ function Hero() {
 
         <AnimateIn className="relative isolate" y={30} delay={0.12}>
           <div className="absolute -inset-12 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/25 via-transparent to-champagne-400/25 blur-3xl" />
-          <div className="frame-gold relative overflow-hidden rounded-[32px] shadow-luxe-dark">
-            <Image
-              src={site.attractions[0].image}
-              alt="Gruta de Ametista — formações naturais de cristais violetas iluminadas"
-              width={900}
-              height={1100}
-              sizes="(max-width: 768px) 90vw, 480px"
-              className="h-auto w-full object-cover"
-              priority
-            />
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-obsidian-950/70 via-transparent to-transparent"
-              aria-hidden="true"
-            />
+          <div className="grid grid-cols-[1.4fr_1fr] gap-3 sm:gap-4">
+            <div className="frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark">
+              <Image
+                src={attractionImages["gruta-de-ametista"]}
+                alt="Gruta de Ametista — formações de cristais violetas"
+                fill
+                sizes="(max-width: 768px) 55vw, 280px"
+                placeholder="blur"
+                className="object-cover"
+                priority
+              />
+              <div
+                className="card-media-overlay absolute inset-0"
+                aria-hidden="true"
+              />
+              <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
+                Gruta
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
+                <Image
+                  src={attractionImages["museu-de-minerais"]}
+                  alt="Museu de Minerais — acervo catalogado"
+                  fill
+                  sizes="(max-width: 768px) 40vw, 200px"
+                  placeholder="blur"
+                  className="object-cover"
+                />
+                <div
+                  className="card-media-overlay absolute inset-0"
+                  aria-hidden="true"
+                />
+                <div className="absolute bottom-2 left-2 inline-flex items-center rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
+                  Museu
+                </div>
+              </div>
+              <div className="frame-gold relative aspect-square overflow-hidden rounded-[22px] shadow-luxe-dark">
+                <Image
+                  src={attractionImages["loja-de-pedras"]}
+                  alt="Loja de Pedras — peças lapidadas à mão"
+                  fill
+                  sizes="(max-width: 768px) 40vw, 200px"
+                  placeholder="blur"
+                  className="object-cover"
+                />
+                <div
+                  className="card-media-overlay absolute inset-0"
+                  aria-hidden="true"
+                />
+                <div className="absolute bottom-2 left-2 inline-flex items-center rounded-full border border-champagne-400/40 bg-obsidian-900/70 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.22em] text-champagne-200 backdrop-blur">
+                  Loja
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="absolute -bottom-8 -left-6 hidden w-52 rotate-[-4deg] rounded-2xl border border-champagne-300/20 bg-obsidian-900/80 p-4 shadow-luxe-dark backdrop-blur sm:block">
-            <p className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
-              Destaque
-            </p>
-            <p className="mt-1 font-display text-lg italic text-pearl-100">
-              Gruta de Ametista
-            </p>
-            <p className="text-xs text-pearl-200/70">Experiência sensorial</p>
-          </div>
-          <div className="absolute -top-6 right-6 hidden rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/70 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur sm:block">
+          <div className="absolute -top-6 right-4 hidden rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/80 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur sm:block">
             Foz do Iguaçu · PR
           </div>
         </AnimateIn>
@@ -244,10 +277,11 @@ function Attractions() {
                 </span>
                 <div className="relative aspect-[4/5] overflow-hidden">
                   <Image
-                    src={a.image}
+                    src={attractionImages[a.slug as keyof typeof attractionImages]}
                     alt={`${a.name} — ${a.tagline}`}
                     fill
                     sizes="(max-width: 768px) 90vw, 33vw"
+                    placeholder="blur"
                     className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
                   />
                   <div
@@ -475,10 +509,11 @@ function VisitPlan() {
 
             <div className="relative min-h-[360px] overflow-hidden">
               <Image
-                src={site.attractions[1].image}
+                src={attractionImages["museu-de-minerais"]}
                 alt="Acervo do Museu de Minerais"
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
+                placeholder="blur"
                 className="object-cover"
               />
               <div

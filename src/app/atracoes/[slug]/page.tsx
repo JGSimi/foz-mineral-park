@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Ticket, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Ticket, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 
 import { site } from "@/lib/site";
+import { attractionImages, type AttractionSlug } from "@/lib/images";
 import { Container } from "@/components/container";
 import { Button } from "@/components/button";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/animate";
@@ -40,10 +41,14 @@ export default async function AttractionPage({
   params: Promise<RouteParams>;
 }) {
   const { slug } = await params;
-  const attraction = site.attractions.find((a) => a.slug === slug);
+  const index = site.attractions.findIndex((a) => a.slug === slug);
+  const attraction = site.attractions[index];
   if (!attraction) notFound();
 
-  const otherAttractions = site.attractions.filter((a) => a.slug !== slug);
+  const total = site.attractions.length;
+  const prev = site.attractions[(index - 1 + total) % total];
+  const next = site.attractions[(index + 1) % total];
+  const image = attractionImages[attraction.slug as AttractionSlug];
 
   return (
     <>
@@ -51,12 +56,13 @@ export default async function AttractionPage({
         {/* Imagem de fundo */}
         <div className="absolute inset-0 -z-20" aria-hidden="true">
           <Image
-            src={attraction.image}
+            src={image}
             alt=""
             fill
             priority
+            placeholder="blur"
             sizes="100vw"
-            className="object-cover scale-105"
+            className="scale-105 object-cover"
           />
         </div>
         <div
@@ -109,11 +115,10 @@ export default async function AttractionPage({
             <div className="absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/30 via-transparent to-champagne-400/30 blur-3xl" />
             <div className="frame-gold overflow-hidden rounded-[32px] shadow-luxe-dark">
               <Image
-                src={attraction.image}
+                src={image}
                 alt={`${attraction.name} — ${attraction.tagline}`}
-                width={900}
-                height={1100}
                 sizes="(max-width: 768px) 90vw, 500px"
+                placeholder="blur"
                 className="h-auto w-full object-cover"
               />
             </div>
@@ -158,46 +163,73 @@ export default async function AttractionPage({
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container>
           <AnimateIn>
             <p className="ornament font-display text-[0.65rem] uppercase tracking-[0.28em] text-champagne-700">
               Continue explorando
             </p>
             <h2 className="mt-5 max-w-2xl font-display text-3xl text-obsidian-900">
-              Outras atrações{" "}
-              <em className="italic text-champagne-600">do parque</em>
+              Próxima parada{" "}
+              <em className="italic text-champagne-600">do circuito</em>
             </h2>
           </AnimateIn>
-          <Stagger className="mt-10 grid gap-5 md:grid-cols-2">
-            {otherAttractions.map((a) => (
-              <StaggerItem key={a.slug}>
-                <Link
-                  href={`/atracoes/${a.slug}`}
-                  className="group flex items-center gap-5 rounded-2xl border border-pearl-300 bg-pearl-50 p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-champagne-300 hover:shadow-luxe"
-                >
-                  <div className="frame-gold relative aspect-square w-28 shrink-0 overflow-hidden rounded-xl">
-                    <Image
-                      src={a.image}
-                      alt={a.name}
-                      fill
-                      sizes="112px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.08]"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[0.65rem] uppercase tracking-[0.24em] text-champagne-700">
-                      {a.tagline}
-                    </p>
-                    <p className="mt-1 font-display text-xl text-obsidian-900">
-                      {a.name}
-                    </p>
-                    <p className="mt-1 text-sm text-pearl-700">{a.short}</p>
-                  </div>
-                </Link>
-              </StaggerItem>
-            ))}
-          </Stagger>
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <Link
+              href={`/atracoes/${prev.slug}`}
+              className="group flex items-stretch gap-5 rounded-2xl border border-pearl-300 bg-pearl-50 p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-champagne-300 hover:shadow-luxe"
+            >
+              <div className="frame-gold relative aspect-square w-28 shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src={attractionImages[prev.slug as AttractionSlug]}
+                  alt={prev.name}
+                  fill
+                  sizes="112px"
+                  placeholder="blur"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.08]"
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-between">
+                <p className="inline-flex items-center gap-1.5 text-[0.65rem] uppercase tracking-[0.24em] text-champagne-700">
+                  <ArrowLeft className="size-3" />
+                  Anterior
+                </p>
+                <div>
+                  <p className="font-display text-xl text-obsidian-900">
+                    {prev.name}
+                  </p>
+                  <p className="mt-0.5 text-sm text-pearl-700">{prev.tagline}</p>
+                </div>
+              </div>
+            </Link>
+            <Link
+              href={`/atracoes/${next.slug}`}
+              className="group flex items-stretch gap-5 rounded-2xl border border-pearl-300 bg-pearl-50 p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-champagne-300 hover:shadow-luxe"
+            >
+              <div className="flex flex-1 flex-col justify-between text-right">
+                <p className="inline-flex items-center justify-end gap-1.5 text-[0.65rem] uppercase tracking-[0.24em] text-champagne-700">
+                  Próxima
+                  <ArrowRight className="size-3" />
+                </p>
+                <div>
+                  <p className="font-display text-xl text-obsidian-900">
+                    {next.name}
+                  </p>
+                  <p className="mt-0.5 text-sm text-pearl-700">{next.tagline}</p>
+                </div>
+              </div>
+              <div className="frame-gold relative aspect-square w-28 shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src={attractionImages[next.slug as AttractionSlug]}
+                  alt={next.name}
+                  fill
+                  sizes="112px"
+                  placeholder="blur"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.08]"
+                />
+              </div>
+            </Link>
+          </div>
         </Container>
       </section>
     </>

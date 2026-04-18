@@ -1,16 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
+import { CONSENT_EVENT } from "./cookie-banner";
+
+const CONSENT_KEY = "fmp-consent-v1";
 
 export function WhatsAppFloating() {
+  const [consentResolved, setConsentResolved] = useState(true);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CONSENT_KEY);
+      setConsentResolved(Boolean(stored));
+    } catch {
+      setConsentResolved(true);
+    }
+    const onResolve = () => setConsentResolved(true);
+    window.addEventListener(CONSENT_EVENT, onResolve);
+    return () => window.removeEventListener(CONSENT_EVENT, onResolve);
+  }, []);
+
   const message = encodeURIComponent(
     "Olá! Gostaria de saber mais sobre o Foz Mineral Park.",
   );
+
   return (
     <a
       href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}?text=${message}`}
       target="_blank"
       rel="noreferrer"
       aria-label="Conversar no WhatsApp"
-      className="fixed bottom-5 right-5 z-30 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 transition-transform hover:scale-105 focus-visible:scale-105"
+      className={cn(
+        "fixed right-5 z-30 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 transition-all duration-500 hover:scale-105 focus-visible:scale-105",
+        // Quando o cookie banner ainda está na tela em mobile, sobe o botão
+        // para não ficar coberto.
+        consentResolved ? "bottom-5" : "bottom-44 sm:bottom-5",
+      )}
     >
       <svg
         aria-hidden="true"

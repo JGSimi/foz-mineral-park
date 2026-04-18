@@ -17,6 +17,7 @@ export default function ContatoPage() {
   return (
     <>
       <PageHero
+        accent="jade"
         eyebrow="Contato"
         title={
           <>
@@ -27,7 +28,7 @@ export default function ContatoPage() {
         description="Responde em minutos pelo WhatsApp nos horários comerciais. Para agências e grupos escolares, temos equipe dedicada."
       />
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container className="grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-start">
           <ContactForm />
 

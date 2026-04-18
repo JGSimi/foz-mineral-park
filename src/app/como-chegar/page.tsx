@@ -50,6 +50,7 @@ export default function ComoChegarPage() {
   return (
     <>
       <PageHero
+        accent="imperial"
         eyebrow="Como chegar"
         title={
           <>
@@ -61,7 +62,7 @@ export default function ComoChegarPage() {
         description={`Nosso endereço é fácil: ${site.address.street}, Foz do Iguaçu. Aberto todos os dias.`}
       />
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container className="grid gap-6 md:grid-cols-3">
           {routes.map((r) => (
             <div
@@ -82,7 +83,7 @@ export default function ComoChegarPage() {
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container>
           <div className="frame-gold overflow-hidden rounded-3xl border border-transparent bg-pearl-50 shadow-luxe">
             <iframe
@@ -109,7 +110,7 @@ export default function ComoChegarPage() {
         </Container>
       </section>
 
-      <section className="py-20">
+      <section className="py-20 sm:py-28">
         <Container size="md" className="text-center">
           <SectionHeading
             align="center"

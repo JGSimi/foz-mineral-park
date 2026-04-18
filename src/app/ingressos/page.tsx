@@ -31,6 +31,7 @@ export default function IngressosPage() {
   return (
     <>
       <PageHero
+        accent="champagne"
         eyebrow="Ingressos"
         title={
           <>
@@ -41,7 +42,7 @@ export default function IngressosPage() {
         description="Nosso time confirma dia, horário e pacote pelo WhatsApp. Em breve, compra online com voucher automático no e-mail."
       />
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container size="md">
           <div className="frame-gold relative overflow-hidden rounded-3xl border border-transparent bg-pearl-50 p-10 shadow-luxe sm:p-14">
             <p className="text-[0.65rem] uppercase tracking-[0.28em] text-champagne-700">
@@ -82,7 +83,7 @@ export default function IngressosPage() {
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="py-20 sm:py-24">
         <Container className="grid gap-12 md:grid-cols-2">
           <div>
             <SectionHeading
@@ -125,7 +126,7 @@ export default function IngressosPage() {
         </Container>
       </section>
 
-      <section className="py-20">
+      <section className="py-20 sm:py-28">
         <Container size="md">
           <div className="relative grid overflow-hidden rounded-3xl border border-champagne-400/20 bg-aurora p-10 text-pearl-100 sm:grid-cols-[1fr_auto] sm:items-center sm:p-14">
             <div className="grain absolute inset-0" aria-hidden="true" />

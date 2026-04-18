@@ -38,6 +38,7 @@ export default function SobrePage() {
   return (
     <>
       <PageHero
+        accent="imperial"
         eyebrow="Sobre"
         title={
           <>
@@ -48,7 +49,7 @@ export default function SobrePage() {
         description={site.longDescription}
       />
 
-      <section className="py-20">
+      <section className="py-20 sm:py-28">
         <Container className="grid gap-6 md:grid-cols-3">
           {milestones.map((m) => (
             <article
@@ -72,7 +73,7 @@ export default function SobrePage() {
         </Container>
       </section>
 
-      <section className="py-20">
+      <section className="py-20 sm:py-28">
         <Container>
           <div className="relative grid gap-12 overflow-hidden rounded-3xl border border-champagne-400/20 bg-aurora p-10 text-pearl-100 sm:p-16 md:grid-cols-2">
             <div className="grain absolute inset-0" aria-hidden="true" />
@@ -104,7 +105,7 @@ export default function SobrePage() {
         </Container>
       </section>
 
-      <section className="py-20">
+      <section className="py-20 sm:py-28">
         <Container size="md" className="text-center">
           <SectionHeading
             align="center"

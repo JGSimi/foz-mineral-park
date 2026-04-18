@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 import { Container } from "./container";
+import { cn } from "@/lib/utils";
+
+type Accent = "imperial" | "champagne" | "jade";
 
 interface PageHeroProps {
   eyebrow?: string;
@@ -7,7 +10,17 @@ interface PageHeroProps {
   description?: ReactNode;
   align?: "left" | "center";
   actions?: ReactNode;
+  accent?: Accent;
 }
+
+const accentGlow: Record<Accent, string> = {
+  imperial:
+    "bg-[radial-gradient(ellipse_at_top_right,rgba(146,77,142,0.35)_0%,transparent_55%)]",
+  champagne:
+    "bg-[radial-gradient(ellipse_at_top_right,rgba(200,147,71,0.28)_0%,transparent_55%)]",
+  jade:
+    "bg-[radial-gradient(ellipse_at_top_right,rgba(74,131,114,0.28)_0%,transparent_55%)]",
+};
 
 export function PageHero({
   eyebrow,
@@ -15,10 +28,15 @@ export function PageHero({
   description,
   align = "center",
   actions,
+  accent = "imperial",
 }: PageHeroProps) {
   return (
     <section className="relative -mt-16 overflow-hidden pb-16 pt-36 sm:-mt-20 sm:pt-48">
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
+      <div
+        className={cn("absolute inset-0 -z-10", accentGlow[accent])}
+        aria-hidden="true"
+      />
       <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
       <div
         className="page-hero-overlay absolute inset-x-0 top-0 -z-10 h-full"
@@ -52,6 +70,35 @@ export function PageHero({
             {actions}
           </div>
         )}
+      </Container>
+    </section>
+  );
+}
+
+/** Variação clara, para páginas institucionais (política, termos). */
+export function LegalHero({
+  eyebrow,
+  title,
+  meta,
+}: {
+  eyebrow: string;
+  title: string;
+  meta?: string;
+}) {
+  return (
+    <section className="relative -mt-16 overflow-hidden pb-10 pt-36 sm:-mt-20 sm:pt-48">
+      <div
+        className="absolute inset-0 -z-10 bg-parchment-grid opacity-70"
+        aria-hidden="true"
+      />
+      <Container size="md">
+        <p className="text-[0.65rem] uppercase tracking-[0.3em] text-champagne-700">
+          {eyebrow}
+        </p>
+        <h1 className="mt-4 font-display text-4xl leading-tight text-obsidian-900 sm:text-5xl">
+          {title}
+        </h1>
+        {meta && <p className="mt-3 text-sm text-pearl-600">{meta}</p>}
       </Container>
     </section>
   );
