@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Foz Mineral Park — site oficial
 
-## Getting Started
+Site institucional e de vendas do **Foz Mineral Park** (Foz do Iguaçu, PR).
+Reconstrução completa do site anterior, com foco em SEO real, conformidade
+com LGPD e funil de conversão funcional.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router + Turbopack)
+- **React 19** + **TypeScript**
+- **Tailwind CSS v4** com design tokens inspirados em gemas
+- **Vercel Analytics** + **Speed Insights** (sem cookies, LGPD-friendly)
+- **Resend** para e-mail transacional (opcional na configuração inicial)
+- **Sonner** para notificações de formulário
+- **Lucide** para ícones
+
+## Como rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # build de produção
+npm run start      # servidor de produção
+npm run lint       # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Node 20+ recomendado. O projeto é testado em Node 25.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Todas opcionais no setup inicial.
 
-## Learn More
+| Variável | Descrição |
+|---|---|
+| `RESEND_API_KEY` | API key Resend. Sem ela, o formulário de contato loga no servidor em vez de enviar e-mail. |
+| `CONTACT_EMAIL` | Destino das mensagens (default: `contato@fozmineralpark.com.br`). |
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/          rotas App Router (home, atracoes/[slug], ingressos, contato, ...)
+├── components/   UI primitivos (Button, Container, Navbar, Footer, ...)
+└── lib/
+    ├── site.ts   fonte única de copy, contatos, atrações, horário
+    └── utils.ts  cn() helper
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy
 
-## Deploy on Vercel
+Pipeline pensado para Vercel:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. `vercel link` no diretório do projeto.
+2. Definir `RESEND_API_KEY` e `CONTACT_EMAIL` em Project Settings.
+3. Apontar o domínio `fozmineralpark.com.br` (após registro no Registro.br).
+4. Push na branch `main` → deploy automático.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Segurança
+
+Headers configurados em `next.config.ts`: CSP, HSTS (preload), X-Content-Type-Options,
+X-Frame-Options: DENY, Referrer-Policy, Permissions-Policy, COOP/CORP. HTTPS é
+garantido pelo Vercel. Não há tracking de terceiros além do Vercel Analytics.
+
+`/.well-known/security.txt` está publicado conforme RFC 9116.
+
+## Licença
+
+© Foz Mineral Park LTDA — todos os direitos reservados.

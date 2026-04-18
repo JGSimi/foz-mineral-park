@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   Foz Mineral Park — Design Tokens
+   Paleta inspirada em gemas e minerais do acervo:
+   - Ametista (violeta profundo)
+   - Citrino (âmbar quente)
+   - Quartzo fumê (neutros terrosos)
+   - Cristal de rocha (off-white)
+--------------------------------------------------------------------------- */
 
 @theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --color-ink: var(--ink);
+  --color-parchment: var(--parchment);
+
+  --color-amethyst-50: #faf6ff;
+  --color-amethyst-100: #f0e6ff;
+  --color-amethyst-200: #dfccff;
+  --color-amethyst-300: #c6a5ff;
+  --color-amethyst-400: #a97cff;
+  --color-amethyst-500: #8b52f0;
+  --color-amethyst-600: #7336d6;
+  --color-amethyst-700: #5d28ae;
+  --color-amethyst-800: #452073;
+  --color-amethyst-900: #2e1750;
+  --color-amethyst-950: #1a0c2e;
+
+  --color-citrine-50: #fff9ec;
+  --color-citrine-100: #fff1cc;
+  --color-citrine-200: #ffe299;
+  --color-citrine-300: #ffcc5c;
+  --color-citrine-400: #ffb030;
+  --color-citrine-500: #f29014;
+  --color-citrine-600: #c96a08;
+  --color-citrine-700: #954d0c;
+  --color-citrine-800: #6b3910;
+  --color-citrine-900: #402209;
+
+  --color-quartz-50: #faf9f7;
+  --color-quartz-100: #f2f0eb;
+  --color-quartz-200: #e4ded4;
+  --color-quartz-300: #cdc4b4;
+  --color-quartz-400: #a79b86;
+  --color-quartz-500: #7d7461;
+  --color-quartz-600: #5c5445;
+  --color-quartz-700: #3f392e;
+  --color-quartz-800: #272319;
+  --color-quartz-900: #17140d;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #fbf8f3;
+  --foreground: #17140d;
+  --ink: #17140d;
+  --parchment: #fbf8f3;
+  --muted: #f2f0eb;
+  --muted-foreground: #5c5445;
+  --border: #e4ded4;
+  --ring: #8b52f0;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.bg-geode {
+  background:
+    radial-gradient(
+      ellipse at 20% 10%,
+      color-mix(in oklab, var(--color-amethyst-500) 35%, transparent) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 85% 80%,
+      color-mix(in oklab, var(--color-citrine-400) 30%, transparent) 0%,
+      transparent 45%
+    ),
+    linear-gradient(180deg, var(--color-amethyst-950) 0%, var(--color-quartz-900) 100%);
+}
+
+.bg-parchment-grid {
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      color-mix(in oklab, var(--color-quartz-300) 60%, transparent) 1px,
+      transparent 0
+    );
+  background-size: 28px 28px;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+@keyframes shine {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    110deg,
+    transparent 40%,
+    color-mix(in oklab, var(--color-citrine-300) 50%, transparent) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shine 3s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-amethyst-500) 30%, transparent);
+  color: var(--foreground);
 }
