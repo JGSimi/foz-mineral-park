@@ -7,6 +7,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https://*.google.com https://*.googleusercontent.com https://maps.gstatic.com",
+  "media-src 'self' blob:",
   "frame-src https://www.google.com https://vercel.live",
   "connect-src 'self' https://*.vercel-insights.com https://vitals.vercel-insights.com https://api.resend.com",
   "form-action 'self'",

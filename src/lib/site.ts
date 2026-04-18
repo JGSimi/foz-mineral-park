@@ -63,6 +63,7 @@ export const site = {
       badge: "Experiência sensorial",
       duration: "20 min",
       accent: "amethyst",
+      image: "/media/attractions/gruta-de-ametista.jpg",
     },
     {
       slug: "museu-de-minerais",
@@ -74,6 +75,7 @@ export const site = {
       badge: "+1.000 espécimes",
       duration: "40 min",
       accent: "citrine",
+      image: "/media/attractions/museu-de-minerais.jpg",
     },
     {
       slug: "loja-de-pedras",
@@ -85,8 +87,14 @@ export const site = {
       badge: "Artesanato local",
       duration: "Livre",
       accent: "quartz",
+      image: "/media/attractions/loja-de-pedras.jpg",
     },
   ],
+
+  hero: {
+    video: "/media/video/hero-1.mp4",
+    poster: "/media/attractions/gruta-de-ametista.jpg",
+  },
 
   keywords: [
     "Foz Mineral Park",

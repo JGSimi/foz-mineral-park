@@ -10,6 +10,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CookieBanner } from "@/components/cookie-banner";
 import { WhatsAppFloating } from "@/components/whatsapp-floating";
+import { PageTransition } from "@/components/page-transition";
 
 import "./globals.css";
 
@@ -167,7 +168,7 @@ export default function RootLayout({
         </a>
         <Navbar />
         <main id="conteudo" className="flex-1">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
         <WhatsAppFloating />
