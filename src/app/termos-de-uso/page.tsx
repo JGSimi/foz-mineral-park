@@ -6,7 +6,7 @@ import { Container } from "@/components/container";
 export const metadata: Metadata = {
   title: "Termos de Uso",
   description:
-    "Termos que regem o uso do site do Foz Mineral Park e a compra de ingressos.",
+    "Termos que regem o uso do site do Foz Mineral Park e a reserva de ingressos.",
 };
 
 export default function TermosPage() {
@@ -38,30 +38,30 @@ export default function TermosPage() {
             <p>
               Este site pertence a {site.company.legalName}, CNPJ{" "}
               {site.company.cnpj}, e tem o propósito de apresentar o parque,
-              possibilitar a compra de ingressos e intermediar o contato entre
+              possibilitar a reserva de ingressos e intermediar o contato entre
               visitantes e a equipe.
             </p>
           </Block>
 
-          <Block title="3. Compra de ingressos">
+          <Block title="3. Reserva e ingresso">
             <ul className="list-disc space-y-2 pl-5">
               <li>
-                O ingresso é pessoal, intransferível após emissão e dá acesso
-                único ao parque na data escolhida.
+                O ingresso é pessoal e dá acesso ao parque na data escolhida,
+                dentro do horário de funcionamento divulgado.
               </li>
               <li>
-                Cancelamento com reembolso integral é aceito até 7 dias antes
-                da data da visita. Após esse prazo, oferecemos remarcação
-                gratuita por até 90 dias.
+                Prazos para cancelamento, remarcação e reembolso são informados
+                no momento da reserva e confirmados no voucher enviado por
+                e-mail ou WhatsApp.
               </li>
               <li>
-                Meia-entrada e gratuidades são garantidas mediante comprovação
-                documental na recepção.
+                Meia-entrada e gratuidades seguem a legislação vigente e são
+                garantidas mediante comprovação documental na recepção, no dia
+                da visita.
               </li>
               <li>
-                Em caso de fechamento por força maior (clima severo, queda de
-                energia, ordem das autoridades), é garantida a remarcação sem
-                custo.
+                Em caso de fechamento por força maior (clima severo, ordem das
+                autoridades), a equipe oferece remarcação sem custo.
               </li>
             </ul>
           </Block>

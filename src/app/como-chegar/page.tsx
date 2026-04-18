@@ -17,17 +17,17 @@ const routes = [
   {
     icon: Car,
     title: "De carro",
-    body: "Av. das Cataratas — principal via do turismo. Estacionamento gratuito e monitorado na porta.",
+    body: "Av. das Cataratas — principal via do turismo de Foz. Estacionamento em frente ao parque.",
   },
   {
     icon: Bus,
     title: "De ônibus",
-    body: "Linha Cataratas (TTU → Cataratas). Peça para descer no Mineral Park.",
+    body: "Linha Cataratas (TTU → Cataratas) passa em frente. Peça para descer no Foz Mineral Park.",
   },
   {
     icon: Plane,
     title: "Do aeroporto (IGU)",
-    body: "15 minutos pela BR-469. Táxis, Uber e transfer turístico funcionam o dia inteiro.",
+    body: "Cerca de 15 minutos pela BR-469. Táxis, Uber e transfer turístico operam o dia inteiro.",
   },
 ];
 
@@ -42,7 +42,7 @@ const info = [
     icon: Accessibility,
     label: "Acessibilidade",
     value:
-      "Piso plano, rampas, sinalização tátil e banheiros adaptados.",
+      "Para detalhes específicos, chame no WhatsApp antes da visita.",
   },
 ];
 

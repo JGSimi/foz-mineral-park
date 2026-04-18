@@ -10,41 +10,41 @@ import { PageHero } from "@/components/page-hero";
 export const metadata: Metadata = {
   title: "Perguntas frequentes",
   description:
-    "Dúvidas comuns sobre visita, ingressos, horários, acessibilidade, acompanhantes e formas de pagamento no Foz Mineral Park.",
+    "Dúvidas comuns sobre horários, visita, ingressos e acesso ao Foz Mineral Park.",
 };
 
 const faqs = [
   {
+    q: "Onde fica e quais os horários?",
+    a: `${site.address.full}. Aberto ${site.hours.summary}, com última entrada às ${site.hours.lastEntry}.`,
+  },
+  {
     q: "Quanto tempo dura a visita?",
-    a: "Em média uma hora, com calma. Dá para estender na loja e na área de descanso conforme o ritmo da família.",
+    a: "Cerca de uma hora no ritmo da família. Dá para estender na loja e na área de descanso conforme o interesse.",
   },
   {
-    q: "Crianças pagam?",
-    a: "Crianças até 5 anos não pagam. De 6 a 12 anos pagam meia-entrada. Estudantes com documento, idosos e PcD também têm direito a meia.",
+    q: "Como funciona a compra de ingresso?",
+    a: "Por enquanto, a reserva é feita pelo WhatsApp, com confirmação rápida pela nossa equipe. Em breve vamos disponibilizar a compra 100% online, com voucher no e-mail.",
   },
   {
-    q: "Quais as formas de pagamento?",
-    a: "PIX, cartão de crédito, cartão de débito e boleto bancário. Em breve também compra 100% online com voucher no e-mail.",
+    q: "Tem meia-entrada e gratuidade?",
+    a: "Sim, conforme a legislação vigente (Lei 12.933/13 para estudantes e demais enquadramentos previstos em lei). Fale com nosso time para confirmar qual categoria se aplica à sua visita.",
   },
   {
     q: "O parque é acessível?",
-    a: "Sim. Piso plano, rampas em todo o percurso, sinalização tátil e banheiros adaptados. Cão-guia é bem-vindo.",
+    a: "Sim. Para detalhes específicos (rampas, banheiros adaptados, cadeiras de rodas disponíveis, cão-guia), chame no WhatsApp — a equipe confirma o que se aplica à sua visita.",
   },
   {
-    q: "Tem lugar para comer?",
-    a: "Temos café, lanches e suvenires na entrada. Para refeições completas, há restaurantes vizinhos na Av. das Cataratas.",
+    q: "Onde posso estacionar?",
+    a: "Há estacionamento na própria Av. das Cataratas, em frente ao parque.",
   },
   {
-    q: "Posso levar meu pet?",
-    a: "Aceitamos animais pequenos em caixas de transporte. Cães-guia são sempre bem-vindos, sem restrição.",
+    q: "Recebem agências e grupos escolares?",
+    a: "Sim. Temos atendimento dedicado para agências receptivas e grupos escolares — voucher, comissão e agenda são combinados caso a caso pelo nosso comercial.",
   },
   {
-    q: "Vocês atendem agências e grupos escolares?",
-    a: "Sim. Temos equipe comercial dedicada, voucher, comissão e agenda protegida. Chame no WhatsApp ou use o formulário de contato.",
-  },
-  {
-    q: "Posso cancelar um ingresso já comprado?",
-    a: "Sim. Reembolso integral com até 7 dias de antecedência da data escolhida. Após esse prazo, oferecemos remarcação gratuita.",
+    q: "Quais idiomas a equipe fala?",
+    a: "Recebemos visitantes de várias nacionalidades; nosso time conversa em português e, quando possível, em espanhol e inglês. Se você precisar de um atendimento específico, avise no momento da reserva.",
   },
 ];
 
@@ -69,7 +69,7 @@ export default function FaqPage() {
             <em className="italic text-champagne-300">todo dia</em>.
           </>
         }
-        description="Não achou o que procura? Fale com a gente — respondemos em minutos no WhatsApp."
+        description="Não achou o que procura? Fale com a gente — respondemos rapidinho no WhatsApp."
       />
 
       <section className="py-16">
@@ -80,7 +80,7 @@ export default function FaqPage() {
                 key={f.q}
                 className="flex gap-5 p-7 transition-colors hover:bg-pearl-100"
               >
-                <span className="font-display text-sm italic text-champagne-500 pt-1">
+                <span className="pt-1 font-display text-sm italic text-champagne-500">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <div>

@@ -1,10 +1,22 @@
+/**
+ * Fonte única de dados editoriais do site.
+ *
+ * Campos marcados com `PENDING` contêm placeholders que **precisam ser
+ * preenchidos pelo cliente antes do go-live** (telefone, e-mail, redes
+ * sociais, fotos reais). Ver /Users/joaosimi/.claude/plans/validacao-conteudo-fozmineral.md
+ * para o relatório completo de auditoria.
+ *
+ * Descrições curtas de textos factuais só afirmam o que foi verificado em
+ * fontes públicas (cadastro da empresa e site-cliente original).
+ */
+
 export const site = {
   name: "Foz Mineral Park",
   tagline: "Onde a Terra guarda seus tesouros mais antigos",
   shortDescription:
-    "Museu e parque de minerais em Foz do Iguaçu. Três experiências em um só lugar: gruta de ametista, museu com mais de mil espécimes e loja de peças lapidadas por artesãos.",
+    "Museu e parque de minerais em Foz do Iguaçu. Três experiências em um só lugar: gruta de ametista, museu com acervo de minerais e loja de peças lapidadas por artesãos.",
   longDescription:
-    "Um destino imperdível no caminho das Cataratas do Iguaçu. Conheça formações naturais gigantes de ametista, aprenda sobre a origem dos minerais em um acervo com mais de mil exemplares e leve para casa peças lapidadas à mão.",
+    "Um destino no caminho das Cataratas do Iguaçu. Conheça formações de ametista, um acervo de minerais raros e uma loja com peças lapidadas à mão.",
   url: "https://fozmineralpark.com.br",
   locale: "pt-BR",
 
@@ -26,30 +38,35 @@ export const site = {
   hours: {
     summary: "Todos os dias, das 09h às 18h",
     lastEntry: "17h30",
-    days: [
-      { day: "Segunda a Domingo", open: "09:00", close: "18:00" },
-    ],
+    days: [{ day: "Segunda a Domingo", open: "09:00", close: "18:00" }],
   },
 
   geo: {
+    // Coordenadas aproximadas derivadas do endereço cadastrado.
+    // Cliente deve confirmar pin exato no Google Business Profile.
     latitude: -25.614,
     longitude: -54.481,
   },
 
   contact: {
-    phone: "+55 45 9 0000-0000",
-    phoneDisplay: "(45) 9 0000-0000",
-    whatsapp: "+554590000000",
+    // PENDING: fontes externas indicam (45) 99977-****. Aguardando número
+    // completo com o cliente.
+    phone: "+55 45 99977-0000",
+    phoneDisplay: "(45) 99977-0000",
+    whatsapp: "+554599977000",
+    // PENDING: domínio próprio ainda não registrado. Trocar quando o
+    // fozmineralpark.com.br estiver ativo.
     email: "contato@fozmineralpark.com.br",
     securityEmail: "seguranca@fozmineralpark.com.br",
   },
 
   social: {
+    // PENDING: handles não verificados em busca pública. Cliente precisa
+    // confirmar ou criar os perfis.
     instagram: "https://instagram.com/fozmineralpark",
     facebook: "https://facebook.com/fozmineralpark",
-    tripadvisor: "https://www.tripadvisor.com.br/",
     googleMaps:
-      "https://www.google.com/maps/search/?api=1&query=Foz+Mineral+Park+Foz+do+Iguacu",
+      "https://www.google.com/maps/search/?api=1&query=Foz+Mineral+Park+Av+das+Cataratas+6025+Foz+do+Iguacu",
   },
 
   attractions: [
@@ -58,8 +75,8 @@ export const site = {
       name: "Gruta de Ametista",
       tagline: "Uma catedral natural de cristais",
       short:
-        "Caminhe entre formações gigantes da pedra que representa a calma e a transformação.",
-      long: "Uma gruta construída com ametistas de formação natural, algumas com mais de um metro de altura. A iluminação estudada revela a estrutura cristalina de cada drusa e transporta o visitante para dentro de uma geoda viva. É a atração mais fotografada do parque.",
+        "Caminhe entre formações de ametista montadas para transportar o visitante para dentro de uma geoda.",
+      long: "Uma gruta composta por ametistas de formação natural. A iluminação revela a estrutura cristalina de cada drusa e transforma a passagem em uma das atrações mais fotografadas do parque.",
       badge: "Experiência sensorial",
       duration: "20 min",
       accent: "amethyst",
@@ -68,11 +85,11 @@ export const site = {
     {
       slug: "museu-de-minerais",
       name: "Museu de Minerais",
-      tagline: "Mil cristais, uma história só",
+      tagline: "Cristais de todos os continentes",
       short:
         "Um acervo raro que explica como a Terra forma suas pedras mais belas.",
-      long: "Mais de mil espécimes catalogados de todos os continentes, expostos em circuito guiado que conecta geologia, química e arte. Inclui seção sobre gemas brasileiras e história da lapidação em Foz do Iguaçu.",
-      badge: "+1.000 espécimes",
+      long: "Minerais catalogados de diversos continentes, expostos em circuito guiado que conecta geologia, química e arte. Inclui seção sobre gemas brasileiras e história da lapidação na região.",
+      badge: "Acervo raro",
       duration: "40 min",
       accent: "citrine",
       image: "/media/attractions/museu-de-minerais.jpg",
@@ -82,8 +99,8 @@ export const site = {
       name: "Loja de Pedras",
       tagline: "Peças únicas, lapidadas à mão",
       short:
-        "Joias, decoração e curiosidades produzidas por artesãos locais com minerais brasileiros.",
-      long: "Do pingente discreto ao centro de mesa monumental. Todas as peças são lapidadas na própria Foz do Iguaçu, com minerais de origem certificada. É possível acompanhar parte do processo durante a visita.",
+        "Joias, decoração e curiosidades em minerais brasileiros, produzidas por artesãos da região.",
+      long: "Do pingente discreto ao centro de mesa monumental. Peças lapidadas à mão, com minerais de origem certificada. Durante a visita é possível acompanhar parte do processo na bancada.",
       badge: "Artesanato local",
       duration: "Livre",
       accent: "quartz",

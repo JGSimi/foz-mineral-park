@@ -133,12 +133,12 @@ export default async function AttractionPage({
               {
                 k: "Para quem é",
                 v: "Todas as idades",
-                d: "Roteiro pensado para famílias, agências e grupos escolares.",
+                d: "Famílias, agências receptivas e grupos escolares.",
               },
               {
-                k: "Inclui",
-                v: "Guia impresso",
-                d: "Material explicativo bilíngue em PT/ES/EN.",
+                k: "No mesmo ingresso",
+                v: "3 atrações",
+                d: "Gruta, museu e loja em um só circuito.",
               },
             ].map((i) => (
               <StaggerItem

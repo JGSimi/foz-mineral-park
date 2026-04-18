@@ -68,9 +68,8 @@ function Hero() {
           </h1>
           <p className="max-w-xl text-pretty text-base leading-relaxed text-pearl-200/90 sm:text-lg">
             Três experiências em um só lugar, no caminho das Cataratas.
-            Atravesse uma gruta gigante de ametista, percorra um acervo com mais
-            de mil minerais e leve para casa peças lapidadas à mão por artesãos
-            de Foz do Iguaçu.
+            Atravesse uma gruta de ametista, percorra um acervo de minerais e
+            leve para casa peças lapidadas à mão por artesãos da região.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" variant="gold">
@@ -90,23 +89,12 @@ function Hero() {
           <dl className="grid max-w-xl grid-cols-3 gap-6 border-t border-champagne-300/15 pt-8 text-sm text-pearl-200">
             <div>
               <dt className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
-                Acervo
+                Atrações
               </dt>
-              <dd className="mt-2 font-display text-3xl text-pearl-100">
-                1.000<span className="text-champagne-400">+</span>
-              </dd>
+              <dd className="mt-2 font-display text-3xl text-pearl-100">3</dd>
               <dd className="text-xs text-pearl-200/70">
-                minerais catalogados
+                num só roteiro
               </dd>
-            </div>
-            <div>
-              <dt className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
-                Gruta
-              </dt>
-              <dd className="mt-2 font-display text-3xl text-pearl-100">
-                +2&thinsp;m
-              </dd>
-              <dd className="text-xs text-pearl-200/70">de ametista real</dd>
             </div>
             <div>
               <dt className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
@@ -116,7 +104,18 @@ function Hero() {
                 ~1h
               </dd>
               <dd className="text-xs text-pearl-200/70">
-                para todas as idades
+                sem pressa, sem fila
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
+                Aberto
+              </dt>
+              <dd className="mt-2 font-display text-3xl text-pearl-100">
+                9–18h
+              </dd>
+              <dd className="text-xs text-pearl-200/70">
+                todos os dias
               </dd>
             </div>
           </dl>
@@ -149,7 +148,7 @@ function Hero() {
             <p className="text-xs text-pearl-200/70">Experiência sensorial</p>
           </div>
           <div className="absolute -top-6 right-6 hidden rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/70 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur sm:block">
-            Desde&nbsp;2008
+            Foz do Iguaçu · PR
           </div>
         </AnimateIn>
       </Container>
@@ -292,23 +291,23 @@ function WhyVisit() {
   const points = [
     {
       icon: Gem,
-      title: "Acervo raro de verdade",
-      body: "Espécimes de todos os continentes, alguns com mais de cinquenta anos de coleção, curados por quem entende de geologia e lapidação.",
+      title: "Minerais para ver de perto",
+      body: "Acervo com peças de diferentes origens, apresentadas em circuito curto que conecta geologia, química e estética.",
     },
     {
       icon: Sparkles,
       title: "Feito para encantar crianças",
-      body: "As crianças saem falando sobre cristais por dias. A gruta e a bancada de lapidação viram lembrança para a vida toda.",
+      body: "A gruta e a bancada de lapidação costumam virar assunto dos pequenos por dias. Roteiro curto, sem cansar.",
     },
     {
       icon: Camera,
       title: "A foto que rende no feed",
-      body: "A iluminação da gruta foi desenhada em parceria com cinegrafistas para entregar cenas que ficam lindas no celular.",
+      body: "A iluminação da gruta foi pensada para destacar cor e estrutura das pedras — rende as melhores fotos do dia.",
     },
     {
       icon: Accessibility,
-      title: "Todo mundo entra",
-      body: "Piso plano sem degraus, rotas acessíveis, descrição tátil de peças e materiais explicativos em três idiomas.",
+      title: "Pensado para todo mundo",
+      body: "Queremos que todo visitante tenha uma visita tranquila. Se houver necessidade específica, avise ao nosso time no momento da reserva.",
     },
   ];
 
@@ -364,81 +363,44 @@ function WhyVisit() {
 }
 
 function Testimonials() {
-  const quotes = [
-    {
-      name: "Família Menezes",
-      origin: "São Paulo, SP",
-      text: "Paramos entre a visita às Cataratas e o hotel. Acabamos ficando mais do que planejamos. As crianças adoraram a gruta, e a loja tem peças a preços honestos.",
-      rating: 5,
-    },
-    {
-      name: "Laura Bauer",
-      origin: "Buenos Aires, AR",
-      text: "Una experiencia muy distinta a las Cataratas. Muy bonito, limpio, y los guías explican todo con mucho cariño. Compramos una amatista preciosa.",
-      rating: 5,
-    },
-    {
-      name: "Carlos Tavares",
-      origin: "Porto, PT",
-      text: "Surpreendentemente bom. Num dia de chuva valeu cada minuto. Fotografia incrível, equipe simpática, café gostoso.",
-      rating: 5,
-    },
-  ];
-
   return (
     <section className="py-28 sm:py-36">
-      <Container>
+      <Container size="md" className="text-center">
         <AnimateIn>
-          <SectionHeading
-            eyebrow="Quem visita, volta"
-            title={
-              <>
-                O que viajantes dizem{" "}
-                <em className="italic text-champagne-600">sobre a gente</em>
-              </>
-            }
-            align="center"
-          />
+          <span className="ornament font-display text-[0.65rem] uppercase tracking-[0.3em] text-champagne-700">
+            Quem visita, volta
+          </span>
+          <h2 className="mx-auto mt-6 max-w-3xl text-balance font-display text-4xl leading-tight sm:text-5xl">
+            Depoimentos de verdade,{" "}
+            <em className="italic text-champagne-600">escritos por quem foi</em>.
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-pretty text-[0.95rem] leading-relaxed text-pearl-700">
+            Acreditamos em prova social honesta. Prefira avaliar a visita nas
+            plataformas oficiais — leia o que outros viajantes dizem e deixe
+            seu relato depois que voltar para casa.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild size="md" variant="gold">
+              <a
+                href={site.social.googleMaps}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Star className="size-4" />
+                Avaliar no Google
+              </a>
+            </Button>
+            <Button asChild size="md" variant="outline">
+              <a
+                href="https://www.tripadvisor.com.br/Search?q=Foz+Mineral+Park"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ver no TripAdvisor
+              </a>
+            </Button>
+          </div>
         </AnimateIn>
-        <Stagger className="mt-16 grid gap-6 md:grid-cols-3">
-          {quotes.map((q) => (
-            <StaggerItem key={q.name} as="figure">
-              <div className="relative flex h-full flex-col gap-6 overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 p-8 transition-shadow duration-500 hover:shadow-luxe">
-                <span
-                  aria-hidden="true"
-                  className="absolute -right-2 -top-6 font-display text-[7rem] italic text-champagne-300/40"
-                >
-                  &ldquo;
-                </span>
-                <div className="relative flex gap-0.5 text-champagne-500">
-                  {Array.from({ length: q.rating }).map((_, i) => (
-                    <Star key={i} className="size-4 fill-current" />
-                  ))}
-                </div>
-                <blockquote className="relative flex-1 text-pretty text-[0.95rem] leading-relaxed text-obsidian-700">
-                  {q.text}
-                </blockquote>
-                <figcaption className="relative flex items-center gap-3 border-t border-pearl-300 pt-4">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-obsidian-900 font-display text-sm text-champagne-300">
-                    {q.name
-                      .split(" ")
-                      .map((x) => x[0])
-                      .slice(0, 2)
-                      .join("")}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-obsidian-900">
-                      {q.name}
-                    </p>
-                    <p className="text-xs uppercase tracking-[0.18em] text-pearl-600">
-                      {q.origin}
-                    </p>
-                  </div>
-                </figcaption>
-              </div>
-            </StaggerItem>
-          ))}
-        </Stagger>
       </Container>
     </section>
   );
@@ -473,11 +435,11 @@ function VisitPlan() {
                   },
                   {
                     k: "Estacionamento",
-                    v: "Gratuito e sinalizado, no próprio parque.",
+                    v: "Na Av. das Cataratas, em frente ao parque.",
                   },
                   {
                     k: "Acessibilidade",
-                    v: "Piso plano, rampas e rota adaptada.",
+                    v: "Fale com a equipe para confirmar o que se aplica à sua visita.",
                   },
                 ].map((item) => (
                   <div

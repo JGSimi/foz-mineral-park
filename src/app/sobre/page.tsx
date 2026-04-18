@@ -10,27 +10,27 @@ import { PageHero } from "@/components/page-hero";
 export const metadata: Metadata = {
   title: "Sobre nós",
   description:
-    "A história do Foz Mineral Park: uma família, décadas de paixão por minerais e a vontade de mostrar a beleza da Terra para quem visita Foz do Iguaçu.",
+    "Conheça o Foz Mineral Park: um parque novo em Foz do Iguaçu dedicado a minerais, gemas e artesanato local.",
 };
 
 const milestones = [
   {
     numeral: "I",
-    year: "Décadas atrás",
-    title: "Uma coleção vira família",
-    body: "A família Colla começa a reunir peças raras de minerais, fascinada pelas formações do sul do Brasil e pela história geológica da região.",
+    label: "A coleção",
+    title: "Uma paixão que virou acervo",
+    body: "Tudo começou com o gosto da família Colla por minerais e gemas. Pedra a pedra, uma coleção ganhou forma e encontrou seu endereço em Foz do Iguaçu.",
   },
   {
     numeral: "II",
-    year: "Chegada em Foz",
-    title: "Uma nova casa para as pedras",
-    body: "O acervo encontra seu lar em um terreno na Avenida das Cataratas — o caminho por onde passam milhões de turistas todo ano.",
+    label: "O endereço",
+    title: "Entre as Cataratas e a cidade",
+    body: "O parque abriu as portas na Avenida das Cataratas — o caminho por onde passam, todo ano, milhões de turistas que visitam Foz do Iguaçu.",
   },
   {
     numeral: "III",
-    year: "Hoje",
-    title: "Três atrações, uma só missão",
-    body: "Além do acervo, uma gruta construída com ametistas reais e uma bancada de lapidação ativa. Tudo aberto ao público, o ano inteiro.",
+    label: "Hoje",
+    title: "Três atrações, uma só visita",
+    body: "Museu com acervo de minerais, gruta de ametista e loja com peças lapidadas à mão por artesãos locais. Tudo aberto ao público todos os dias.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function SobrePage() {
                 {m.numeral}
               </span>
               <p className="text-[0.65rem] uppercase tracking-[0.28em] text-champagne-700">
-                {m.year}
+                {m.label}
               </p>
               <h2 className="mt-4 max-w-[14ch] font-display text-2xl text-obsidian-900">
                 {m.title}
@@ -96,14 +96,8 @@ export default function SobrePage() {
                 gente gosta de traduzir isso numa visita curta, clara e bonita.
               </p>
               <p>
-                Nosso time é formado por guias, geólogos e artesãos locais.
-                Todo mineral exposto foi extraído legalmente; todas as peças
-                da loja são lapidadas aqui mesmo, em Foz do Iguaçu.
-              </p>
-              <p>
-                Acreditamos em turismo responsável, em salários justos para
-                quem recebe o visitante e em um site honesto — que fala o que
-                entrega.
+                Acreditamos em turismo responsável e em um site honesto — que
+                fala o que entrega, no idioma de quem chega para visitar.
               </p>
             </div>
           </div>
@@ -124,7 +118,7 @@ export default function SobrePage() {
           />
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild variant="gold" size="lg">
-              <Link href="/ingressos">Comprar ingresso</Link>
+              <Link href="/ingressos">Reservar visita</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link href="/como-chegar">Como chegar</Link>
