@@ -2,42 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
 
+import { site } from "@/lib/site";
 import { localeLabel, locales, type Locale } from "@/i18n/config";
 import { useLocale } from "@/i18n/provider";
 import { localePath, stripLocale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 /**
- * Faixa fina acima da navbar (desktop-only). Endereço + status em tempo
- * real + seletor de idioma funcional. Cada botão de idioma leva à mesma
- * rota no novo locale.
+ * Faixa fina acima da navbar (desktop-only).
+ * Endereço · Link para Google Maps · Seletor de idioma.
  */
 export function UtilityStrip() {
   const { locale, dict } = useLocale();
   const pathname = usePathname();
-  const [status, setStatus] = useState<{ open: boolean; label: string }>({
-    open: true,
-    label: dict.utility.openNow,
-  });
-
-  useEffect(() => {
-    const compute = () => {
-      const now = new Date();
-      const hour = now.getHours();
-      const open = hour >= 9 && hour < 18;
-      setStatus({
-        open,
-        label: open ? dict.utility.openNow : dict.utility.closedNow,
-      });
-    };
-    compute();
-    const id = setInterval(compute, 60_000);
-    return () => clearInterval(id);
-  }, [dict.utility.openNow, dict.utility.closedNow]);
-
   const basePath = stripLocale(pathname);
 
   return (
@@ -46,18 +25,19 @@ export function UtilityStrip() {
         <MapPin className="size-2.5 text-champagne-300" strokeWidth={1.4} />
         <span>{dict.utility.addressLabel}</span>
       </span>
-      <span className="inline-flex items-center gap-1.5">
-        <span
-          aria-hidden="true"
-          className={cn(
-            "inline-block size-[5px] rounded-full",
-            status.open
-              ? "bg-[#6aa87a] shadow-[0_0_0_3px_rgba(106,168,122,0.18)]"
-              : "bg-pearl-600 shadow-[0_0_0_3px_rgba(118,105,84,0.18)]",
-          )}
+      <a
+        href={site.social.googleMaps}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={dict.common.openInMaps}
+        className="inline-flex items-center gap-1.5 transition-colors hover:text-champagne-300 focus-visible:text-champagne-300"
+      >
+        <Navigation
+          className="size-2.5 text-champagne-300"
+          strokeWidth={1.4}
         />
-        <span>{status.label}</span>
-      </span>
+        <span>{dict.utility.mapLabel}</span>
+      </a>
       <span className="ml-auto inline-flex items-center gap-3">
         {locales.map((l, i) => (
           <LocaleLink

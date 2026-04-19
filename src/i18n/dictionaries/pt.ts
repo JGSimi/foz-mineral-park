@@ -42,8 +42,7 @@ const dict = {
 
   utility: {
     addressLabel: "Av. das Cataratas · Yolanda",
-    openNow: "Aberto agora · até 18h",
-    closedNow: "Fechado · abre às 9h",
+    mapLabel: "Google Maps",
   },
 
   attractions: {

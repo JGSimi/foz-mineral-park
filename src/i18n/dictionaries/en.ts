@@ -44,8 +44,7 @@ const dict: Dictionary = {
 
   utility: {
     addressLabel: "Av. das Cataratas · Yolanda",
-    openNow: "Open now · until 6pm",
-    closedNow: "Closed · opens at 9am",
+    mapLabel: "Google Maps",
   },
 
   attractions: {
