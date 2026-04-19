@@ -25,6 +25,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { HeroVideo } from "@/components/hero-video";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/animate";
 import { AttractionsSection } from "@/components/home/attractions-section";
+import { GeodeReveal } from "@/components/home/geode-reveal";
 import { notFound } from "next/navigation";
 
 type Params = { lang: string };
@@ -59,7 +60,7 @@ const iconMap = {
 function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const h = dict.hero;
   return (
-    <section className="relative -mt-16 overflow-hidden pb-24 pt-32 sm:-mt-20 sm:pb-32 sm:pt-52">
+    <section className="relative -mt-16 flex min-h-[100svh] items-center overflow-hidden pb-20 pt-28 sm:-mt-20 sm:pb-24 sm:pt-40">
       <div className="absolute inset-0 -z-20" aria-hidden="true">
         <HeroVideo
           src={site.hero.video}
@@ -77,38 +78,72 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
       />
       <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
 
-      <Container className="grid items-center gap-12 md:grid-cols-[1.05fr_1fr] md:gap-16">
-        <AnimateIn className="space-y-7 text-pearl-100 sm:space-y-8" y={24}>
-          <p className="inline-flex items-center gap-2 rounded-full border border-champagne-300/30 bg-white/5 px-3.5 py-1.5 text-[0.58rem] uppercase tracking-[0.22em] text-champagne-300 backdrop-blur sm:px-4 sm:text-[0.65rem] sm:tracking-[0.28em]">
-            <Sparkles className="size-3 sm:size-3.5" />
-            <span className="truncate">{h.locationBadge}</span>
-          </p>
-          <h1 className="text-balance font-display text-[2.6rem] leading-[1] sm:text-6xl sm:leading-[0.98] md:text-[4.4rem]">
+      <Container className="relative">
+        <AnimateIn className="mx-auto flex max-w-5xl flex-col items-center text-center text-pearl-100">
+          {/* Eyebrow localizado com filetes laterais */}
+          <span className="inline-flex items-center gap-3 text-[0.58rem] uppercase tracking-[0.32em] text-champagne-300 sm:text-[0.65rem] sm:tracking-[0.38em]">
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-gradient-to-r from-transparent via-champagne-400/70 to-champagne-400/50 sm:w-12"
+            />
+            {h.pillLocation}
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-gradient-to-l from-transparent via-champagne-400/70 to-champagne-400/50 sm:w-12"
+            />
+          </span>
+
+          {/* Protagonista: pedra comum → cristal */}
+          <div className="relative mt-10 w-[min(78vw,480px)] sm:mt-12 sm:w-[min(52vw,520px)]">
+            <GeodeReveal
+              crystal={attractionImages["gruta-de-ametista"]}
+              crystalAlt={dict.attractions.items["gruta-de-ametista"].name}
+              hintLabel={h.photoBadge.sub}
+              revealedLabel={h.photoBadge.title}
+            />
+          </div>
+
+          {/* Título com italic-hinge gilded */}
+          <h1 className="mt-10 max-w-4xl text-balance font-display text-[2.4rem] leading-[1] sm:mt-14 sm:text-6xl sm:leading-[0.98] md:text-[4.6rem]">
             {h.titleLead}{" "}
             <em className="italic text-gilded">{h.titleEm}</em>
             {h.titleTail}
           </h1>
-          <p className="max-w-xl text-pretty text-[0.95rem] leading-relaxed text-pearl-200/90 sm:text-lg">
+
+          <p className="mt-5 max-w-xl text-pretty text-[0.95rem] leading-relaxed text-pearl-200/85 sm:mt-7 sm:text-lg">
             {h.description}
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" variant="gold" className="w-full sm:w-auto">
+
+          <div className="mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row">
+            <Button
+              asChild
+              size="lg"
+              variant="gold"
+              className="w-full sm:w-auto"
+            >
               <Link href={localePath(locale, "/ingressos")}>
                 <Ticket className="size-4" />
                 {h.ctaBuy}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="onDark" className="w-full sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              variant="onDark"
+              className="w-full sm:w-auto"
+            >
               <Link href={localePath(locale, "/como-chegar")}>
                 <MapIcon className="size-4" />
                 {h.ctaHowTo}
               </Link>
             </Button>
           </div>
-          <dl className="grid max-w-xl grid-cols-3 gap-4 border-t border-champagne-300/15 pt-6 text-sm text-pearl-200 sm:gap-6 sm:pt-8">
+
+          {/* Stats discretos */}
+          <dl className="mt-12 grid w-full max-w-2xl grid-cols-3 gap-4 border-t border-champagne-300/15 pt-7 text-pearl-200 sm:mt-16 sm:gap-10 sm:pt-8">
             {h.stats.map((s) => (
-              <div key={s.k}>
+              <div key={s.k} className="text-center">
                 <dt className="text-[0.56rem] uppercase tracking-[0.24em] text-champagne-300 sm:text-[0.6rem] sm:tracking-[0.3em]">
                   {s.k}
                 </dt>
@@ -121,40 +156,16 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               </div>
             ))}
           </dl>
-        </AnimateIn>
 
-        <AnimateIn className="relative isolate" y={30} delay={0.12}>
-          <div className="absolute -inset-12 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/25 via-transparent to-champagne-400/25 blur-3xl" />
-          <div className="float-a frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark sm:rounded-[32px]">
-            <Image
-              src={attractionImages["gruta-de-ametista"]}
-              alt={dict.attractions.items["gruta-de-ametista"].name}
-              fill
-              sizes="(max-width: 768px) 90vw, 480px"
-              placeholder="blur"
-              className="object-cover"
-              priority
-            />
-            <div
-              className="card-media-overlay absolute inset-0"
-              aria-hidden="true"
-            />
-          </div>
-          <div className="float-b absolute -bottom-8 -left-6 hidden sm:block">
-            <div className="w-52 -rotate-[4deg] rounded-2xl border border-champagne-300/20 bg-obsidian-900/85 p-4 shadow-luxe-dark backdrop-blur">
-              <p className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
-                {h.photoBadge.k}
-              </p>
-              <p className="mt-1 font-display text-lg italic text-pearl-100">
-                {h.photoBadge.title}
-              </p>
-              <p className="text-xs text-pearl-200/70">{h.photoBadge.sub}</p>
-            </div>
-          </div>
-          <div className="float-c absolute -top-6 right-6 hidden sm:block">
-            <div className="rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/80 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur">
-              {h.pillLocation}
-            </div>
+          {/* Scroll cue */}
+          <div
+            aria-hidden="true"
+            className="mt-14 hidden flex-col items-center gap-2 text-[0.55rem] uppercase tracking-[0.36em] text-pearl-100/50 sm:flex"
+          >
+            <span>Role para descobrir</span>
+            <span className="relative h-8 w-px overflow-hidden">
+              <span className="absolute inset-x-0 top-0 h-full w-px animate-[scrollcue_2.2s_ease-in-out_infinite] bg-gradient-to-b from-champagne-300/70 to-transparent" />
+            </span>
           </div>
         </AnimateIn>
       </Container>
