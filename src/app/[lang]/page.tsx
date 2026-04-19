@@ -313,9 +313,8 @@ function VisitPlan({ dict, locale }: { dict: Dictionary; locale: Locale }) {
     <section className="py-20 sm:py-28 md:py-36">
       <Container>
         <AnimateIn>
-          <div className="relative grid overflow-hidden rounded-3xl border border-champagne-400/15 bg-aurora text-pearl-100 md:grid-cols-[1.1fr_1fr]">
-            <div className="grain absolute inset-0" aria-hidden="true" />
-            <div className="relative space-y-7 p-8 sm:space-y-8 sm:p-12 md:p-16">
+          <div className="relative isolate grid overflow-hidden rounded-3xl border border-champagne-400/15 bg-aurora text-pearl-100 md:grid-cols-[1.1fr_1fr]">
+            <div className="relative z-10 space-y-7 p-8 sm:space-y-8 sm:p-12 md:p-16">
               <SectionHeading
                 eyebrow={v.eyebrow}
                 title={
@@ -371,7 +370,7 @@ function VisitPlan({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               </div>
             </div>
 
-            <div className="relative aspect-[16/11] overflow-hidden md:aspect-auto md:min-h-[360px]">
+            <div className="relative aspect-[16/11] overflow-hidden md:aspect-auto md:h-full md:min-h-[420px]">
               <Image
                 src={attractionImages["museu-de-minerais"]}
                 alt={dict.attractions.items["museu-de-minerais"].name}
