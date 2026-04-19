@@ -137,35 +137,40 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 function QuickFacts({ dict }: { dict: Dictionary }) {
   const icons = [Clock, MapPin, Accessibility];
   return (
-    <section className="relative bg-gradient-to-b from-imperial-950 to-obsidian-950 pb-20 sm:pb-24">
+    <section className="relative bg-gradient-to-b from-imperial-950 via-obsidian-950 to-obsidian-950 pb-24 sm:pb-28">
       <Container className="-mt-14 sm:-mt-16">
-        <Stagger className="relative grid gap-0 rounded-[22px] border border-champagne-400/22 bg-pearl-50 p-1 shadow-luxe sm:grid-cols-3">
-          <span
+        <Stagger className="relative grid gap-0 overflow-hidden rounded-[22px] border border-champagne-400/20 bg-obsidian-900/55 p-1 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:grid-cols-3">
+          {/* Glow sutil interno pra dar volume ao vidro */}
+          <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-5 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/22 to-transparent sm:block"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-champagne-300/[0.06] via-transparent to-imperial-500/[0.08]"
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-5 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/22 to-transparent sm:block"
+            className="pointer-events-none absolute inset-y-5 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/25 to-transparent sm:block"
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-5 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/25 to-transparent sm:block"
           />
           {dict.quickFacts.map((f, i) => {
             const Icon = icons[i];
             return (
               <StaggerItem
                 key={f.label}
-                className="flex items-start gap-3.5 px-5 py-4"
+                className="relative flex items-start gap-3.5 px-5 py-5"
               >
-                <div className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne-400/30 bg-obsidian-950 text-champagne-300">
+                <div className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne-400/40 bg-obsidian-950 text-champagne-300">
                   <Icon className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.28em] text-champagne-700">
+                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.28em] text-champagne-300">
                     {f.label}
                   </p>
-                  <p className="mt-1 font-display text-xl leading-tight text-obsidian-900">
+                  <p className="mt-1 font-display text-xl leading-tight text-pearl-100">
                     {f.value}
                   </p>
-                  <p className="mt-0.5 text-[0.8rem] text-pearl-700">
+                  <p className="mt-0.5 text-[0.8rem] text-pearl-200/70">
                     {f.detail}
                   </p>
                 </div>

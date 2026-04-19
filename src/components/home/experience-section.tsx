@@ -41,6 +41,11 @@ export function ExperienceSection({
         aria-hidden="true"
       />
       <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
+      {/* Fade do topo: emenda com o obsidian-950 do fim da QuickFacts. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-obsidian-950 to-transparent sm:h-56"
+      />
 
       <Container className="grid items-center gap-12 md:grid-cols-[1fr_1.05fr] md:gap-16">
         <AnimateIn className="space-y-6 text-pearl-100 sm:space-y-7" y={24}>
