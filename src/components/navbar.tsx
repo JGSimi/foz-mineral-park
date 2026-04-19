@@ -88,17 +88,17 @@ export function Navbar() {
           "fixed inset-x-0 top-0 z-40 w-full transition-colors duration-500",
           scrolled
             ? "navbar-shadow bg-obsidian-950/88 backdrop-blur-md"
-            : "bg-obsidian-950/35 backdrop-blur-sm",
+            : "bg-pearl-50/50 backdrop-blur-md",
         )}
       >
-        <UtilityStrip />
+        <UtilityStrip scrolled={scrolled} />
         <Container className="flex h-16 items-center justify-between sm:h-20">
           <Link
             href={homePath}
             aria-label="Foz Mineral Park"
             className="group"
           >
-            <Logo tone="dark" />
+            <Logo tone={scrolled ? "dark" : "light"} />
           </Link>
 
           <nav
@@ -109,7 +109,12 @@ export function Navbar() {
               <Link
                 key={l.href}
                 href={localePath(locale, l.href)}
-                className="relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] text-pearl-100/80 transition-colors duration-300 hover:text-champagne-300"
+                className={cn(
+                  "relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] transition-colors duration-500",
+                  scrolled
+                    ? "text-pearl-100/80 hover:text-champagne-300"
+                    : "text-obsidian-900/75 hover:text-champagne-700",
+                )}
               >
                 {l.label}
               </Link>
@@ -131,7 +136,12 @@ export function Navbar() {
               aria-label={open ? dict.navbar.menuClose : dict.navbar.menuOpen}
               aria-expanded={open}
               aria-controls="mobile-menu"
-              className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/30 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 md:hidden"
+              className={cn(
+                "inline-flex size-11 items-center justify-center rounded-full border transition-colors duration-500 active:scale-95 md:hidden",
+                scrolled
+                  ? "border-champagne-300/30 text-pearl-100 hover:border-champagne-300/60"
+                  : "border-champagne-700/30 text-obsidian-900 hover:border-champagne-700/55",
+              )}
               onClick={() => setOpen((v) => !v)}
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -142,8 +152,10 @@ export function Navbar() {
         <div
           aria-hidden="true"
           className={cn(
-            "mx-auto h-px max-w-6xl bg-gradient-to-r from-transparent via-champagne-400/50 to-transparent transition-opacity duration-500",
-            scrolled ? "opacity-100" : "opacity-0",
+            "mx-auto h-px max-w-6xl transition-opacity duration-500",
+            scrolled
+              ? "bg-gradient-to-r from-transparent via-champagne-400/50 to-transparent opacity-100"
+              : "bg-gradient-to-r from-transparent via-champagne-700/30 to-transparent opacity-60",
           )}
         />
       </motion.header>
