@@ -1,0 +1,254 @@
+"use client";
+
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "motion/react";
+
+import { cn } from "@/lib/utils";
+import { reveal } from "@/lib/reveal-images";
+import type { Dictionary } from "@/i18n/dictionaries/pt";
+
+/**
+ * Stone interativa pro hero.
+ *
+ * A pedra base fica sempre visível; uma máscara SVG revela o cristal
+ * dentro, com borda orgânica via feTurbulence + feDisplacementMap.
+ * No hover segue o cursor; no toque (mobile) abre/fecha no centro.
+ *
+ * Camadas de transform (fora pra dentro):
+ * - `float-hero` (CSS keyframe) — a flutuação constante.
+ * - motion.div com x/y — parallax sutil seguindo o cursor.
+ *
+ * Não tem zoom de scroll aqui: o stone já é a estrela do hero, não
+ * precisa de transição cinematográfica — esta ficou pra seções internas.
+ */
+export function HeroStone({
+  dict,
+  className,
+}: {
+  dict: Dictionary;
+  className?: string;
+}) {
+  const r = dict.reveal;
+  const reduced = useReducedMotion();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [isTouch, setIsTouch] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  const HOVER_R = 22;
+  const TAP_R = 30;
+  const FULL_R = 140;
+
+  const x = useMotionValue(50);
+  const y = useMotionValue(56);
+  const radius = useMotionValue(0);
+  const sx = useSpring(x, { damping: 28, stiffness: 240, mass: 0.45 });
+  const sy = useSpring(y, { damping: 28, stiffness: 240, mass: 0.45 });
+  const sr = useSpring(radius, { damping: 30, stiffness: 180, mass: 0.7 });
+
+  const parallaxX = useTransform(sx, [0, 100], [-8, 8]);
+  const parallaxY = useTransform(sy, [0, 125], [-5, 5]);
+  const smoothPX = useSpring(parallaxX, {
+    damping: 22,
+    stiffness: 140,
+    mass: 0.6,
+  });
+  const smoothPY = useSpring(parallaxY, {
+    damping: 22,
+    stiffness: 140,
+    mass: 0.6,
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: none)");
+    const apply = () => setIsTouch(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  // Peek automático após o hero entrar na tela — ensina a interação
+  // sem bloquear o LCP com uma animação imediata.
+  useEffect(() => {
+    if (reduced) {
+      radius.set(FULL_R);
+      return;
+    }
+    const t1 = window.setTimeout(() => {
+      if (!hasInteracted) radius.set(HOVER_R + 6);
+    }, 1400);
+    const t2 = window.setTimeout(() => {
+      if (!hasInteracted) radius.set(0);
+    }, 2900);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [hasInteracted, radius, reduced]);
+
+  const onEnter = () => {
+    if (isTouch || reduced) return;
+    setHasInteracted(true);
+    radius.set(HOVER_R);
+  };
+  const onLeave = () => {
+    if (isTouch || reduced) return;
+    radius.set(0);
+    x.set(50);
+    y.set(56);
+  };
+  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isTouch) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set(((e.clientX - rect.left) / rect.width) * 100);
+    y.set(((e.clientY - rect.top) / rect.height) * 125);
+  };
+  const toggle = () => {
+    if (!isTouch) return;
+    setHasInteracted(true);
+    const isOpen = radius.get() > 5;
+    radius.set(isOpen ? 0 : TAP_R);
+    x.set(50);
+    y.set(56);
+  };
+
+  return (
+    <div
+      className={cn(
+        "relative mx-auto aspect-[4/5] w-[min(80vw,420px)] sm:w-[min(46vw,480px)]",
+        className,
+      )}
+    >
+      {/* Halo ambiente atrás da pedra */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-500/35 via-transparent to-champagne-400/25 blur-3xl"
+      />
+      {/* Sombra oval no chão */}
+      <div
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute inset-x-10 bottom-[-6%] -z-10 h-10 rounded-[50%] bg-obsidian-950 opacity-60 blur-2xl",
+          !reduced && "animate-[float-shadow_9s_ease-in-out_infinite]",
+        )}
+      />
+
+      <div
+        ref={wrapperRef}
+        onPointerEnter={onEnter}
+        onPointerLeave={onLeave}
+        onPointerMove={onMove}
+        onClick={toggle}
+        role={isTouch ? "button" : undefined}
+        aria-label={r.hintOpened}
+        tabIndex={isTouch ? 0 : -1}
+        onKeyDown={(e) => {
+          if (!isTouch) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        }}
+        className={cn(
+          "relative h-full w-full select-none",
+          !reduced && "float-hero",
+          isTouch && "cursor-pointer",
+        )}
+      >
+        <motion.div
+          className="absolute inset-0"
+          style={reduced ? undefined : { x: smoothPX, y: smoothPY }}
+        >
+          <div className="pointer-events-none absolute inset-0">
+            <Image
+              src={reveal.closed}
+              alt={r.hintClosed}
+              fill
+              sizes="(max-width: 768px) 80vw, 480px"
+              placeholder="blur"
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <svg
+            viewBox="0 0 100 125"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            aria-hidden="true"
+          >
+            <defs>
+              <filter
+                id="fmp-liquid"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%"
+                colorInterpolationFilters="sRGB"
+              >
+                <feTurbulence
+                  type="fractalNoise"
+                  baseFrequency="0.018 0.022"
+                  numOctaves="2"
+                  seed="3"
+                  result="turb"
+                >
+                  {!reduced && (
+                    <animate
+                      attributeName="seed"
+                      values="3;5;7;5;3"
+                      dur="12s"
+                      repeatCount="indefinite"
+                      calcMode="linear"
+                    />
+                  )}
+                </feTurbulence>
+                <feDisplacementMap
+                  in="SourceGraphic"
+                  in2="turb"
+                  scale="12"
+                  xChannelSelector="R"
+                  yChannelSelector="G"
+                />
+              </filter>
+
+              <mask
+                id="fmp-reveal-mask"
+                maskUnits="userSpaceOnUse"
+                x="0"
+                y="0"
+                width="100"
+                height="125"
+              >
+                <rect x="0" y="0" width="100" height="125" fill="black" />
+                <motion.circle
+                  cx={sx}
+                  cy={sy}
+                  r={sr}
+                  fill="white"
+                  filter="url(#fmp-liquid)"
+                />
+              </mask>
+            </defs>
+
+            <image
+              href={reveal.opened.src}
+              x="0"
+              y="0"
+              width="100"
+              height="125"
+              preserveAspectRatio="xMidYMid meet"
+              mask="url(#fmp-reveal-mask)"
+            />
+          </svg>
+        </motion.div>
+      </div>
+    </div>
+  );
+}

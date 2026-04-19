@@ -139,15 +139,22 @@ const dict: Dictionary = {
   ],
 
   reveal: {
-    eyebrow: "From rock to crystal",
-    titleLead: "Every gem started out",
-    titleEm: "rough",
-    titleTail: ".",
-    description:
-      "What looks plain hides something unique inside. Hover to open the geode.",
     hintClosed: "Reveal",
     hintOpened: "Natural amethyst",
     tapHint: "Tap to reveal",
+  },
+
+  experience: {
+    eyebrow: "The immersive experience",
+    titleLead: "A natural cathedral of",
+    titleEm: "violet crystals",
+    titleTail: ".",
+    description:
+      "Walk between amethyst walls that run floor-to-ceiling, inside a cave lit to reveal the crystalline structure of each druse. It's the sensory heart of the park — and the photo that lands best on the feed.",
+    photoBadge: { k: "Highlight", title: "Amethyst Cave", sub: "Sensory experience" },
+    pillLocation: "Av. das Cataratas · Yolanda",
+    ctaBuy: "Buy ticket",
+    ctaMore: "See all attractions",
   },
 
   whyVisit: {

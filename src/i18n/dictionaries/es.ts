@@ -139,15 +139,22 @@ const dict: Dictionary = {
   ],
 
   reveal: {
-    eyebrow: "De la piedra al cristal",
-    titleLead: "Toda gema empezó en",
-    titleEm: "bruto",
-    titleTail: ".",
-    description:
-      "Lo que parece común guarda algo único dentro. Pasa el mouse para abrir la geoda.",
     hintClosed: "Revelar",
     hintOpened: "Amatista natural",
     tapHint: "Tócala para revelar",
+  },
+
+  experience: {
+    eyebrow: "La experiencia inmersiva",
+    titleLead: "Una catedral natural de",
+    titleEm: "cristales violetas",
+    titleTail: ".",
+    description:
+      "Camina entre paredes de amatista que van del suelo al techo, dentro de una gruta iluminada para revelar la estructura cristalina de cada drusa. Es el corazón sensorial del parque — y la foto que mejor rinde en el feed.",
+    photoBadge: { k: "Destacado", title: "Gruta de Amatista", sub: "Experiencia sensorial" },
+    pillLocation: "Av. das Cataratas · Yolanda",
+    ctaBuy: "Comprar entrada",
+    ctaMore: "Ver todas las atracciones",
   },
 
   whyVisit: {

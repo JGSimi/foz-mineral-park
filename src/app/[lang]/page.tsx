@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { site } from "@/lib/site";
-import { attractionImages, heroPoster } from "@/lib/images";
+import { attractionImages } from "@/lib/images";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, type Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/routing";
@@ -22,10 +22,10 @@ import type { Dictionary } from "@/i18n/dictionaries/pt";
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
 import { SectionHeading } from "@/components/section-heading";
-import { HeroVideo } from "@/components/hero-video";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/animate";
 import { AttractionsSection } from "@/components/home/attractions-section";
-import { RevealSection } from "@/components/home/reveal-section";
+import { HeroStone } from "@/components/home/hero-stone";
+import { ExperienceSection } from "@/components/home/experience-section";
 import { notFound } from "next/navigation";
 
 type Params = { lang: string };
@@ -39,7 +39,7 @@ export default async function Home({ params }: { params: Promise<Params> }) {
     <>
       <Hero dict={dict} locale={locale} />
       <QuickFacts dict={dict} />
-      <RevealSection dict={dict} />
+      <ExperienceSection dict={dict} locale={locale} />
       <AttractionsSection dict={dict} locale={locale} />
       <WhyVisit dict={dict} />
       <Testimonials dict={dict} />
@@ -61,18 +61,9 @@ const iconMap = {
 function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const h = dict.hero;
   return (
-    <section className="relative -mt-16 overflow-hidden pb-24 pt-32 sm:-mt-20 sm:pb-32 sm:pt-52">
-      <div className="absolute inset-0 -z-20" aria-hidden="true">
-        <HeroVideo
-          src={site.hero.video}
-          poster={heroPoster}
-          className="scale-105"
-        />
-      </div>
-      <div
-        className="hero-overlay-main absolute inset-0 -z-10"
-        aria-hidden="true"
-      />
+    <section className="relative -mt-16 overflow-hidden pb-28 pt-32 sm:-mt-20 sm:pb-40 sm:pt-52">
+      {/* Stage escuro: bg-geode no chão, halo brando e grão por cima. */}
+      <div className="bg-geode absolute inset-0 -z-20" aria-hidden="true" />
       <div
         className="hero-overlay-glow absolute inset-0 -z-10"
         aria-hidden="true"
@@ -94,14 +85,24 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
             {h.description}
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" variant="gold" className="w-full sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              variant="gold"
+              className="w-full sm:w-auto"
+            >
               <Link href={localePath(locale, "/ingressos")}>
                 <Ticket className="size-4" />
                 {h.ctaBuy}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="onDark" className="w-full sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              variant="onDark"
+              className="w-full sm:w-auto"
+            >
               <Link href={localePath(locale, "/como-chegar")}>
                 <MapIcon className="size-4" />
                 {h.ctaHowTo}
@@ -125,39 +126,8 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           </dl>
         </AnimateIn>
 
-        <AnimateIn className="relative isolate" y={30} delay={0.12}>
-          <div className="absolute -inset-12 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/25 via-transparent to-champagne-400/25 blur-3xl" />
-          <div className="float-a frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark sm:rounded-[32px]">
-            <Image
-              src={attractionImages["gruta-de-ametista"]}
-              alt={dict.attractions.items["gruta-de-ametista"].name}
-              fill
-              sizes="(max-width: 768px) 90vw, 480px"
-              placeholder="blur"
-              className="object-cover"
-              priority
-            />
-            <div
-              className="card-media-overlay absolute inset-0"
-              aria-hidden="true"
-            />
-          </div>
-          <div className="float-b absolute -bottom-8 -left-6 hidden sm:block">
-            <div className="w-52 -rotate-[4deg] rounded-2xl border border-champagne-300/20 bg-obsidian-900/85 p-4 shadow-luxe-dark backdrop-blur">
-              <p className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
-                {h.photoBadge.k}
-              </p>
-              <p className="mt-1 font-display text-lg italic text-pearl-100">
-                {h.photoBadge.title}
-              </p>
-              <p className="text-xs text-pearl-200/70">{h.photoBadge.sub}</p>
-            </div>
-          </div>
-          <div className="float-c absolute -top-6 right-6 hidden sm:block">
-            <div className="rotate-[3deg] rounded-full border border-champagne-300/30 bg-obsidian-900/80 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300 backdrop-blur">
-              {h.pillLocation}
-            </div>
-          </div>
+        <AnimateIn className="relative" y={30} delay={0.12}>
+          <HeroStone dict={dict} />
         </AnimateIn>
       </Container>
     </section>
@@ -167,7 +137,7 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 function QuickFacts({ dict }: { dict: Dictionary }) {
   const icons = [Clock, MapPin, Accessibility];
   return (
-    <section className="relative bg-obsidian-950 pb-16 sm:pb-20">
+    <section className="relative bg-gradient-to-b from-imperial-950 to-obsidian-950 pb-20 sm:pb-24">
       <Container className="-mt-14 sm:-mt-16">
         <Stagger className="relative grid gap-0 rounded-[22px] border border-champagne-400/22 bg-pearl-50 p-1 shadow-luxe sm:grid-cols-3">
           <span
