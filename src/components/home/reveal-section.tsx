@@ -16,17 +16,16 @@ import type { Dictionary } from "@/i18n/dictionaries/pt";
 import { Container } from "@/components/container";
 
 /**
- * "Da pedra ao cristal" — performance-tuned reveal without a frame.
+ * Reveal "lupa": a pedra é sempre a base. O cristal aparece apenas
+ * num pequeno disco (clip-path circle) que segue o ponteiro — e fecha
+ * completamente quando o mouse sai.
  *
- * - Both images are PNGs with alpha, so the stone genuinely floats over
- *   the bg-geode background. No rounded rectangle, no shadow card.
- * - Pointer is tracked via motion values (no React re-renders); a single
- *   `clip-path: circle(...)` string is written to the DOM per frame.
- * - `will-change: clip-path` only while the cursor is inside.
- * - The whole stack runs inside a CSS `.float-hero` animation so the
- *   composition levitates idly. prefers-reduced-motion disables it.
- * - A radial shadow underneath scales with the float to read as
- *   proper ground shadow (not a flat glow).
+ * Performance
+ * - Pointer e radius são motion values; clipPath é produzido por
+ *   useTransform e escrito direto no DOM sem re-render do React.
+ * - useSpring suaviza cursor + radius.
+ * - `will-change: clip-path` só durante hover.
+ * - `contain: layout paint` no wrapper interativo.
  */
 export function RevealSection({ dict }: { dict: Dictionary }) {
   const r = dict.reveal;
@@ -37,22 +36,24 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [open, setOpen] = useState(false);
 
+  // Tamanho do disco revelado (em % do tamanho do wrapper)
+  const HOVER_RADIUS = 26;
+  const TAP_RADIUS = 36;
+  const FULL_RADIUS = 140; // só usado quando reduced-motion (mostra tudo)
+
   const x = useMotionValue(52);
   const y = useMotionValue(45);
-  const radius = useMotionValue(135);
-  const sx = useSpring(x, { damping: 26, stiffness: 180, mass: 0.6 });
-  const sy = useSpring(y, { damping: 26, stiffness: 180, mass: 0.6 });
-  const sr = useSpring(radius, { damping: 32, stiffness: 140, mass: 0.8 });
+  const radius = useMotionValue(0);
+  const sx = useSpring(x, { damping: 28, stiffness: 220, mass: 0.5 });
+  const sy = useSpring(y, { damping: 28, stiffness: 220, mass: 0.5 });
+  const sr = useSpring(radius, { damping: 30, stiffness: 180, mass: 0.7 });
 
   const clipPath = useTransform(
     [sx, sy, sr],
     (latest: number[]) =>
       `circle(${latest[2]}% at ${latest[0]}% ${latest[1]}%)`,
   );
-  const glowOpacity = useTransform(sr, [0, 135], [1, 0.3]);
-  const glowScale = useTransform(sr, [0, 135], [1.1, 0.88]);
 
-  // Detect touch vs hover
   useEffect(() => {
     const mq = window.matchMedia("(hover: none)");
     const apply = () => setIsTouch(mq.matches);
@@ -61,10 +62,10 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  // Teaser once when section enters viewport
+  // Peek curto na primeira vez que a seção entra no viewport
   useEffect(() => {
     if (reduced) {
-      radius.set(0);
+      radius.set(FULL_RADIUS);
       setOpen(true);
       return;
     }
@@ -73,13 +74,13 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting || hasInteracted) return;
-        radius.set(0);
+        radius.set(HOVER_RADIUS + 6);
         const t = window.setTimeout(() => {
-          if (!hasInteracted) radius.set(135);
-        }, 1500);
+          if (!hasInteracted) radius.set(0);
+        }, 1300);
         return () => window.clearTimeout(t);
       },
-      { threshold: 0.55 },
+      { threshold: 0.5 },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -88,12 +89,12 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const onEnter = () => {
     if (isTouch || reduced) return;
     setHasInteracted(true);
-    radius.set(0);
+    radius.set(HOVER_RADIUS);
     if (topRef.current) topRef.current.style.willChange = "clip-path";
   };
   const onLeave = () => {
     if (isTouch || reduced) return;
-    radius.set(135);
+    radius.set(0);
     if (topRef.current) topRef.current.style.willChange = "auto";
   };
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -107,21 +108,14 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     setHasInteracted(true);
     const willOpen = !open;
     setOpen(willOpen);
-    radius.set(willOpen ? 0 : 135);
+    radius.set(willOpen ? TAP_RADIUS : 0);
     x.set(50);
     y.set(45);
   };
 
   return (
     <section className="relative overflow-hidden py-20 sm:py-28 md:py-36">
-      <div
-        className="bg-geode absolute inset-0 -z-10"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(244,234,209,0.06),transparent_55%)]"
-        aria-hidden="true"
-      />
+      <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
 
       <Container size="md" className="text-center">
         <span className="ornament font-display text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300">
@@ -136,28 +130,15 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
           {r.description}
         </p>
 
-        {/* Wrapper flutuante — isola paint e hospeda o float CSS */}
         <div
           className="relative mx-auto mt-12 aspect-[4/5] w-[min(82vw,440px)] sm:mt-16 sm:w-[min(56vw,500px)]"
           style={{ contain: "layout paint" }}
         >
-          {/* Glow atrás — animado com o reveal */}
-          <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute -inset-16 -z-10 rounded-full blur-3xl"
-            style={{
-              opacity: glowOpacity,
-              scale: glowScale,
-              background:
-                "radial-gradient(circle, rgba(146,77,142,0.55) 0%, rgba(200,147,71,0.22) 45%, transparent 78%)",
-            }}
-          />
-
-          {/* Ground shadow — sombra de chão sob a pedra, também flutua */}
+          {/* Sombra de chão oval, respira em antifase */}
           <div
             aria-hidden="true"
             className={cn(
-              "pointer-events-none absolute inset-x-10 bottom-[-8%] -z-10 h-8 rounded-[50%] bg-obsidian-950 opacity-70 blur-2xl",
+              "pointer-events-none absolute inset-x-10 bottom-[-6%] -z-10 h-10 rounded-[50%] bg-obsidian-950 opacity-60 blur-2xl",
               !reduced && "animate-[float-shadow_9s_ease-in-out_infinite]",
             )}
           />
@@ -185,19 +166,20 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
               isTouch && "cursor-pointer",
             )}
           >
-            {/* Camada 1: cristal aberto — sempre lá, atrás da pedra */}
+            {/* Camada 1 (base): pedra fechada, sempre visível */}
             <div className="absolute inset-0">
               <Image
-                src={reveal.opened}
-                alt={r.hintOpened}
+                src={reveal.closed}
+                alt={r.hintClosed}
                 fill
                 sizes="(max-width: 768px) 82vw, 500px"
                 placeholder="blur"
-                className="object-contain drop-shadow-[0_20px_40px_rgba(85,48,86,0.45)]"
+                className="object-contain"
               />
             </div>
 
-            {/* Camada 2: pedra fechada — clip-path cobre a camada 1 */}
+            {/* Camada 2 (topo): cristal revelado dentro de um disco circular
+                que segue o ponteiro */}
             <motion.div
               ref={topRef}
               aria-hidden="true"
@@ -205,18 +187,17 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
               style={{ clipPath }}
             >
               <Image
-                src={reveal.closed}
+                src={reveal.opened}
                 alt=""
                 fill
                 sizes="(max-width: 768px) 82vw, 500px"
                 placeholder="blur"
-                className="object-contain drop-shadow-[0_16px_32px_rgba(10,9,16,0.6)]"
+                className="object-contain"
               />
             </motion.div>
           </div>
         </div>
 
-        {/* Chip de legenda (fora do wrapper flutuante, pra não seguir o float) */}
         <div className="mt-8 flex justify-center sm:mt-10">
           <RevealLabel
             isTouch={isTouch}
@@ -247,7 +228,7 @@ function RevealLabel({
       setIsOpen(open);
       return;
     }
-    return radius.on("change", (v) => setIsOpen(v < 40));
+    return radius.on("change", (v) => setIsOpen(v > 8));
   }, [isTouch, open, radius]);
 
   return (
