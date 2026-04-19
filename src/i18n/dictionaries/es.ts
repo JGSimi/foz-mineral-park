@@ -138,6 +138,18 @@ const dict: Dictionary = {
     },
   ],
 
+  reveal: {
+    eyebrow: "De la piedra al cristal",
+    titleLead: "Toda gema empezó en",
+    titleEm: "bruto",
+    titleTail: ".",
+    description:
+      "Lo que parece común guarda algo único dentro. Pasa el mouse para abrir la geoda.",
+    hintClosed: "Revelar",
+    hintOpened: "Amatista natural",
+    tapHint: "Tócala para revelar",
+  },
+
   whyVisit: {
     eyebrow: "Por qué vale la visita",
     titleLead: "Una parada que los turistas",

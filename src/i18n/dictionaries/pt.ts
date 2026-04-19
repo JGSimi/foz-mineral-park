@@ -132,6 +132,18 @@ const dict = {
     },
   ],
 
+  reveal: {
+    eyebrow: "Da pedra ao cristal",
+    titleLead: "Toda gema começou",
+    titleEm: "bruta",
+    titleTail: ".",
+    description:
+      "O que parece comum guarda algo único por dentro. Passe o mouse para abrir a geoda.",
+    hintClosed: "Revelar",
+    hintOpened: "Ametista natural",
+    tapHint: "Toque para revelar",
+  },
+
   whyVisit: {
     eyebrow: "Por que vale a visita",
     titleLead: "Uma parada que os turistas",

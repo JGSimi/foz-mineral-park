@@ -25,6 +25,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { HeroVideo } from "@/components/hero-video";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/animate";
 import { AttractionsSection } from "@/components/home/attractions-section";
+import { RevealSection } from "@/components/home/reveal-section";
 import { notFound } from "next/navigation";
 
 type Params = { lang: string };
@@ -38,6 +39,7 @@ export default async function Home({ params }: { params: Promise<Params> }) {
     <>
       <Hero dict={dict} locale={locale} />
       <QuickFacts dict={dict} />
+      <RevealSection dict={dict} />
       <AttractionsSection dict={dict} locale={locale} />
       <WhyVisit dict={dict} />
       <Testimonials dict={dict} />

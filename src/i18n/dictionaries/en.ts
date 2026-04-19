@@ -138,6 +138,18 @@ const dict: Dictionary = {
     },
   ],
 
+  reveal: {
+    eyebrow: "From rock to crystal",
+    titleLead: "Every gem started out",
+    titleEm: "rough",
+    titleTail: ".",
+    description:
+      "What looks plain hides something unique inside. Hover to open the geode.",
+    hintClosed: "Reveal",
+    hintOpened: "Natural amethyst",
+    tapHint: "Tap to reveal",
+  },
+
   whyVisit: {
     eyebrow: "Why it's worth the stop",
     titleLead: "A stop travelers",
