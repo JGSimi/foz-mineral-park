@@ -42,6 +42,9 @@ export function CookieBanner() {
       role="dialog"
       aria-labelledby="cookie-title"
       aria-describedby="cookie-body"
+      style={{
+        marginBottom: "env(safe-area-inset-bottom)",
+      }}
       className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-xl overflow-hidden rounded-2xl border border-champagne-300/25 bg-obsidian-950/95 p-6 shadow-luxe-dark backdrop-blur-md sm:inset-x-auto sm:right-5 sm:left-auto"
     >
       <span

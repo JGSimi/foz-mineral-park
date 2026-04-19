@@ -233,16 +233,20 @@ function Attractions({
           </div>
         </AnimateIn>
 
-        <Stagger className="mt-16 grid gap-6 md:grid-cols-3">
+        <Stagger className="h-scroll -mx-5 mt-16 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 md:mx-0 md:grid md:snap-none md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0">
           {site.attractions.map((a, i) => {
             const t = dict.attractions.items[
               a.slug as keyof typeof dict.attractions.items
             ];
             return (
-              <StaggerItem key={a.slug} as="article">
+              <StaggerItem
+                key={a.slug}
+                as="article"
+                className="w-[82%] shrink-0 snap-center md:w-auto md:shrink"
+              >
                 <Link
                   href={localePath(locale, `/atracoes/${a.slug}`)}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 transition-all duration-500 hover:-translate-y-1.5 hover:border-champagne-300 hover:shadow-luxe-lift"
+                  className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 transition-all duration-500 active:scale-[0.98] hover:-translate-y-1.5 hover:border-champagne-300 hover:shadow-luxe-lift"
                 >
                   <span
                     aria-hidden="true"
@@ -305,6 +309,15 @@ function Attractions({
             );
           })}
         </Stagger>
+        {/* Indicador "arraste" mobile */}
+        <div
+          className="mt-4 flex items-center justify-center gap-1.5 text-[0.6rem] uppercase tracking-[0.28em] text-pearl-600 md:hidden"
+          aria-hidden="true"
+        >
+          <span>←</span>
+          <span>Arraste</span>
+          <span>→</span>
+        </div>
       </Container>
     </section>
   );
