@@ -7,7 +7,6 @@ import {
   useMotionValue,
   useReducedMotion,
   useSpring,
-  useTransform,
 } from "motion/react";
 
 import { cn } from "@/lib/utils";
@@ -16,16 +15,20 @@ import type { Dictionary } from "@/i18n/dictionaries/pt";
 import { Container } from "@/components/container";
 
 /**
- * Reveal "lupa": a pedra é sempre a base. O cristal aparece apenas
- * num pequeno disco (clip-path circle) que segue o ponteiro — e fecha
- * completamente quando o mouse sai.
+ * Reveal com borda orgânica (líquida).
+ *
+ * A "lupa" é um SVG mask: um <circle> branco pintado num mask preto,
+ * distorcido por feDisplacementMap alimentado por feTurbulence animado.
+ * Isso entrega bordas orgânicas, que respiram sozinhas, sem a silhueta
+ * circular rígida.
  *
  * Performance
- * - Pointer e radius são motion values; clipPath é produzido por
- *   useTransform e escrito direto no DOM sem re-render do React.
- * - useSpring suaviza cursor + radius.
- * - `will-change: clip-path` só durante hover.
- * - `contain: layout paint` no wrapper interativo.
+ * - cx/cy/r são motion values + springs; motion.circle recebe direto
+ *   (sem re-render do React).
+ * - feTurbulence/feDisplacementMap rodam 100% na GPU (SVG filter).
+ * - Apenas o <circle> é distorcido; a <Image> do cristal permanece
+ *   nítida — o filter é aplicado na máscara, não no conteúdo.
+ * - `will-change: mask` só enquanto o cursor está dentro.
  */
 export function RevealSection({ dict }: { dict: Dictionary }) {
   const r = dict.reveal;
@@ -34,25 +37,18 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const topRef = useRef<HTMLDivElement>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [open, setOpen] = useState(false);
 
-  // Tamanho do disco revelado (em % do tamanho do wrapper)
-  const HOVER_RADIUS = 26;
-  const TAP_RADIUS = 36;
-  const FULL_RADIUS = 140; // só usado quando reduced-motion (mostra tudo)
+  // Sistema de coordenadas do SVG mask (viewBox 0-100)
+  const HOVER_R = 22;
+  const TAP_R = 30;
+  const FULL_R = 80;
 
   const x = useMotionValue(52);
   const y = useMotionValue(45);
   const radius = useMotionValue(0);
-  const sx = useSpring(x, { damping: 28, stiffness: 220, mass: 0.5 });
-  const sy = useSpring(y, { damping: 28, stiffness: 220, mass: 0.5 });
+  const sx = useSpring(x, { damping: 28, stiffness: 240, mass: 0.45 });
+  const sy = useSpring(y, { damping: 28, stiffness: 240, mass: 0.45 });
   const sr = useSpring(radius, { damping: 30, stiffness: 180, mass: 0.7 });
-
-  const clipPath = useTransform(
-    [sx, sy, sr],
-    (latest: number[]) =>
-      `circle(${latest[2]}% at ${latest[0]}% ${latest[1]}%)`,
-  );
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: none)");
@@ -62,11 +58,9 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  // Peek curto na primeira vez que a seção entra no viewport
   useEffect(() => {
     if (reduced) {
-      radius.set(FULL_RADIUS);
-      setOpen(true);
+      radius.set(FULL_R);
       return;
     }
     const el = wrapperRef.current;
@@ -74,7 +68,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting || hasInteracted) return;
-        radius.set(HOVER_RADIUS + 6);
+        radius.set(HOVER_R + 6);
         const t = window.setTimeout(() => {
           if (!hasInteracted) radius.set(0);
         }, 1300);
@@ -89,8 +83,8 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const onEnter = () => {
     if (isTouch || reduced) return;
     setHasInteracted(true);
-    radius.set(HOVER_RADIUS);
-    if (topRef.current) topRef.current.style.willChange = "clip-path";
+    radius.set(HOVER_R);
+    if (topRef.current) topRef.current.style.willChange = "mask";
   };
   const onLeave = () => {
     if (isTouch || reduced) return;
@@ -106,9 +100,8 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const toggle = () => {
     if (!isTouch) return;
     setHasInteracted(true);
-    const willOpen = !open;
-    setOpen(willOpen);
-    radius.set(willOpen ? TAP_RADIUS : 0);
+    const isOpen = radius.get() > 5;
+    radius.set(isOpen ? 0 : TAP_R);
     x.set(50);
     y.set(45);
   };
@@ -116,6 +109,60 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   return (
     <section className="relative overflow-hidden py-20 sm:py-28 md:py-36">
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
+
+      {/* Filter + mask globais. O SVG em si é invisível (size-0). */}
+      <svg
+        className="pointer-events-none absolute"
+        style={{ width: 0, height: 0, position: "absolute" }}
+        aria-hidden="true"
+      >
+        <defs>
+          <filter
+            id="fmp-liquid"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.018 0.022"
+              numOctaves="2"
+              seed="3"
+              result="turb"
+            >
+              {!reduced && (
+                <animate
+                  attributeName="seed"
+                  values="3;7;11;7;3"
+                  dur="9s"
+                  repeatCount="indefinite"
+                  calcMode="linear"
+                />
+              )}
+            </feTurbulence>
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="turb"
+              scale="6"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+
+          <mask id="fmp-reveal-mask">
+            <rect x="0" y="0" width="100" height="100" fill="black" />
+            <motion.circle
+              cx={sx}
+              cy={sy}
+              r={sr}
+              fill="white"
+              filter="url(#fmp-liquid)"
+            />
+          </mask>
+        </defs>
+      </svg>
 
       <Container size="md" className="text-center">
         <span className="ornament font-display text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300">
@@ -134,7 +181,6 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
           className="relative mx-auto mt-12 aspect-[4/5] w-[min(82vw,440px)] sm:mt-16 sm:w-[min(56vw,500px)]"
           style={{ contain: "layout paint" }}
         >
-          {/* Sombra de chão oval, respira em antifase */}
           <div
             aria-hidden="true"
             className={cn(
@@ -150,8 +196,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
             onPointerMove={onMove}
             onClick={toggle}
             role={isTouch ? "button" : undefined}
-            aria-pressed={isTouch ? open : undefined}
-            aria-label={open ? r.hintOpened : r.hintClosed}
+            aria-label={r.hintOpened}
             tabIndex={isTouch ? 0 : -1}
             onKeyDown={(e) => {
               if (!isTouch) return;
@@ -166,7 +211,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
               isTouch && "cursor-pointer",
             )}
           >
-            {/* Camada 1 (base): pedra fechada, sempre visível */}
+            {/* Base: pedra fechada, sempre visível */}
             <div className="absolute inset-0">
               <Image
                 src={reveal.closed}
@@ -178,13 +223,15 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
               />
             </div>
 
-            {/* Camada 2 (topo): cristal revelado dentro de um disco circular
-                que segue o ponteiro */}
-            <motion.div
+            {/* Topo: cristal, mascarado pelo blob líquido */}
+            <div
               ref={topRef}
               aria-hidden="true"
               className="absolute inset-0"
-              style={{ clipPath }}
+              style={{
+                WebkitMask: "url(#fmp-reveal-mask)",
+                mask: "url(#fmp-reveal-mask)",
+              }}
             >
               <Image
                 src={reveal.opened}
@@ -194,57 +241,10 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
                 placeholder="blur"
                 className="object-contain"
               />
-            </motion.div>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-8 flex justify-center sm:mt-10">
-          <RevealLabel
-            isTouch={isTouch}
-            open={open}
-            radius={sr}
-            dict={r}
-          />
         </div>
       </Container>
     </section>
-  );
-}
-
-function RevealLabel({
-  isTouch,
-  open,
-  radius,
-  dict,
-}: {
-  isTouch: boolean;
-  open: boolean;
-  radius: ReturnType<typeof useMotionValue<number>>;
-  dict: Dictionary["reveal"];
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    if (isTouch) {
-      setIsOpen(open);
-      return;
-    }
-    return radius.on("change", (v) => setIsOpen(v > 8));
-  }, [isTouch, open, radius]);
-
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-champagne-300/30 bg-obsidian-950/80 px-4 py-1.5 text-[0.58rem] uppercase tracking-[0.3em] text-champagne-200 backdrop-blur">
-      <span
-        aria-hidden="true"
-        className={cn(
-          "inline-block size-1.5 rounded-full transition-colors duration-500",
-          isOpen ? "bg-champagne-300" : "bg-pearl-400",
-        )}
-      />
-      {isTouch && !isOpen
-        ? dict.tapHint
-        : isOpen
-          ? dict.hintOpened
-          : dict.hintClosed}
-    </span>
   );
 }
