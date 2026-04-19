@@ -65,8 +65,7 @@ export const site = {
     // confirmar ou criar os perfis.
     instagram: "https://instagram.com/fozmineralpark",
     facebook: "https://facebook.com/fozmineralpark",
-    googleMaps:
-      "https://www.google.com/maps/search/?api=1&query=Foz+Mineral+Park+Av+das+Cataratas+6025+Foz+do+Iguacu",
+    googleMaps: "https://maps.app.goo.gl/jW4goc33JkoCYsMu8",
   },
 
   attractions: [
