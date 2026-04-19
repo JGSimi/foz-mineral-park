@@ -17,34 +17,29 @@ import { Container } from "@/components/container";
 /**
  * Reveal com borda orgânica (líquida).
  *
- * A "lupa" é um SVG mask: um <circle> branco pintado num mask preto,
- * distorcido por feDisplacementMap alimentado por feTurbulence animado.
- * Isso entrega bordas orgânicas, que respiram sozinhas, sem a silhueta
- * circular rígida.
+ * Abordagem: SVG <image> com <mask> interno ao mesmo SVG.
+ * `mask: url(#id)` em CSS num elemento HTML é instável no Safari e
+ * tem quirks no Chrome. Já o atributo `mask=""` num elemento SVG é
+ * nativo, previsível e funciona em todos os navegadores modernos.
  *
- * Performance
- * - cx/cy/r são motion values + springs; motion.circle recebe direto
- *   (sem re-render do React).
- * - feTurbulence/feDisplacementMap rodam 100% na GPU (SVG filter).
- * - Apenas o <circle> é distorcido; a <Image> do cristal permanece
- *   nítida — o filter é aplicado na máscara, não no conteúdo.
- * - `will-change: mask` só enquanto o cursor está dentro.
+ * A borda orgânica vem de feTurbulence + feDisplacementMap aplicados
+ * no <circle> dentro da máscara — somente a máscara é distorcida, a
+ * foto do cristal permanece nítida.
  */
 export function RevealSection({ dict }: { dict: Dictionary }) {
   const r = dict.reveal;
   const reduced = useReducedMotion();
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const topRef = useRef<HTMLDivElement>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  // Sistema de coordenadas do SVG mask (viewBox 0-100)
+  // Sistema de coordenadas do SVG (viewBox 100 x 125 = 4:5, igual ao wrapper)
   const HOVER_R = 22;
   const TAP_R = 30;
-  const FULL_R = 80;
+  const FULL_R = 140;
 
-  const x = useMotionValue(52);
-  const y = useMotionValue(45);
+  const x = useMotionValue(50);
+  const y = useMotionValue(56);
   const radius = useMotionValue(0);
   const sx = useSpring(x, { damping: 28, stiffness: 240, mass: 0.45 });
   const sy = useSpring(y, { damping: 28, stiffness: 240, mass: 0.45 });
@@ -84,18 +79,16 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     if (isTouch || reduced) return;
     setHasInteracted(true);
     radius.set(HOVER_R);
-    if (topRef.current) topRef.current.style.willChange = "mask";
   };
   const onLeave = () => {
     if (isTouch || reduced) return;
     radius.set(0);
-    if (topRef.current) topRef.current.style.willChange = "auto";
   };
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isTouch) return;
     const rect = e.currentTarget.getBoundingClientRect();
     x.set(((e.clientX - rect.left) / rect.width) * 100);
-    y.set(((e.clientY - rect.top) / rect.height) * 100);
+    y.set(((e.clientY - rect.top) / rect.height) * 125);
   };
   const toggle = () => {
     if (!isTouch) return;
@@ -103,66 +96,12 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
     const isOpen = radius.get() > 5;
     radius.set(isOpen ? 0 : TAP_R);
     x.set(50);
-    y.set(45);
+    y.set(56);
   };
 
   return (
     <section className="relative overflow-hidden py-20 sm:py-28 md:py-36">
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
-
-      {/* Filter + mask globais. O SVG em si é invisível (size-0). */}
-      <svg
-        className="pointer-events-none absolute"
-        style={{ width: 0, height: 0, position: "absolute" }}
-        aria-hidden="true"
-      >
-        <defs>
-          <filter
-            id="fmp-liquid"
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-            colorInterpolationFilters="sRGB"
-          >
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.018 0.022"
-              numOctaves="2"
-              seed="3"
-              result="turb"
-            >
-              {!reduced && (
-                <animate
-                  attributeName="seed"
-                  values="3;7;11;7;3"
-                  dur="9s"
-                  repeatCount="indefinite"
-                  calcMode="linear"
-                />
-              )}
-            </feTurbulence>
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="turb"
-              scale="6"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-
-          <mask id="fmp-reveal-mask">
-            <rect x="0" y="0" width="100" height="100" fill="black" />
-            <motion.circle
-              cx={sx}
-              cy={sy}
-              r={sr}
-              fill="white"
-              filter="url(#fmp-liquid)"
-            />
-          </mask>
-        </defs>
-      </svg>
 
       <Container size="md" className="text-center">
         <span className="ornament font-display text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300">
@@ -212,7 +151,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
             )}
           >
             {/* Base: pedra fechada, sempre visível */}
-            <div className="absolute inset-0">
+            <div className="pointer-events-none absolute inset-0">
               <Image
                 src={reveal.closed}
                 alt={r.hintClosed}
@@ -223,25 +162,77 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
               />
             </div>
 
-            {/* Topo: cristal, mascarado pelo blob líquido */}
-            <div
-              ref={topRef}
+            {/* Topo: cristal mascarado pelo blob líquido */}
+            <svg
+              viewBox="0 0 100 125"
+              preserveAspectRatio="none"
+              className="pointer-events-none absolute inset-0 h-full w-full"
               aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                WebkitMask: "url(#fmp-reveal-mask)",
-                mask: "url(#fmp-reveal-mask)",
-              }}
             >
-              <Image
-                src={reveal.opened}
-                alt=""
-                fill
-                sizes="(max-width: 768px) 82vw, 500px"
-                placeholder="blur"
-                className="object-contain"
+              <defs>
+                <filter
+                  id="fmp-liquid"
+                  x="-50%"
+                  y="-50%"
+                  width="200%"
+                  height="200%"
+                  colorInterpolationFilters="sRGB"
+                >
+                  <feTurbulence
+                    type="fractalNoise"
+                    baseFrequency="0.022 0.028"
+                    numOctaves="2"
+                    seed="3"
+                    result="turb"
+                  >
+                    {!reduced && (
+                      <animate
+                        attributeName="seed"
+                        values="3;7;11;7;3"
+                        dur="9s"
+                        repeatCount="indefinite"
+                        calcMode="linear"
+                      />
+                    )}
+                  </feTurbulence>
+                  <feDisplacementMap
+                    in="SourceGraphic"
+                    in2="turb"
+                    scale="9"
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                  />
+                </filter>
+
+                <mask
+                  id="fmp-reveal-mask"
+                  maskUnits="userSpaceOnUse"
+                  x="0"
+                  y="0"
+                  width="100"
+                  height="125"
+                >
+                  <rect x="0" y="0" width="100" height="125" fill="black" />
+                  <motion.circle
+                    cx={sx}
+                    cy={sy}
+                    r={sr}
+                    fill="white"
+                    filter="url(#fmp-liquid)"
+                  />
+                </mask>
+              </defs>
+
+              <image
+                href={reveal.opened.src}
+                x="0"
+                y="0"
+                width="100"
+                height="125"
+                preserveAspectRatio="xMidYMid meet"
+                mask="url(#fmp-reveal-mask)"
               />
-            </div>
+            </svg>
           </div>
         </div>
       </Container>
