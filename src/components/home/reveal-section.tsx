@@ -65,9 +65,9 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const rawScale = useTransform(
     scrollYProgress,
     [0, 0.5, 1],
-    reduced ? [1, 1, 1] : [1.22, 0.92, 1.22],
+    reduced ? [1, 1, 1] : [1.95, 0.42, 1.95],
   );
-  const scale = useSpring(rawScale, { damping: 30, stiffness: 120, mass: 0.8 });
+  const scale = useSpring(rawScale, { damping: 32, stiffness: 110, mass: 0.9 });
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: none)");
@@ -129,7 +129,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-20 sm:py-28 md:py-36"
+      className="relative overflow-hidden py-32 sm:py-44 md:py-56"
     >
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
       {/* Fade do topo: mascara o radial imperial do geode pra casar
@@ -152,10 +152,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
           {r.description}
         </p>
 
-        <div
-          className="relative mx-auto mt-12 aspect-[4/5] w-[min(82vw,440px)] sm:mt-16 sm:w-[min(56vw,500px)]"
-          style={{ contain: "layout paint" }}
-        >
+        <div className="relative mx-auto mt-12 aspect-[4/5] w-[min(82vw,440px)] sm:mt-16 sm:w-[min(56vw,500px)]">
           <div
             aria-hidden="true"
             className={cn(
