@@ -125,16 +125,16 @@ export function HeroStone({
         className,
       )}
     >
-      {/* Halo ambiente atrás da pedra */}
+      {/* Halo ambiente atrás da pedra — leve pra funcionar sobre pearl claro */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-500/35 via-transparent to-champagne-400/25 blur-3xl"
+        className="pointer-events-none absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/18 via-transparent to-champagne-400/14 blur-3xl"
       />
-      {/* Sombra oval no chão */}
+      {/* Sombra oval no chão — mais suave contra o claro */}
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-x-10 bottom-[-6%] -z-10 h-10 rounded-[50%] bg-obsidian-950 opacity-60 blur-2xl",
+          "pointer-events-none absolute inset-x-10 bottom-[-6%] -z-10 h-10 rounded-[50%] bg-obsidian-950 opacity-30 blur-2xl",
           !reduced && "animate-[float-shadow_9s_ease-in-out_infinite]",
         )}
       />

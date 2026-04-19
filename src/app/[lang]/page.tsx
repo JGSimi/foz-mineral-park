@@ -38,7 +38,6 @@ export default async function Home({ params }: { params: Promise<Params> }) {
   return (
     <>
       <Hero dict={dict} locale={locale} />
-      <QuickFacts dict={dict} />
       <ExperienceSection dict={dict} locale={locale} />
       <AttractionsSection dict={dict} locale={locale} />
       <WhyVisit dict={dict} />
@@ -60,28 +59,32 @@ const iconMap = {
 
 function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const h = dict.hero;
+  const icons = [Clock, MapPin, Accessibility];
   return (
-    <section className="relative -mt-16 overflow-hidden pb-28 pt-32 sm:-mt-20 sm:pb-40 sm:pt-52">
-      {/* Stage escuro: bg-geode no chão, halo brando e grão por cima. */}
-      <div className="bg-geode absolute inset-0 -z-20" aria-hidden="true" />
+    <section className="relative -mt-16 overflow-hidden pb-24 pt-32 sm:-mt-20 sm:pb-28 sm:pt-48">
+      {/* Textura parchment sutil sobre o pearl-100 do body. */}
       <div
-        className="hero-overlay-glow absolute inset-0 -z-10"
+        className="bg-parchment-grid absolute inset-0 -z-10 opacity-50"
         aria-hidden="true"
       />
-      <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
+      {/* Halo quente no canto da pedra, bem diluído no fundo claro. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[-15%] top-[8%] -z-10 h-[70vh] w-[70vw] rounded-full bg-gradient-to-br from-imperial-400/12 via-champagne-300/8 to-transparent blur-3xl"
+      />
 
       <Container className="grid items-center gap-12 md:grid-cols-[1.05fr_1fr] md:gap-16">
-        <AnimateIn className="space-y-7 text-pearl-100 sm:space-y-8" y={24}>
-          <p className="inline-flex items-center gap-2 rounded-full border border-champagne-300/30 bg-white/5 px-3.5 py-1.5 text-[0.58rem] uppercase tracking-[0.22em] text-champagne-300 backdrop-blur sm:px-4 sm:text-[0.65rem] sm:tracking-[0.28em]">
+        <AnimateIn className="space-y-7 sm:space-y-8" y={24}>
+          <span className="inline-flex items-center gap-2 rounded-full border border-champagne-400/40 bg-pearl-50/80 px-3.5 py-1.5 text-[0.58rem] uppercase tracking-[0.22em] text-champagne-700 backdrop-blur-sm sm:px-4 sm:text-[0.65rem] sm:tracking-[0.28em]">
             <Sparkles className="size-3 sm:size-3.5" />
             <span className="truncate">{h.locationBadge}</span>
-          </p>
-          <h1 className="text-balance font-display text-[2.6rem] leading-[1] sm:text-6xl sm:leading-[0.98] md:text-[4.4rem]">
+          </span>
+          <h1 className="pr-2 text-balance font-display text-[2.4rem] leading-[1.02] text-obsidian-900 sm:text-[3.5rem] sm:leading-[1] md:text-[4rem]">
             {h.titleLead}{" "}
-            <em className="italic text-gilded">{h.titleEm}</em>
+            <em className="italic text-champagne-600">{h.titleEm}</em>
             {h.titleTail}
           </h1>
-          <p className="max-w-xl text-pretty text-[0.95rem] leading-relaxed text-pearl-200/90 sm:text-lg">
+          <p className="max-w-xl text-pretty text-[0.95rem] leading-relaxed text-pearl-700 sm:text-base">
             {h.description}
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -100,7 +103,7 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
             <Button
               asChild
               size="lg"
-              variant="onDark"
+              variant="outline"
               className="w-full sm:w-auto"
             >
               <Link href={localePath(locale, "/como-chegar")}>
@@ -109,16 +112,16 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               </Link>
             </Button>
           </div>
-          <dl className="grid max-w-xl grid-cols-3 gap-4 border-t border-champagne-300/15 pt-6 text-sm text-pearl-200 sm:gap-6 sm:pt-8">
+          <dl className="grid max-w-xl grid-cols-3 gap-4 border-t border-champagne-400/30 pt-6 text-sm sm:gap-6 sm:pt-8">
             {h.stats.map((s) => (
               <div key={s.k}>
-                <dt className="text-[0.56rem] uppercase tracking-[0.24em] text-champagne-300 sm:text-[0.6rem] sm:tracking-[0.3em]">
+                <dt className="text-[0.56rem] uppercase tracking-[0.24em] text-champagne-700 sm:text-[0.6rem] sm:tracking-[0.3em]">
                   {s.k}
                 </dt>
-                <dd className="mt-1.5 font-display text-2xl text-pearl-100 sm:mt-2 sm:text-3xl">
+                <dd className="mt-1.5 font-display text-2xl text-obsidian-900 sm:mt-2 sm:text-3xl">
                   {s.v}
                 </dd>
-                <dd className="text-[0.7rem] text-pearl-200/70 sm:text-xs">
+                <dd className="text-[0.7rem] text-pearl-700 sm:text-xs">
                   {s.d}
                 </dd>
               </div>
@@ -130,47 +133,36 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           <HeroStone dict={dict} />
         </AnimateIn>
       </Container>
-    </section>
-  );
-}
 
-function QuickFacts({ dict }: { dict: Dictionary }) {
-  const icons = [Clock, MapPin, Accessibility];
-  return (
-    <section className="relative bg-gradient-to-b from-imperial-950 via-obsidian-950 to-obsidian-950 pb-24 sm:pb-28">
-      <Container className="-mt-14 sm:-mt-16">
-        <Stagger className="relative grid gap-0 overflow-hidden rounded-[22px] border border-champagne-400/20 bg-obsidian-900/55 p-1 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:grid-cols-3">
-          {/* Glow sutil interno pra dar volume ao vidro */}
-          <div
+      {/* Strip de quick facts integrada como rodapé do hero. */}
+      <Container className="mt-16 sm:mt-20">
+        <Stagger className="relative grid gap-0 overflow-hidden rounded-2xl border border-champagne-400/30 bg-pearl-50/70 p-1 shadow-[0_10px_40px_-12px_rgba(30,20,10,0.15)] backdrop-blur-md sm:grid-cols-3">
+          <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-champagne-300/[0.06] via-transparent to-imperial-500/[0.08]"
+            className="pointer-events-none absolute inset-y-6 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/35 to-transparent sm:block"
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-5 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/25 to-transparent sm:block"
-          />
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-5 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/25 to-transparent sm:block"
+            className="pointer-events-none absolute inset-y-6 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/35 to-transparent sm:block"
           />
           {dict.quickFacts.map((f, i) => {
             const Icon = icons[i];
             return (
               <StaggerItem
                 key={f.label}
-                className="relative flex items-start gap-3.5 px-5 py-5"
+                className="relative flex items-start gap-4 px-6 py-6"
               >
-                <div className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne-400/40 bg-obsidian-950 text-champagne-300">
+                <div className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne-400/60 bg-pearl-100 text-champagne-700">
                   <Icon className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.28em] text-champagne-300">
+                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.28em] text-champagne-700">
                     {f.label}
                   </p>
-                  <p className="mt-1 font-display text-xl leading-tight text-pearl-100">
+                  <p className="mt-1 font-display text-xl leading-tight text-obsidian-900">
                     {f.value}
                   </p>
-                  <p className="mt-0.5 text-[0.8rem] text-pearl-200/70">
+                  <p className="mt-0.5 text-[0.8rem] text-pearl-700">
                     {f.detail}
                   </p>
                 </div>
