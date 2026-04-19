@@ -35,6 +35,23 @@ export default function Home() {
   );
 }
 
+/**
+ * Destaca a palavra-chave do nome da atração em italic gilded
+ * ("Gruta de *Ametista*", "Museu de *Minerais*", "Loja de *Pedras*").
+ */
+function renderAttractionTitle(name: string) {
+  const words = name.split(" ");
+  if (words.length < 2) return name;
+  const last = words[words.length - 1];
+  const head = words.slice(0, -1).join(" ");
+  return (
+    <>
+      {head}{" "}
+      <em className="italic text-imperial-700">{last}</em>
+    </>
+  );
+}
+
 function Hero() {
   return (
     <section className="relative -mt-16 overflow-hidden pb-32 pt-40 sm:-mt-20 sm:pt-52">
@@ -186,23 +203,34 @@ function QuickFacts() {
   return (
     <section className="relative">
       <Container className="-mt-16">
-        <Stagger className="frame-gold grid gap-3 rounded-3xl border border-transparent bg-pearl-50 p-3 shadow-luxe sm:grid-cols-3 sm:p-4">
+        <Stagger className="relative grid gap-0 rounded-[22px] border border-champagne-400/22 bg-pearl-50 p-1 sm:grid-cols-3">
+          {/* hairline vertical dividers */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-5 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/22 to-transparent sm:block"
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-5 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/22 to-transparent sm:block"
+          />
           {facts.map((f) => (
             <StaggerItem
               key={f.label}
-              className="flex items-start gap-4 rounded-2xl bg-pearl-100 p-5"
+              className="flex items-start gap-3.5 px-5 py-4"
             >
-              <div className="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-obsidian-900 text-champagne-300">
-                <f.icon className="size-5" />
+              <div className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne-400/30 bg-obsidian-950 text-champagne-300">
+                <f.icon className="size-4" />
               </div>
-              <div>
-                <p className="text-[0.65rem] uppercase tracking-[0.22em] text-pearl-700">
+              <div className="min-w-0">
+                <p className="text-[0.6rem] font-medium uppercase tracking-[0.28em] text-champagne-700">
                   {f.label}
                 </p>
-                <p className="mt-1 font-display text-lg text-obsidian-900">
+                <p className="mt-1 font-display text-xl leading-tight text-obsidian-900">
                   {f.value}
                 </p>
-                <p className="text-sm text-pearl-700">{f.detail}</p>
+                <p className="mt-0.5 text-[0.8rem] text-pearl-700">
+                  {f.detail}
+                </p>
               </div>
             </StaggerItem>
           ))}
@@ -240,11 +268,11 @@ function Attractions() {
             <StaggerItem key={a.slug} as="article">
               <Link
                 href={`/atracoes/${a.slug}`}
-                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 transition-all duration-500 hover:-translate-y-1.5 hover:border-champagne-300 hover:shadow-luxe"
+                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 transition-all duration-500 hover:-translate-y-1.5 hover:border-champagne-300 hover:shadow-luxe-lift"
               >
                 <span
                   aria-hidden="true"
-                  className="absolute left-5 top-5 z-10 inline-flex size-9 items-center justify-center rounded-full border border-champagne-300/70 bg-obsidian-950/85 font-display text-[0.75rem] uppercase tracking-[0.16em] text-champagne-200 shadow-lg backdrop-blur"
+                  className="absolute left-5 top-5 z-10 inline-flex size-9 items-center justify-center rounded-full border border-champagne-300/70 bg-obsidian-950/85 font-display italic text-[0.85rem] tracking-[0.12em] text-champagne-200 shadow-lg backdrop-blur"
                 >
                   {["I", "II", "III"][i] ?? ""}
                 </span>
@@ -274,16 +302,25 @@ function Attractions() {
                   <p className="text-[0.65rem] uppercase tracking-[0.28em] text-champagne-700">
                     {a.tagline}
                   </p>
-                  <h3 className="font-display text-2xl text-obsidian-900">
-                    {a.name}
+                  <h3 className="font-display text-2xl leading-tight text-obsidian-900">
+                    {renderAttractionTitle(a.name)}
                   </h3>
                   <p className="flex-1 text-sm leading-relaxed text-pearl-700">
                     {a.short}
                   </p>
-                  <span className="mt-3 inline-flex items-center gap-1.5 text-[0.8rem] font-medium uppercase tracking-[0.18em] text-imperial-700 transition-all duration-500 group-hover:gap-3 group-hover:text-champagne-700">
-                    Saiba mais
-                    <ArrowRight className="size-4" />
-                  </span>
+                  <div className="mt-3 flex items-center justify-between border-t border-dashed border-champagne-400/30 pt-3">
+                    <span className="inline-flex items-center gap-1.5 text-[0.65rem] text-pearl-600">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-jade-500"
+                      />
+                      <span>Acessível</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-imperial-700 transition-all duration-500 group-hover:gap-3 group-hover:text-champagne-700">
+                      Saiba mais
+                      <ArrowRight className="size-4" />
+                    </span>
+                  </div>
                 </div>
               </Link>
             </StaggerItem>

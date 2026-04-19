@@ -310,10 +310,10 @@ h4 {
     0 40px 80px -20px rgba(85, 48, 86, 0.35);
 }
 
-/* Ícones Lucide — stroke mais fino (hairline, editorial).
-   Aplicável sem mudar cada uso no código. */
+/* Ícones Lucide — stroke hairline (design system: 1.25 em todos os ícones,
+   1.4 em alertas onde precisa de presença). Aplicável sem tocar nos usos. */
 svg.lucide {
-  stroke-width: 1.5;
+  stroke-width: 1.25;
 }
 
 /* =============================================================
@@ -323,11 +323,16 @@ svg.lucide {
 .btn-gold-surface {
   background-image:
     linear-gradient(145deg, #f4ead1 0%, #dbb46e 40%, #c89347 60%, #915a25 100%);
-  box-shadow: 0 10px 28px -10px rgba(180, 119, 48, 0.55);
+  /* inset 1px highlight on top = polished-metal feel */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 10px 28px -10px rgba(180, 119, 48, 0.55);
   transition: box-shadow 0.5s ease-out, transform 0.5s ease-out;
 }
 .btn-gold-surface:hover {
-  box-shadow: 0 20px 50px -12px rgba(180, 119, 48, 0.8);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 20px 50px -12px rgba(180, 119, 48, 0.8);
 }
 
 .btn-primary-surface {

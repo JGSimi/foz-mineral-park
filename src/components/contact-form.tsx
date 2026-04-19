@@ -73,7 +73,7 @@ export function ContactForm() {
           <select
             id="subject"
             name="subject"
-            className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm focus:border-amethyst-500 focus:outline-none focus:ring-2 focus:ring-amethyst-200"
+            className="h-11 w-full rounded-xl border border-pearl-300 bg-pearl-50 px-3.5 text-sm text-obsidian-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 focus:border-champagne-600 focus:outline-none focus:ring-[3px] focus:ring-champagne-400/28"
             defaultValue="visita"
           >
             <option value="visita">Planejar visita</option>
@@ -98,7 +98,7 @@ export function ContactForm() {
           rows={5}
           required
           minLength={10}
-          className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:border-amethyst-500 focus:outline-none focus:ring-2 focus:ring-amethyst-200"
+          className="w-full rounded-xl border border-pearl-300 bg-pearl-50 p-3.5 text-sm text-obsidian-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 focus:border-champagne-600 focus:outline-none focus:ring-[3px] focus:ring-champagne-400/28"
           placeholder="Quero visitar no dia X, somos Y pessoas..."
         />
         {errors.message && (
@@ -154,10 +154,14 @@ function Field({
     <div>
       <label
         htmlFor={name}
-        className="mb-1.5 block text-sm font-medium text-foreground"
+        className="mb-1.5 flex items-baseline justify-between text-[0.8rem] font-medium text-obsidian-900"
       >
-        {label}
-        {required && <span aria-hidden="true" className="text-amethyst-700"> *</span>}
+        <span>
+          {label}
+          {required && (
+            <span aria-hidden="true" className="text-imperial-700"> *</span>
+          )}
+        </span>
       </label>
       <input
         id={name}
@@ -165,9 +169,32 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
-        className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm focus:border-amethyst-500 focus:outline-none focus:ring-2 focus:ring-amethyst-200"
+        className={
+          "h-11 w-full rounded-xl border border-pearl-300 bg-pearl-50 px-3.5 text-sm text-obsidian-900 transition-all duration-300 " +
+          "shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] " +
+          "focus:border-champagne-600 focus:outline-none focus:ring-[3px] focus:ring-champagne-400/28 " +
+          (error ? "border-[#b54456] bg-[#fdf5f4]" : "")
+        }
       />
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.7rem] text-[#9a2b3b]">
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v4M12 16h.01" />
+          </svg>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
