@@ -167,7 +167,7 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 function QuickFacts({ dict }: { dict: Dictionary }) {
   const icons = [Clock, MapPin, Accessibility];
   return (
-    <section className="relative">
+    <section className="relative bg-obsidian-950 pb-16 sm:pb-20">
       <Container className="-mt-14 sm:-mt-16">
         <Stagger className="relative grid gap-0 rounded-[22px] border border-champagne-400/22 bg-pearl-50 p-1 shadow-luxe sm:grid-cols-3">
           <span

@@ -6,7 +6,9 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
+  useScroll,
   useSpring,
+  useTransform,
 } from "motion/react";
 
 import { cn } from "@/lib/utils";
@@ -15,20 +17,22 @@ import type { Dictionary } from "@/i18n/dictionaries/pt";
 import { Container } from "@/components/container";
 
 /**
- * Reveal com borda orgânica (líquida).
+ * Reveal com borda orgânica (líquida) + parallax de cursor + zoom cinemático no scroll.
  *
- * Abordagem: SVG <image> com <mask> interno ao mesmo SVG.
- * `mask: url(#id)` em CSS num elemento HTML é instável no Safari e
- * tem quirks no Chrome. Já o atributo `mask=""` num elemento SVG é
- * nativo, previsível e funciona em todos os navegadores modernos.
+ * Camadas de transform (do mais externo pro mais interno):
+ * 1. motion.div com scale vindo de useScroll — cria o zoom out na
+ *    entrada e zoom in na saída.
+ * 2. div com animação CSS `float-hero` — o flutuar lento da pedra.
+ * 3. motion.div com translate vindo de useTransform(sx/sy) — o
+ *    parallax sutil que segue o cursor.
  *
- * A borda orgânica vem de feTurbulence + feDisplacementMap aplicados
- * no <circle> dentro da máscara — somente a máscara é distorcida, a
- * foto do cristal permanece nítida.
+ * Cada um tem sua própria element, então os transforms compõem
+ * via matriz do DOM sem conflito.
  */
 export function RevealSection({ dict }: { dict: Dictionary }) {
   const r = dict.reveal;
   const reduced = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -44,6 +48,26 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const sx = useSpring(x, { damping: 28, stiffness: 240, mass: 0.45 });
   const sy = useSpring(y, { damping: 28, stiffness: 240, mass: 0.45 });
   const sr = useSpring(radius, { damping: 30, stiffness: 180, mass: 0.7 });
+
+  // Parallax sutil baseado no cursor. Deviação pequena pra não descolar
+  // o centro do blob da posição do cursor.
+  const parallaxX = useTransform(sx, [0, 100], [-6, 6]);
+  const parallaxY = useTransform(sy, [0, 125], [-4, 4]);
+  const smoothPX = useSpring(parallaxX, { damping: 24, stiffness: 140, mass: 0.6 });
+  const smoothPY = useSpring(parallaxY, { damping: 24, stiffness: 140, mass: 0.6 });
+
+  // Scroll-driven zoom: pedra grande ao entrar, encolhe no centro,
+  // cresce de novo ao sair — efeito "dip" cinemático.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const rawScale = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    reduced ? [1, 1, 1] : [1.22, 0.92, 1.22],
+  );
+  const scale = useSpring(rawScale, { damping: 30, stiffness: 120, mass: 0.8 });
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: none)");
@@ -83,6 +107,9 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   const onLeave = () => {
     if (isTouch || reduced) return;
     radius.set(0);
+    // Recentraliza x/y pra o parallax voltar ao repouso.
+    x.set(50);
+    y.set(56);
   };
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isTouch) return;
@@ -100,7 +127,10 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
   };
 
   return (
-    <section className="relative overflow-hidden py-20 sm:py-28 md:py-36">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden py-20 sm:py-28 md:py-36"
+    >
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
 
       <Container size="md" className="text-center">
@@ -128,112 +158,122 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
             )}
           />
 
-          <div
-            ref={wrapperRef}
-            onPointerEnter={onEnter}
-            onPointerLeave={onLeave}
-            onPointerMove={onMove}
-            onClick={toggle}
-            role={isTouch ? "button" : undefined}
-            aria-label={r.hintOpened}
-            tabIndex={isTouch ? 0 : -1}
-            onKeyDown={(e) => {
-              if (!isTouch) return;
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                toggle();
-              }
-            }}
-            className={cn(
-              "relative h-full w-full select-none",
-              !reduced && "float-hero",
-              isTouch && "cursor-pointer",
-            )}
+          <motion.div
+            className="absolute inset-0"
+            style={reduced ? undefined : { scale }}
           >
-            {/* Base: pedra fechada, sempre visível */}
-            <div className="pointer-events-none absolute inset-0">
-              <Image
-                src={reveal.closed}
-                alt={r.hintClosed}
-                fill
-                sizes="(max-width: 768px) 82vw, 500px"
-                placeholder="blur"
-                className="object-contain"
-              />
-            </div>
-
-            {/* Topo: cristal mascarado pelo blob líquido */}
-            <svg
-              viewBox="0 0 100 125"
-              preserveAspectRatio="none"
-              className="pointer-events-none absolute inset-0 h-full w-full"
-              aria-hidden="true"
+            <div
+              ref={wrapperRef}
+              onPointerEnter={onEnter}
+              onPointerLeave={onLeave}
+              onPointerMove={onMove}
+              onClick={toggle}
+              role={isTouch ? "button" : undefined}
+              aria-label={r.hintOpened}
+              tabIndex={isTouch ? 0 : -1}
+              onKeyDown={(e) => {
+                if (!isTouch) return;
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggle();
+                }
+              }}
+              className={cn(
+                "relative h-full w-full select-none",
+                !reduced && "float-hero",
+                isTouch && "cursor-pointer",
+              )}
             >
-              <defs>
-                <filter
-                  id="fmp-liquid"
-                  x="-50%"
-                  y="-50%"
-                  width="200%"
-                  height="200%"
-                  colorInterpolationFilters="sRGB"
+              <motion.div
+                className="absolute inset-0"
+                style={reduced ? undefined : { x: smoothPX, y: smoothPY }}
+              >
+                {/* Base: pedra fechada, sempre visível */}
+                <div className="pointer-events-none absolute inset-0">
+                  <Image
+                    src={reveal.closed}
+                    alt={r.hintClosed}
+                    fill
+                    sizes="(max-width: 768px) 82vw, 500px"
+                    placeholder="blur"
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Topo: cristal mascarado pelo blob líquido */}
+                <svg
+                  viewBox="0 0 100 125"
+                  preserveAspectRatio="none"
+                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  aria-hidden="true"
                 >
-                  <feTurbulence
-                    type="fractalNoise"
-                    baseFrequency="0.018 0.022"
-                    numOctaves="2"
-                    seed="3"
-                    result="turb"
-                  >
-                    {!reduced && (
-                      <animate
-                        attributeName="seed"
-                        values="3;5;7;5;3"
-                        dur="12s"
-                        repeatCount="indefinite"
-                        calcMode="linear"
+                  <defs>
+                    <filter
+                      id="fmp-liquid"
+                      x="-50%"
+                      y="-50%"
+                      width="200%"
+                      height="200%"
+                      colorInterpolationFilters="sRGB"
+                    >
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.018 0.022"
+                        numOctaves="2"
+                        seed="3"
+                        result="turb"
+                      >
+                        {!reduced && (
+                          <animate
+                            attributeName="seed"
+                            values="3;5;7;5;3"
+                            dur="12s"
+                            repeatCount="indefinite"
+                            calcMode="linear"
+                          />
+                        )}
+                      </feTurbulence>
+                      <feDisplacementMap
+                        in="SourceGraphic"
+                        in2="turb"
+                        scale="12"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
                       />
-                    )}
-                  </feTurbulence>
-                  <feDisplacementMap
-                    in="SourceGraphic"
-                    in2="turb"
-                    scale="12"
-                    xChannelSelector="R"
-                    yChannelSelector="G"
-                  />
-                </filter>
+                    </filter>
 
-                <mask
-                  id="fmp-reveal-mask"
-                  maskUnits="userSpaceOnUse"
-                  x="0"
-                  y="0"
-                  width="100"
-                  height="125"
-                >
-                  <rect x="0" y="0" width="100" height="125" fill="black" />
-                  <motion.circle
-                    cx={sx}
-                    cy={sy}
-                    r={sr}
-                    fill="white"
-                    filter="url(#fmp-liquid)"
-                  />
-                </mask>
-              </defs>
+                    <mask
+                      id="fmp-reveal-mask"
+                      maskUnits="userSpaceOnUse"
+                      x="0"
+                      y="0"
+                      width="100"
+                      height="125"
+                    >
+                      <rect x="0" y="0" width="100" height="125" fill="black" />
+                      <motion.circle
+                        cx={sx}
+                        cy={sy}
+                        r={sr}
+                        fill="white"
+                        filter="url(#fmp-liquid)"
+                      />
+                    </mask>
+                  </defs>
 
-              <image
-                href={reveal.opened.src}
-                x="0"
-                y="0"
-                width="100"
-                height="125"
-                preserveAspectRatio="xMidYMid meet"
-                mask="url(#fmp-reveal-mask)"
-              />
-            </svg>
-          </div>
+                  <image
+                    href={reveal.opened.src}
+                    x="0"
+                    y="0"
+                    width="100"
+                    height="125"
+                    preserveAspectRatio="xMidYMid meet"
+                    mask="url(#fmp-reveal-mask)"
+                  />
+                </svg>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </Container>
     </section>
