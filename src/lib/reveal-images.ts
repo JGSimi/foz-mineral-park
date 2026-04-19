@@ -1,4 +1,4 @@
-import crystalClosed from "../../public/media/reveal/crystal-closed.jpg";
+import crystalClosed from "../../public/media/reveal/crystal-closed.png";
 import crystalOpened from "../../public/media/reveal/crystal-opened.png";
 
 export const reveal = {

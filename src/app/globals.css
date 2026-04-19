@@ -525,6 +525,33 @@ svg.lucide {
   animation: float-a 7.2s ease-in-out infinite;
   will-change: transform;
 }
+
+/* Float mais amplo e lento — usado na pedra "flutuante" da seção reveal */
+@keyframes float-hero {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -18px, 0); }
+}
+.float-hero {
+  animation: float-hero 9s ease-in-out infinite;
+  will-change: transform;
+}
+@media (max-width: 767px) {
+  .float-hero {
+    animation-duration: 10s;
+  }
+}
+
+/* Sombra de chão que respira em anti-fase com a pedra flutuante */
+@keyframes float-shadow {
+  0%, 100% {
+    transform: scaleX(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scaleX(0.78);
+    opacity: 0.45;
+  }
+}
 .float-b {
   animation: float-b 5.8s ease-in-out 0.6s infinite;
   will-change: transform;
