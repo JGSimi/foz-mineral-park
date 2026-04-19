@@ -2,6 +2,9 @@ import Link from "next/link";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 import { site } from "@/lib/site";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries/pt";
+import { localePath } from "@/i18n/routing";
 import { Container } from "./container";
 import { Logo } from "./logo";
 
@@ -32,39 +35,15 @@ function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-const columns = [
-  {
-    title: "O parque",
-    items: [
-      { href: "/#atracoes", label: "Atrações" },
-      { href: "/sobre", label: "Sobre nós" },
-      { href: "/faq", label: "Perguntas frequentes" },
-      { href: "/ingressos", label: "Ingressos" },
-    ],
-  },
-  {
-    title: "Visita",
-    items: [
-      { href: "/como-chegar", label: "Como chegar" },
-      { href: "/contato", label: "Fale conosco" },
-      {
-        href: site.social.googleMaps,
-        label: "Abrir no Google Maps",
-        external: true,
-      },
-    ],
-  },
-  {
-    title: "Institucional",
-    items: [
-      { href: "/politica-de-privacidade", label: "Política de Privacidade" },
-      { href: "/termos-de-uso", label: "Termos de Uso" },
-      { href: "/.well-known/security.txt", label: "Segurança", external: true },
-    ],
-  },
-];
+interface FooterProps {
+  locale: Locale;
+  dict: Dictionary;
+}
 
-export function Footer() {
+export function Footer({ locale, dict }: FooterProps) {
+  const f = dict.footer;
+  const cols = [f.columns.park, f.columns.visit, f.columns.legal];
+
   return (
     <footer className="relative mt-28 border-t border-champagne-400/15 bg-obsidian-950 text-pearl-200">
       <div
@@ -77,7 +56,7 @@ export function Footer() {
           <div className="space-y-5">
             <Logo tone="dark" />
             <p className="max-w-sm text-sm leading-relaxed text-pearl-200/75">
-              {site.shortDescription}
+              {f.description}
             </p>
             <div className="flex gap-3 pt-2">
               <a
@@ -101,33 +80,45 @@ export function Footer() {
             </div>
           </div>
 
-          {columns.map((c) => (
+          {cols.map((c) => (
             <div key={c.title}>
               <h3 className="font-display text-[0.65rem] uppercase tracking-[0.3em] text-champagne-300">
                 {c.title}
               </h3>
               <ul className="mt-5 space-y-2.5 text-sm">
-                {c.items.map((item) => (
-                  <li key={item.href}>
-                    {"external" in item && item.external ? (
-                      <a
-                        href={item.href}
-                        className="text-pearl-200/75 transition-colors hover:text-champagne-300"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {item.label}
-                      </a>
-                    ) : (
+                {c.items.map((item) => {
+                  const external = "external" in item && item.external;
+                  const href = item.href.startsWith("@googleMaps")
+                    ? site.social.googleMaps
+                    : item.href;
+                  if (external || href.startsWith("http") || href.startsWith("/.well-known")) {
+                    return (
+                      <li key={item.label}>
+                        <a
+                          href={href}
+                          className="text-pearl-200/75 transition-colors hover:text-champagne-300"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {item.label}
+                        </a>
+                      </li>
+                    );
+                  }
+                  const isLegal =
+                    item.href === "/politica-de-privacidade" ||
+                    item.href === "/termos-de-uso";
+                  return (
+                    <li key={item.label}>
                       <Link
-                        href={item.href}
+                        href={isLegal ? item.href : localePath(locale, item.href)}
                         className="text-pearl-200/75 transition-colors hover:text-champagne-300"
                       >
                         {item.label}
                       </Link>
-                    )}
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -136,24 +127,24 @@ export function Footer() {
         <div className="mt-14 grid gap-6 border-t border-champagne-300/15 pt-10 sm:grid-cols-2 md:grid-cols-4">
           <InfoBlock
             icon={MapPin}
-            label="Endereço"
+            label={f.info.address}
             value={site.address.full}
           />
           <InfoBlock
             icon={Clock}
-            label="Horário"
+            label={f.info.hours}
             value={site.hours.summary}
-            detail={`Última entrada às ${site.hours.lastEntry}`}
+            detail={f.info.hoursDetail}
           />
           <InfoBlock
             icon={Phone}
-            label="Telefone"
+            label={f.info.phone}
             value={site.contact.phoneDisplay}
             href={`tel:${site.contact.phone.replace(/\s|\(|\)|-/g, "")}`}
           />
           <InfoBlock
             icon={Mail}
-            label="E-mail"
+            label={f.info.email}
             value={site.contact.email}
             href={`mailto:${site.contact.email}`}
           />
@@ -162,17 +153,17 @@ export function Footer() {
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-champagne-300/10 pt-6 text-xs text-pearl-200/60 sm:flex-row sm:items-center">
           <p>
             © {new Date().getFullYear()} {site.company.legalName} — CNPJ{" "}
-            {site.company.cnpj}. Todos os direitos reservados.
+            {site.company.cnpj}.
           </p>
           <p>
-            Site próprio. Dados tratados segundo a LGPD — consulte nossa{" "}
+            {f.copyrightSuffix.split(f.privacyLink)[0]}
             <Link
               href="/politica-de-privacidade"
               className="underline decoration-champagne-400/60 underline-offset-4 hover:text-champagne-300"
             >
-              Política de Privacidade
+              {f.privacyLink}
             </Link>
-            .
+            {f.copyrightSuffix.split(f.privacyLink)[1] ?? "."}
           </p>
         </div>
       </Container>
@@ -199,9 +190,7 @@ function InfoBlock({
         {label}
       </p>
       <p className="mt-1.5 font-display text-sm text-pearl-100">{value}</p>
-      {detail && (
-        <p className="text-xs text-pearl-200/60">{detail}</p>
-      )}
+      {detail && <p className="text-xs text-pearl-200/60">{detail}</p>}
     </>
   );
   return (

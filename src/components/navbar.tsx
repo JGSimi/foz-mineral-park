@@ -6,22 +6,17 @@ import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/i18n/provider";
+import { localePath } from "@/i18n/routing";
 import { Container } from "./container";
 import { Logo } from "./logo";
 import { Button } from "./button";
 import { UtilityStrip } from "./utility-strip";
 
-const links = [
-  { href: "/#atracoes", label: "Atrações" },
-  { href: "/ingressos", label: "Ingressos" },
-  { href: "/como-chegar", label: "Como chegar" },
-  { href: "/sobre", label: "Sobre" },
-  { href: "/contato", label: "Contato" },
-];
-
 const HIDE_THRESHOLD = 140;
 
 export function Navbar() {
+  const { locale, dict } = useLocale();
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -61,7 +56,6 @@ export function Navbar() {
 
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    // Foco inicial no primeiro link do menu
     first.focus();
 
     const onKey = (e: KeyboardEvent) => {
@@ -85,6 +79,9 @@ export function Navbar() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const homePath = localePath(locale, "/");
+  const ticketsPath = localePath(locale, "/ingressos");
+
   return (
     <motion.header
       initial={{ y: 0 }}
@@ -99,7 +96,11 @@ export function Navbar() {
     >
       <UtilityStrip />
       <Container className="flex h-16 items-center justify-between sm:h-20">
-        <Link href="/" aria-label="Ir para a página inicial" className="group">
+        <Link
+          href={homePath}
+          aria-label="Foz Mineral Park"
+          className="group"
+        >
           <Logo tone="dark" />
         </Link>
 
@@ -107,10 +108,10 @@ export function Navbar() {
           className="hidden items-center gap-1 md:flex"
           aria-label="Navegação principal"
         >
-          {links.map((l) => (
+          {dict.navbar.links.map((l) => (
             <Link
               key={l.href}
-              href={l.href}
+              href={localePath(locale, l.href)}
               className="relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] text-pearl-100/80 transition-colors duration-300 hover:text-champagne-300"
             >
               {l.label}
@@ -125,12 +126,12 @@ export function Navbar() {
             variant="gold"
             className="hidden sm:inline-flex"
           >
-            <Link href="/ingressos">Comprar ingresso</Link>
+            <Link href={ticketsPath}>{dict.navbar.ctaBuy}</Link>
           </Button>
           <button
             ref={triggerRef}
             type="button"
-            aria-label={open ? "Fechar menu" : "Abrir menu"}
+            aria-label={open ? dict.navbar.menuClose : dict.navbar.menuOpen}
             aria-expanded={open}
             aria-controls="mobile-menu"
             className="inline-flex size-10 items-center justify-center rounded-full border border-champagne-300/30 text-pearl-100 transition-colors hover:border-champagne-300/60 md:hidden"
@@ -156,14 +157,14 @@ export function Navbar() {
           className="md:hidden"
           role="dialog"
           aria-modal="true"
-          aria-label="Menu de navegação"
+          aria-label={dict.navbar.menuOpen}
         >
           <div className="border-t border-champagne-400/20 bg-obsidian-950/95 backdrop-blur-md">
             <Container className="flex flex-col gap-1 py-5">
-              {links.map((l) => (
+              {dict.navbar.links.map((l) => (
                 <Link
                   key={l.href}
-                  href={l.href}
+                  href={localePath(locale, l.href)}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-4 py-3 text-sm uppercase tracking-[0.14em] text-pearl-100/90 transition-colors hover:bg-white/5 hover:text-champagne-300"
                 >
@@ -171,8 +172,8 @@ export function Navbar() {
                 </Link>
               ))}
               <Button asChild className="mt-3" variant="gold">
-                <Link href="/ingressos" onClick={() => setOpen(false)}>
-                  Comprar ingresso
+                <Link href={ticketsPath} onClick={() => setOpen(false)}>
+                  {dict.navbar.ctaBuy}
                 </Link>
               </Button>
             </Container>

@@ -1,31 +1,51 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 
 import { site } from "@/lib/site";
+import { isLocale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/get-dictionary";
 import { Container } from "@/components/container";
 import { SectionHeading } from "@/components/section-heading";
 import { ContactForm } from "@/components/contact-form";
 import { PageHero } from "@/components/page-hero";
 
-export const metadata: Metadata = {
-  title: "Contato",
-  description:
-    "Fale com o Foz Mineral Park. WhatsApp, telefone, e-mail e formulário. Atendemos agências, grupos escolares e visitantes individuais.",
-};
+type Params = { lang: string };
 
-export default function ContatoPage() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  const dict = await getDictionary(lang);
+  return { title: dict.contact.pageTitle };
+}
+
+export default async function ContatoPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const dict = await getDictionary(lang);
+  const c = dict.contact;
+
   return (
     <>
       <PageHero
         accent="jade"
-        eyebrow="Contato"
+        eyebrow={c.pageTitle}
         title={
           <>
-            A gente adora saber que{" "}
-            <em className="italic text-champagne-300">você está vindo</em>.
+            {c.heroTitleLead}{" "}
+            <em className="italic text-champagne-300">{c.heroTitleEm}</em>
+            {c.heroTitleTail}
           </>
         }
-        description="Responde em minutos pelo WhatsApp nos horários comerciais. Para agências e grupos escolares, temos equipe dedicada."
+        description={c.heroDescription}
       />
 
       <section className="py-20 sm:py-24">
@@ -34,37 +54,39 @@ export default function ContatoPage() {
 
           <aside className="space-y-5 rounded-3xl border border-pearl-300 bg-pearl-50 p-8 shadow-luxe">
             <SectionHeading
-              eyebrow="Canais diretos"
+              eyebrow={c.aside.eyebrow}
               title={
                 <>
-                  Se preferir,{" "}
-                  <em className="italic text-champagne-600">fale agora</em>
+                  {c.aside.titleLead}{" "}
+                  <em className="italic text-champagne-600">
+                    {c.aside.titleEm}
+                  </em>
                 </>
               }
             />
             <ul className="space-y-4 pt-2 text-sm text-obsidian-800">
               <InfoItem
                 icon={Phone}
-                label="WhatsApp · Telefone"
+                label={c.aside.labels.whatsapp}
                 value={site.contact.phoneDisplay}
                 href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}`}
               />
               <InfoItem
                 icon={Mail}
-                label="E-mail"
+                label={c.aside.labels.email}
                 value={site.contact.email}
                 href={`mailto:${site.contact.email}`}
               />
               <InfoItem
                 icon={MapPin}
-                label="Endereço"
+                label={c.aside.labels.address}
                 value={site.address.full}
               />
               <InfoItem
                 icon={Clock}
-                label="Horário"
+                label={c.aside.labels.hours}
                 value={site.hours.summary}
-                detail={`Última entrada às ${site.hours.lastEntry}`}
+                detail={`${dict.footer.info.hoursDetail}`}
               />
             </ul>
           </aside>

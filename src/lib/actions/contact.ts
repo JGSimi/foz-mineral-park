@@ -3,8 +3,8 @@
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().trim().min(2, "Nome muito curto").max(120),
-  email: z.string().trim().email("E-mail inválido").max(200),
+  name: z.string().trim().min(2, "Invalid name").max(120),
+  email: z.string().trim().email("Invalid email").max(200),
   phone: z.string().trim().max(40).optional().or(z.literal("")),
   subject: z.enum([
     "visita",
@@ -14,10 +14,8 @@ const schema = z.object({
     "imprensa",
     "outro",
   ]),
-  message: z.string().trim().min(10, "Conte um pouco mais").max(3000),
-  consent: z.literal("on", {
-    message: "Precisamos da sua autorização para responder.",
-  }),
+  message: z.string().trim().min(10, "Too short").max(3000),
+  consent: z.literal("on"),
   honeypot: z.string().max(0).optional(),
 });
 
@@ -37,13 +35,12 @@ export async function submitContact(formData: FormData): Promise<Result> {
     }
     return {
       ok: false,
-      message: "Revise os campos destacados.",
+      message: "Please review the highlighted fields.",
       fieldErrors,
     };
   }
 
   if (parsed.data.honeypot) {
-    // Bot detectado — descarta silenciosamente
     return { ok: true };
   }
 
@@ -51,7 +48,6 @@ export async function submitContact(formData: FormData): Promise<Result> {
   const destination = process.env.CONTACT_EMAIL ?? "contato@fozmineralpark.com.br";
 
   if (!resendKey) {
-    // Fallback: registra no log do servidor. Em produção, o Resend deve estar configurado.
     console.info("[contato] Nova mensagem (sem Resend):", {
       ...parsed.data,
       receivedAt: new Date().toISOString(),
@@ -70,7 +66,7 @@ export async function submitContact(formData: FormData): Promise<Result> {
         from: "Foz Mineral Park <site@fozmineralpark.com.br>",
         to: [destination],
         reply_to: parsed.data.email,
-        subject: `[site] Contato: ${parsed.data.subject} — ${parsed.data.name}`,
+        subject: `[site] ${parsed.data.subject} — ${parsed.data.name}`,
         text: formatMessage(parsed.data),
       }),
     });
@@ -80,8 +76,7 @@ export async function submitContact(formData: FormData): Promise<Result> {
       console.error("[contato] Falha no Resend:", response.status, body);
       return {
         ok: false,
-        message:
-          "Serviço de e-mail indisponível. Tente de novo em instantes ou nos chame no WhatsApp.",
+        message: "Service unavailable. Please retry or reach us on WhatsApp.",
       };
     }
 
@@ -90,7 +85,7 @@ export async function submitContact(formData: FormData): Promise<Result> {
     console.error("[contato] Erro inesperado:", err);
     return {
       ok: false,
-      message: "Algo falhou do nosso lado. Por favor, tente pelo WhatsApp.",
+      message: "Unexpected error. Please try WhatsApp.",
     };
   }
 }

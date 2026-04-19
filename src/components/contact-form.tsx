@@ -3,10 +3,14 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import { submitContact } from "@/lib/actions/contact";
+import { useLocale } from "@/i18n/provider";
+import { localePath } from "@/i18n/routing";
 import { Button } from "./button";
-import { submitContact } from "@/app/contato/actions";
 
 export function ContactForm() {
+  const { locale, dict } = useLocale();
+  const f = dict.contact.form;
   const [isPending, start] = useTransition();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -14,17 +18,12 @@ export function ContactForm() {
     start(async () => {
       const result = await submitContact(formData);
       if (result.ok) {
-        toast.success("Mensagem recebida!", {
-          description:
-            "A gente responde pelo canal que você escolheu em até um dia útil.",
-        });
+        toast.success(f.toastSuccess, { description: f.toastSuccessDesc });
         setErrors({});
         const form = document.getElementById("contact-form") as HTMLFormElement | null;
         form?.reset();
       } else {
-        toast.error("Não conseguimos enviar agora.", {
-          description: result.message,
-        });
+        toast.error(f.toastError, { description: result.message });
         setErrors(result.fieldErrors ?? {});
       }
     });
@@ -34,12 +33,12 @@ export function ContactForm() {
     <form
       id="contact-form"
       action={handleSubmit}
-      className="space-y-4 rounded-3xl border border-border bg-background p-8"
+      className="space-y-4 rounded-3xl border border-pearl-300 bg-pearl-50 p-8 shadow-luxe"
       noValidate
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
-          label="Seu nome"
+          label={f.name}
           name="name"
           type="text"
           required
@@ -47,7 +46,7 @@ export function ContactForm() {
           error={errors.name}
         />
         <Field
-          label="E-mail"
+          label={f.email}
           name="email"
           type="email"
           required
@@ -57,7 +56,7 @@ export function ContactForm() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
-          label="Telefone ou WhatsApp"
+          label={f.phone}
           name="phone"
           type="tel"
           autoComplete="tel"
@@ -66,9 +65,9 @@ export function ContactForm() {
         <div>
           <label
             htmlFor="subject"
-            className="mb-1.5 block text-sm font-medium text-foreground"
+            className="mb-1.5 flex items-baseline justify-between text-[0.8rem] font-medium text-obsidian-900"
           >
-            Assunto
+            {f.subject}
           </label>
           <select
             id="subject"
@@ -76,21 +75,21 @@ export function ContactForm() {
             className="h-11 w-full rounded-xl border border-pearl-300 bg-pearl-50 px-3.5 text-sm text-obsidian-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 focus:border-champagne-600 focus:outline-none focus:ring-[3px] focus:ring-champagne-400/28"
             defaultValue="visita"
           >
-            <option value="visita">Planejar visita</option>
-            <option value="ingressos">Ingressos</option>
-            <option value="agencias">Agência de turismo</option>
-            <option value="escolas">Grupo escolar</option>
-            <option value="imprensa">Imprensa</option>
-            <option value="outro">Outro</option>
+            <option value="visita">{f.subjects.visita}</option>
+            <option value="ingressos">{f.subjects.ingressos}</option>
+            <option value="agencias">{f.subjects.agencias}</option>
+            <option value="escolas">{f.subjects.escolas}</option>
+            <option value="imprensa">{f.subjects.imprensa}</option>
+            <option value="outro">{f.subjects.outro}</option>
           </select>
         </div>
       </div>
       <div>
         <label
           htmlFor="message"
-          className="mb-1.5 block text-sm font-medium text-foreground"
+          className="mb-1.5 block text-[0.8rem] font-medium text-obsidian-900"
         >
-          Como podemos ajudar?
+          {f.message}
         </label>
         <textarea
           id="message"
@@ -99,24 +98,30 @@ export function ContactForm() {
           required
           minLength={10}
           className="w-full rounded-xl border border-pearl-300 bg-pearl-50 p-3.5 text-sm text-obsidian-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 focus:border-champagne-600 focus:outline-none focus:ring-[3px] focus:ring-champagne-400/28"
-          placeholder="Quero visitar no dia X, somos Y pessoas..."
+          placeholder={f.messagePlaceholder}
         />
         {errors.message && (
-          <p className="mt-1 text-xs text-red-600">{errors.message}</p>
+          <p className="mt-1 text-xs text-[#9a2b3b]">{errors.message}</p>
         )}
       </div>
-      <label className="flex items-start gap-2 text-xs text-quartz-600">
+      <label className="flex items-start gap-2 text-xs text-pearl-700">
         <input
           type="checkbox"
           name="consent"
           required
-          className="mt-0.5 size-4 rounded border-border text-amethyst-700 focus:ring-amethyst-500"
+          className="mt-0.5 size-4 rounded border-pearl-300 text-imperial-700 focus:ring-champagne-400"
         />
         <span>
-          Concordo com o tratamento dos meus dados para resposta a este contato
-          conforme a{" "}
-          <a href="/politica-de-privacidade" className="underline">
-            Política de Privacidade
+          {f.consent.split(" ").slice(0, -2).join(" ")}{" "}
+          <a
+            href={
+              locale === "pt"
+                ? "/politica-de-privacidade"
+                : "/politica-de-privacidade"
+            }
+            className="underline"
+          >
+            {dict.footer.privacyLink}
           </a>
           .
         </span>
@@ -129,7 +134,7 @@ export function ContactForm() {
         disabled={isPending}
         className="w-full"
       >
-        {isPending ? "Enviando..." : "Enviar mensagem"}
+        {isPending ? f.submitting : f.submit}
       </Button>
     </form>
   );
