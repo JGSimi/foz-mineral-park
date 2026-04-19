@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   AnimatePresence,
   motion,
@@ -61,7 +62,6 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
-  const sheetRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -75,11 +75,126 @@ export function Navbar() {
     else if (latest < previous) setHidden(false);
   });
 
+  const homePath = localePath(locale, "/");
+  const ticketsPath = localePath(locale, "/ingressos");
+
+  return (
+    <>
+      <motion.header
+        initial={{ y: 0 }}
+        animate={{ y: hidden ? "-110%" : 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className={cn(
+          "fixed inset-x-0 top-0 z-40 w-full transition-colors duration-500",
+          scrolled
+            ? "navbar-shadow bg-obsidian-950/88 backdrop-blur-md"
+            : "bg-obsidian-950/35 backdrop-blur-sm",
+        )}
+      >
+        <UtilityStrip />
+        <Container className="flex h-16 items-center justify-between sm:h-20">
+          <Link
+            href={homePath}
+            aria-label="Foz Mineral Park"
+            className="group"
+          >
+            <Logo tone="dark" />
+          </Link>
+
+          <nav
+            className="hidden items-center gap-1 md:flex"
+            aria-label="Navegação principal"
+          >
+            {dict.navbar.links.map((l) => (
+              <Link
+                key={l.href}
+                href={localePath(locale, l.href)}
+                className="relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] text-pearl-100/80 transition-colors duration-300 hover:text-champagne-300"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Button
+              asChild
+              size="sm"
+              variant="gold"
+              className="hidden sm:inline-flex"
+            >
+              <Link href={ticketsPath}>{dict.navbar.ctaBuy}</Link>
+            </Button>
+            <button
+              ref={triggerRef}
+              type="button"
+              aria-label={open ? dict.navbar.menuClose : dict.navbar.menuOpen}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/30 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 md:hidden"
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
+          </div>
+        </Container>
+
+        <div
+          aria-hidden="true"
+          className={cn(
+            "mx-auto h-px max-w-6xl bg-gradient-to-r from-transparent via-champagne-400/50 to-transparent transition-opacity duration-500",
+            scrolled ? "opacity-100" : "opacity-0",
+          )}
+        />
+      </motion.header>
+
+      <MobileSheet
+        open={open}
+        onClose={() => setOpen(false)}
+        returnFocusTo={triggerRef}
+        dict={dict}
+        locale={locale}
+        ticketsPath={ticketsPath}
+      />
+    </>
+  );
+}
+
+function MobileSheet({
+  open,
+  onClose,
+  returnFocusTo,
+  dict,
+  locale,
+  ticketsPath,
+}: {
+  open: boolean;
+  onClose: () => void;
+  returnFocusTo: React.RefObject<HTMLButtonElement | null>;
+  dict: ReturnType<typeof useLocale>["dict"];
+  locale: Locale;
+  ticketsPath: string;
+}) {
+  const [mounted, setMounted] = useState(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const [basePath, setBasePath] = useState("/");
+
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setBasePath(stripLocale(window.location.pathname));
   }, [open]);
 
-  // Focus trap + Escape
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const container = sheetRef.current;
@@ -95,8 +210,8 @@ export function Navbar() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        setOpen(false);
-        triggerRef.current?.focus();
+        onClose();
+        returnFocusTo.current?.focus();
         return;
       }
       if (e.key !== "Tab") return;
@@ -110,256 +225,187 @@ export function Navbar() {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, onClose, returnFocusTo]);
 
-  const homePath = localePath(locale, "/");
-  const ticketsPath = localePath(locale, "/ingressos");
-  const basePath = stripLocale(
-    typeof window !== "undefined" ? window.location.pathname : "/",
-  );
+  if (!mounted) return null;
   const phoneClean = site.contact.phone.replace(/\s|\(|\)|-/g, "");
 
-  return (
-    <motion.header
-      initial={{ y: 0 }}
-      animate={{ y: hidden ? "-110%" : 0 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "fixed inset-x-0 top-0 z-40 w-full transition-colors duration-500",
-        scrolled
-          ? "navbar-shadow bg-obsidian-950/88 backdrop-blur-md"
-          : "bg-obsidian-950/35 backdrop-blur-sm",
-      )}
-    >
-      <UtilityStrip />
-      <Container className="flex h-16 items-center justify-between sm:h-20">
-        <Link href={homePath} aria-label="Foz Mineral Park" className="group">
-          <Logo tone="dark" />
-        </Link>
-
-        <nav
-          className="hidden items-center gap-1 md:flex"
-          aria-label="Navegação principal"
-        >
-          {dict.navbar.links.map((l) => (
-            <Link
-              key={l.href}
-              href={localePath(locale, l.href)}
-              className="relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] text-pearl-100/80 transition-colors duration-300 hover:text-champagne-300"
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            size="sm"
-            variant="gold"
-            className="hidden sm:inline-flex"
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <div className="md:hidden">
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[60] bg-obsidian-950/75 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          <motion.div
+            ref={sheetRef}
+            id="mobile-menu"
+            key="sheet"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={dict.navbar.menuOpen}
+            className="fixed inset-x-0 bottom-0 z-[61] flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[32px] border-t border-champagne-400/20 bg-obsidian-950 text-pearl-100 shadow-luxe-dark"
           >
-            <Link href={ticketsPath}>{dict.navbar.ctaBuy}</Link>
-          </Button>
-          <button
-            ref={triggerRef}
-            type="button"
-            aria-label={open ? dict.navbar.menuClose : dict.navbar.menuOpen}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/30 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 md:hidden"
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
-        </div>
-      </Container>
-
-      <div
-        aria-hidden="true"
-        className={cn(
-          "mx-auto h-px max-w-6xl bg-gradient-to-r from-transparent via-champagne-400/50 to-transparent transition-opacity duration-500",
-          scrolled ? "opacity-100" : "opacity-0",
-        )}
-      />
-
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              key="backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-40 bg-obsidian-950/70 backdrop-blur-sm md:hidden"
-              onClick={() => setOpen(false)}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-champagne-400/70 to-transparent"
             />
-            <motion.div
-              ref={sheetRef}
-              id="mobile-menu"
-              key="sheet"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              role="dialog"
-              aria-modal="true"
-              aria-label={dict.navbar.menuOpen}
-              className="fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[32px] border-t border-champagne-400/20 bg-obsidian-950 text-pearl-100 shadow-luxe-dark md:hidden"
-            >
+            <div className="flex justify-center pt-3">
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-champagne-400/70 to-transparent"
+                className="h-1 w-10 rounded-full bg-pearl-100/20"
               />
-              {/* Grip handle */}
-              <div className="flex justify-center pt-3">
+            </div>
+
+            <div
+              className="flex-1 overflow-y-auto px-6 pt-3"
+              style={{
+                paddingBottom: "max(env(safe-area-inset-bottom), 1.25rem)",
+              }}
+            >
+              <nav aria-label="Navegação">
+                <ul className="flex flex-col">
+                  {dict.navbar.links.map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={localePath(locale, l.href)}
+                        onClick={onClose}
+                        className="flex items-center justify-between gap-4 border-b border-champagne-400/10 py-4 font-display text-xl text-pearl-100 transition-colors active:bg-white/5"
+                      >
+                        <span>{l.label}</span>
+                        <span
+                          aria-hidden="true"
+                          className="text-champagne-300/60"
+                        >
+                          →
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              <div className="mt-6">
+                <Button asChild className="w-full" size="lg" variant="gold">
+                  <Link href={ticketsPath} onClick={onClose}>
+                    {dict.navbar.ctaBuy}
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="mt-7 flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className="h-1 w-10 rounded-full bg-pearl-100/20"
+                  className="h-px flex-1 bg-gradient-to-r from-transparent via-champagne-400/30 to-transparent"
+                />
+                <span className="font-display text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300">
+                  Fale agora
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="h-px flex-1 bg-gradient-to-l from-transparent via-champagne-400/30 to-transparent"
                 />
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 pt-3 pb-[max(env(safe-area-inset-bottom),1.25rem)]">
-                {/* Links principais */}
-                <nav aria-label="Navegação">
-                  <ul className="flex flex-col">
-                    {dict.navbar.links.map((l) => (
-                      <li key={l.href}>
-                        <Link
-                          href={localePath(locale, l.href)}
-                          onClick={() => setOpen(false)}
-                          className="flex items-center justify-between gap-4 border-b border-champagne-400/10 py-4 font-display text-xl text-pearl-100 transition-colors active:bg-white/5"
-                        >
-                          <span>{l.label}</span>
-                          <span
-                            aria-hidden="true"
-                            className="text-champagne-300/60 transition-transform"
-                          >
-                            →
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-
-                {/* CTA principal */}
-                <div className="mt-6">
-                  <Button asChild className="w-full" size="lg" variant="gold">
-                    <Link
-                      href={ticketsPath}
-                      onClick={() => setOpen(false)}
-                    >
-                      {dict.navbar.ctaBuy}
-                    </Link>
-                  </Button>
-                </div>
-
-                {/* Divider decorado */}
-                <div className="mt-7 flex items-center gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="h-px flex-1 bg-gradient-to-r from-transparent via-champagne-400/30 to-transparent"
-                  />
-                  <span className="font-display text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300">
-                    Fale agora
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="h-px flex-1 bg-gradient-to-l from-transparent via-champagne-400/30 to-transparent"
-                  />
-                </div>
-
-                {/* Contatos rápidos (touch targets grandes) */}
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  <QuickAction
-                    href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}`}
-                    label="WhatsApp"
-                    tint="emerald"
-                    icon={<WhatsAppGlyph className="size-5" />}
-                    onClose={() => setOpen(false)}
-                  />
-                  <QuickAction
-                    href={`tel:${phoneClean}`}
-                    label={dict.contact.aside.labels.whatsapp.split("·")[1]?.trim() ?? "Telefone"}
-                    tint="imperial"
-                    icon={<Phone className="size-5" />}
-                    onClose={() => setOpen(false)}
-                  />
-                  <QuickAction
-                    href={site.social.googleMaps}
-                    label={dict.utility.mapLabel}
-                    tint="champagne"
-                    icon={<Navigation className="size-5" />}
-                    onClose={() => setOpen(false)}
-                  />
-                </div>
-
-                {/* Endereço resumido */}
-                <a
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <QuickAction
+                  href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}`}
+                  label="WhatsApp"
+                  tint="emerald"
+                  icon={<WhatsAppGlyph className="size-5" />}
+                  onClose={onClose}
+                />
+                <QuickAction
+                  href={`tel:${phoneClean}`}
+                  label={
+                    dict.contact.aside.labels.whatsapp
+                      .split("·")[1]
+                      ?.trim() ?? "Telefone"
+                  }
+                  tint="imperial"
+                  icon={<Phone className="size-5" />}
+                  onClose={onClose}
+                />
+                <QuickAction
                   href={site.social.googleMaps}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => setOpen(false)}
-                  className="mt-5 flex items-start gap-3 rounded-2xl border border-champagne-400/15 bg-white/5 p-4 text-sm text-pearl-100/80 transition-colors hover:border-champagne-400/35"
+                  label={dict.utility.mapLabel}
+                  tint="champagne"
+                  icon={<Navigation className="size-5" />}
+                  onClose={onClose}
+                />
+              </div>
+
+              <a
+                href={site.social.googleMaps}
+                target="_blank"
+                rel="noreferrer"
+                onClick={onClose}
+                className="mt-5 flex items-start gap-3 rounded-2xl border border-champagne-400/15 bg-white/5 p-4 text-sm text-pearl-100/80 transition-colors hover:border-champagne-400/35"
+              >
+                <MapPin
+                  className="mt-0.5 size-4 shrink-0 text-champagne-300"
+                  strokeWidth={1.4}
+                />
+                <span>{site.address.full}</span>
+              </a>
+
+              <div className="mt-7">
+                <p className="text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300/80">
+                  Idioma · Language · Idioma
+                </p>
+                <div
+                  role="group"
+                  aria-label="Idioma"
+                  className="mt-3 grid grid-cols-3 gap-2"
                 >
-                  <MapPin
-                    className="mt-0.5 size-4 shrink-0 text-champagne-300"
-                    strokeWidth={1.4}
-                  />
-                  <span>{site.address.full}</span>
-                </a>
-
-                {/* Seletor de idioma */}
-                <div className="mt-7">
-                  <p className="text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300/80">
-                    Idioma · Language · Idioma
-                  </p>
-                  <div
-                    role="group"
-                    aria-label="Idioma"
-                    className="mt-3 grid grid-cols-3 gap-2"
-                  >
-                    {locales.map((l) => (
-                      <LocaleChip
-                        key={l}
-                        locale={l}
-                        active={locale === l}
-                        basePath={basePath}
-                        onClose={() => setOpen(false)}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Socials */}
-                <div className="mt-7 flex items-center justify-center gap-4 border-t border-champagne-400/10 pt-6">
-                  <a
-                    href={site.social.instagram}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Instagram"
-                    className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/20 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 hover:text-champagne-300"
-                  >
-                    <InstagramGlyph className="size-4" />
-                  </a>
-                  <a
-                    href={site.social.facebook}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Facebook"
-                    className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/20 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 hover:text-champagne-300"
-                  >
-                    <FacebookGlyph className="size-4" />
-                  </a>
+                  {locales.map((l) => (
+                    <LocaleChip
+                      key={l}
+                      locale={l}
+                      active={locale === l}
+                      basePath={basePath}
+                      onClose={onClose}
+                    />
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </motion.header>
+
+              <div className="mt-7 flex items-center justify-center gap-4 border-t border-champagne-400/10 pt-6">
+                <a
+                  href={site.social.instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Instagram"
+                  className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/20 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 hover:text-champagne-300"
+                >
+                  <InstagramGlyph className="size-4" />
+                </a>
+                <a
+                  href={site.social.facebook}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Facebook"
+                  className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/20 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 hover:text-champagne-300"
+                >
+                  <FacebookGlyph className="size-4" />
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body,
   );
 }
 
