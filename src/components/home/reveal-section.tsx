@@ -172,34 +172,24 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
               <defs>
                 <filter
                   id="fmp-liquid"
-                  x="-100%"
-                  y="-100%"
-                  width="300%"
-                  height="300%"
+                  x="-50%"
+                  y="-50%"
+                  width="200%"
+                  height="200%"
                   colorInterpolationFilters="sRGB"
                 >
                   <feTurbulence
                     type="fractalNoise"
-                    baseFrequency="0.032 0.04"
-                    numOctaves="3"
+                    baseFrequency="0.018 0.022"
+                    numOctaves="2"
                     seed="3"
                     result="turb"
                   >
                     {!reduced && (
                       <animate
-                        attributeName="baseFrequency"
-                        values="0.032 0.04;0.028 0.036;0.036 0.044;0.03 0.038;0.032 0.04"
-                        dur="11s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"
-                      />
-                    )}
-                    {!reduced && (
-                      <animate
                         attributeName="seed"
-                        values="3;9;17;11;5;13;3"
-                        dur="7s"
+                        values="3;5;7;5;3"
+                        dur="12s"
                         repeatCount="indefinite"
                         calcMode="linear"
                       />
@@ -208,7 +198,7 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
                   <feDisplacementMap
                     in="SourceGraphic"
                     in2="turb"
-                    scale="18"
+                    scale="12"
                     xChannelSelector="R"
                     yChannelSelector="G"
                   />
