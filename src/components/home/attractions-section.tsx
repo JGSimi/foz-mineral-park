@@ -72,7 +72,7 @@ export function AttractionsSection({ dict, locale }: Props) {
               >
                 <Link
                   href={localePath(locale, `/atracoes/${a.slug}`)}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 transition-all duration-500 active:scale-[0.98] hover:-translate-y-1.5 hover:border-champagne-300 hover:shadow-luxe-lift"
+                  className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-pearl-300 bg-pearl-50 transition-[border-color,box-shadow] duration-500 hover:border-champagne-300 hover:shadow-luxe-lift"
                 >
                   <span
                     aria-hidden="true"
