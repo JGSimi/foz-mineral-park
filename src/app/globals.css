@@ -542,18 +542,6 @@ svg.lucide {
   }
 }
 
-/* Linha descendente do scroll cue no hero */
-@keyframes scrollcue {
-  0% {
-    transform: translateY(-100%);
-  }
-  55% {
-    transform: translateY(0%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
 
 /* Respeito a preferências do usuário */
 @media (prefers-reduced-motion: reduce) {
