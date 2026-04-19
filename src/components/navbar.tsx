@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Container } from "./container";
 import { Logo } from "./logo";
 import { Button } from "./button";
+import { UtilityStrip } from "./utility-strip";
 
 const links = [
   { href: "/#atracoes", label: "Atrações" },
@@ -96,6 +97,7 @@ export function Navbar() {
           : "bg-obsidian-950/35 backdrop-blur-sm",
       )}
     >
+      <UtilityStrip />
       <Container className="flex h-16 items-center justify-between sm:h-20">
         <Link href="/" aria-label="Ir para a página inicial" className="group">
           <Logo tone="dark" />

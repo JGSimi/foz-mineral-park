@@ -1,53 +1,119 @@
 import { cn } from "@/lib/utils";
 
-type Accent = "amethyst" | "citrine" | "quartz" | "imperial" | "champagne" | "pearl";
+type Accent =
+  | "amethyst"
+  | "citrine"
+  | "quartz"
+  | "imperial"
+  | "champagne"
+  | "pearl";
 
-const palettes: Record<
-  Accent,
-  { top: string; mid: string; bottom: string; shine: string; bg: string }
-> = {
-  // Aliases antigos mapeados para paleta nova
+type Palette = {
+  bg0: string;
+  bg1: string;
+  glowStop: string;
+  f1Start: string;
+  f1Mid: string;
+  f1End: string;
+  f2Start: string;
+  f2End: string;
+  f3Start: string;
+  f3End: string;
+  strokeLight: string;
+  highlight: string;
+  spark: string;
+};
+
+const palettes: Record<Accent, Palette> = {
   amethyst: {
-    top: "#e1b9de",
-    mid: "#733b71",
-    bottom: "#170e1a",
-    shine: "#f9f2f8",
-    bg: "#2a1c2e",
+    bg0: "#432362",
+    bg1: "#1e1030",
+    glowStop: "#f0deee",
+    f1Start: "#ecdcf1",
+    f1Mid: "#9660b4",
+    f1End: "#301948",
+    f2Start: "#432362",
+    f2End: "#0f0619",
+    f3Start: "#74429b",
+    f3End: "#1e1030",
+    strokeLight: "#f4ead1",
+    highlight: "#f4ead1",
+    spark: "#f4ead1",
   },
   imperial: {
-    top: "#e1b9de",
-    mid: "#733b71",
-    bottom: "#170e1a",
-    shine: "#f9f2f8",
-    bg: "#2a1c2e",
+    bg0: "#432362",
+    bg1: "#1e1030",
+    glowStop: "#f0deee",
+    f1Start: "#ecdcf1",
+    f1Mid: "#9660b4",
+    f1End: "#301948",
+    f2Start: "#432362",
+    f2End: "#0f0619",
+    f3Start: "#74429b",
+    f3End: "#1e1030",
+    strokeLight: "#f4ead1",
+    highlight: "#f4ead1",
+    spark: "#f4ead1",
   },
   citrine: {
-    top: "#f4ead1",
-    mid: "#c89347",
-    bottom: "#4a2d18",
-    shine: "#fbf6ed",
-    bg: "#2c1b10",
+    bg0: "#61401b",
+    bg1: "#2a1a0c",
+    glowStop: "#f5ecd3",
+    f1Start: "#fcf8ef",
+    f1Mid: "#dcb570",
+    f1End: "#61401b",
+    f2Start: "#865a23",
+    f2End: "#2a1a0c",
+    f3Start: "#c89547",
+    f3End: "#3e2913",
+    strokeLight: "#fcf8ef",
+    highlight: "#fcf8ef",
+    spark: "#fcf8ef",
   },
   champagne: {
-    top: "#f4ead1",
-    mid: "#c89347",
-    bottom: "#4a2d18",
-    shine: "#fbf6ed",
-    bg: "#2c1b10",
+    bg0: "#61401b",
+    bg1: "#2a1a0c",
+    glowStop: "#f5ecd3",
+    f1Start: "#fcf8ef",
+    f1Mid: "#dcb570",
+    f1End: "#61401b",
+    f2Start: "#865a23",
+    f2End: "#2a1a0c",
+    f3Start: "#c89547",
+    f3End: "#3e2913",
+    strokeLight: "#fcf8ef",
+    highlight: "#fcf8ef",
+    spark: "#fcf8ef",
   },
   quartz: {
-    top: "#ece3d2",
-    mid: "#9f8f73",
-    bottom: "#1d1a14",
-    shine: "#faf6ef",
-    bg: "#0a0910",
+    bg0: "#46545e",
+    bg1: "#1a2026",
+    glowStop: "#e8ecef",
+    f1Start: "#f5f7f8",
+    f1Mid: "#98a5ac",
+    f1End: "#2e3840",
+    f2Start: "#3f4a53",
+    f2End: "#0d1116",
+    f3Start: "#6b7a83",
+    f3End: "#141a1f",
+    strokeLight: "#f5f7f8",
+    highlight: "#f5f7f8",
+    spark: "#f5f7f8",
   },
   pearl: {
-    top: "#ece3d2",
-    mid: "#9f8f73",
-    bottom: "#1d1a14",
-    shine: "#faf6ef",
-    bg: "#0a0910",
+    bg0: "#46545e",
+    bg1: "#1a2026",
+    glowStop: "#e8ecef",
+    f1Start: "#f5f7f8",
+    f1Mid: "#98a5ac",
+    f1End: "#2e3840",
+    f2Start: "#3f4a53",
+    f2End: "#0d1116",
+    f3Start: "#6b7a83",
+    f3End: "#141a1f",
+    strokeLight: "#f5f7f8",
+    highlight: "#f5f7f8",
+    spark: "#f5f7f8",
   },
 };
 
@@ -57,6 +123,11 @@ interface GemIllustrationProps {
   title?: string;
 }
 
+/**
+ * Ilustração procedural de gema trilliant lapidada. Três variantes
+ * de paleta (ametista / citrino / quartzo), facetas com filetes
+ * dourados, satélites menores e partículas de luz.
+ */
 export function GemIllustration({
   accent = "imperial",
   className,
@@ -73,98 +144,114 @@ export function GemIllustration({
       className={cn("block h-full w-full", className)}
     >
       <defs>
-        <linearGradient id={`bg-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={p.bg} stopOpacity="0.55" />
+        <radialGradient id={`bg-${id}`} cx="35%" cy="25%" r="90%">
+          <stop offset="0%" stopColor={p.bg0} stopOpacity="0.78" />
+          <stop offset="55%" stopColor={p.bg1} />
           <stop offset="100%" stopColor="#050508" />
-        </linearGradient>
-        <radialGradient id={`glow-${id}`} cx="50%" cy="30%" r="65%">
-          <stop offset="0%" stopColor={p.shine} stopOpacity="0.55" />
-          <stop offset="100%" stopColor={p.shine} stopOpacity="0" />
         </radialGradient>
-        <linearGradient id={`face-${id}-a`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={p.top} />
-          <stop offset="100%" stopColor={p.mid} />
+        <radialGradient id={`glow-${id}`} cx="30%" cy="20%" r="65%">
+          <stop offset="0%" stopColor={p.glowStop} stopOpacity="0.5" />
+          <stop offset="100%" stopColor={p.glowStop} stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={`f1-${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={p.f1Start} />
+          <stop offset="50%" stopColor={p.f1Mid} />
+          <stop offset="100%" stopColor={p.f1End} />
         </linearGradient>
-        <linearGradient id={`face-${id}-b`} x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={p.mid} />
-          <stop offset="100%" stopColor={p.bottom} />
+        <linearGradient id={`f2-${id}`} x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={p.f2Start} />
+          <stop offset="100%" stopColor={p.f2End} />
         </linearGradient>
-        <linearGradient id={`face-${id}-c`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={p.mid} stopOpacity="0.9" />
-          <stop offset="100%" stopColor={p.bottom} />
+        <linearGradient id={`f3-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={p.f3Start} stopOpacity="0.95" />
+          <stop offset="100%" stopColor={p.f3End} />
         </linearGradient>
-        <linearGradient id={`gold-edge-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#f4ead1" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#915a25" stopOpacity="0.6" />
+        <linearGradient id={`gold-${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f4ead1" />
+          <stop offset="100%" stopColor="#865a23" stopOpacity="0.6" />
         </linearGradient>
       </defs>
 
       <rect width="400" height="500" fill={`url(#bg-${id})`} />
-      <circle cx="200" cy="190" r="240" fill={`url(#glow-${id})`} />
+      <circle cx="200" cy="160" r="270" fill={`url(#glow-${id})`} />
 
-      {/* Gema principal */}
-      <g transform="translate(200 260)">
+      {/* Satélite esquerdo */}
+      <g opacity="0.72" transform="translate(120 360) scale(0.85)">
         <polygon
-          points="-112,-62 -62,-142 62,-142 112,-62 0,142"
-          fill={`url(#face-${id}-a)`}
+          points="-54,-22 -30,-70 30,-70 54,-22 0,80"
+          fill={`url(#f2-${id})`}
         />
         <polygon
-          points="0,142 112,-62 62,-142 0,-90"
-          fill={`url(#face-${id}-b)`}
+          points="0,80 54,-22 30,-70 0,-46"
+          fill={`url(#f3-${id})`}
+          opacity="0.55"
+        />
+      </g>
+      {/* Satélite direito */}
+      <g opacity="0.68" transform="translate(305 380) scale(0.75)">
+        <polygon
+          points="-54,-22 -30,-70 30,-70 54,-22 0,80"
+          fill={`url(#f2-${id})`}
+        />
+        <polygon
+          points="-54,-22 -30,-70 0,-46 0,80"
+          fill={`url(#f3-${id})`}
+          opacity="0.5"
+        />
+      </g>
+
+      {/* Gema principal */}
+      <g transform="translate(205 255)">
+        <polygon
+          points="-112,-62 -62,-158 62,-158 112,-62 0,162"
+          fill={`url(#f1-${id})`}
+        />
+        <polygon
+          points="0,162 112,-62 62,-158 0,-100"
+          fill={`url(#f2-${id})`}
           opacity="0.88"
         />
         <polygon
-          points="-112,-62 -62,-142 0,-90 0,142"
-          fill={`url(#face-${id}-c)`}
-          opacity="0.68"
+          points="-112,-62 -62,-158 0,-100 0,162"
+          fill={`url(#f3-${id})`}
+          opacity="0.75"
         />
-        {/* Filetes dourados nas arestas — "lapidação" */}
-        <polyline
-          points="-62,-142 0,-90 62,-142"
-          fill="none"
-          stroke={`url(#gold-edge-${id})`}
-          strokeWidth="1.2"
-        />
-        <polyline
-          points="-112,-62 0,-90 112,-62"
-          fill="none"
-          stroke={`url(#gold-edge-${id})`}
-          strokeWidth="1.2"
-        />
-        <polyline
-          points="0,-90 0,142"
-          fill="none"
-          stroke={p.shine}
-          strokeOpacity="0.35"
+        <g
+          stroke={p.strokeLight}
+          strokeOpacity="0.32"
           strokeWidth="0.8"
+          fill="none"
+          strokeLinejoin="round"
+        >
+          <polyline points="-62,-158 0,-100 62,-158" />
+          <polyline points="-112,-62 0,-100 112,-62" />
+          <polyline points="-112,-62 -62,-158" />
+          <polyline points="62,-158 112,-62" />
+          <polyline points="0,-100 0,162" />
+        </g>
+        <polyline
+          points="-62,-158 0,-100 62,-158"
+          fill="none"
+          stroke={`url(#gold-${id})`}
+          strokeWidth="1.3"
         />
-        {/* Pequena luz central */}
-        <circle cx="0" cy="-60" r="3" fill={p.shine} opacity="0.9" />
+        <polyline
+          points="-112,-62 0,-100 112,-62"
+          fill="none"
+          stroke={`url(#gold-${id})`}
+          strokeWidth="1.3"
+        />
+        <circle cx="-30" cy="-80" r="2.4" fill={p.highlight} opacity="0.95" />
+        <circle cx="40" cy="20" r="1.4" fill={p.glowStop} opacity="0.7" />
       </g>
 
-      {/* Cristais satélites */}
-      <g opacity="0.55">
-        <polygon
-          points="58,420 82,378 112,394 102,440 76,446"
-          fill={`url(#face-${id}-a)`}
-        />
-        <polygon
-          points="298,438 326,400 352,420 340,462 314,466"
-          fill={`url(#face-${id}-b)`}
-        />
-        <polygon
-          points="28,118 56,88 82,114 70,150 40,150"
-          fill={`url(#face-${id}-c)`}
-        />
-      </g>
-
-      {/* Partículas de ouro flutuando */}
-      <g fill="#f4ead1">
-        <circle cx="84" cy="64" r="1.4" opacity="0.9" />
-        <circle cx="340" cy="108" r="1" opacity="0.7" />
-        <circle cx="72" cy="210" r="0.9" opacity="0.55" />
-        <circle cx="330" cy="320" r="1.2" opacity="0.75" />
-        <circle cx="148" cy="70" r="0.8" opacity="0.4" />
+      {/* Partículas de luz */}
+      <g fill={p.spark}>
+        <circle cx="72" cy="60" r="1.2" opacity="0.75" />
+        <circle cx="348" cy="98" r="0.9" opacity="0.6" />
+        <circle cx="64" cy="230" r="0.8" opacity="0.5" />
+        <circle cx="340" cy="260" r="1.1" opacity="0.7" />
+        <circle cx="200" cy="440" r="0.7" opacity="0.4" />
       </g>
     </svg>
   );
