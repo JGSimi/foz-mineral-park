@@ -31,7 +31,7 @@ export function PageHero({
   accent = "imperial",
 }: PageHeroProps) {
   return (
-    <section className="relative -mt-16 overflow-hidden pb-16 pt-36 sm:-mt-20 sm:pt-48">
+    <section className="relative -mt-16 overflow-hidden pb-12 pt-28 sm:-mt-20 sm:pb-16 sm:pt-48">
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
       <div
         className={cn("absolute inset-0 -z-10", accentGlow[accent])}
@@ -57,11 +57,11 @@ export function PageHero({
             {eyebrow}
           </span>
         )}
-        <h1 className="mt-6 text-balance font-display text-5xl leading-[1.02] text-pearl-100 sm:text-6xl md:text-[4.2rem]">
+        <h1 className="mt-5 text-balance font-display text-[2.4rem] leading-[1.04] text-pearl-100 sm:mt-6 sm:text-6xl sm:leading-[1.02] md:text-[4.2rem]">
           {title}
         </h1>
         {description && (
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-pearl-200/85">
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-pearl-200/85 sm:mt-6 sm:text-lg">
             {description}
           </p>
         )}
@@ -86,7 +86,7 @@ export function LegalHero({
   meta?: string;
 }) {
   return (
-    <section className="relative -mt-16 overflow-hidden pb-10 pt-36 sm:-mt-20 sm:pt-48">
+    <section className="relative -mt-16 overflow-hidden pb-8 pt-28 sm:-mt-20 sm:pb-10 sm:pt-48">
       <div
         className="absolute inset-0 -z-10 bg-parchment-grid opacity-70"
         aria-hidden="true"
@@ -95,7 +95,7 @@ export function LegalHero({
         <p className="text-[0.65rem] uppercase tracking-[0.3em] text-champagne-700">
           {eyebrow}
         </p>
-        <h1 className="mt-4 font-display text-4xl leading-tight text-obsidian-900 sm:text-5xl">
+        <h1 className="mt-4 font-display text-[2.25rem] leading-tight text-obsidian-900 sm:text-5xl">
           {title}
         </h1>
         {meta && <p className="mt-3 text-sm text-pearl-600">{meta}</p>}

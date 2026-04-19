@@ -124,7 +124,7 @@ export function Footer({ locale, dict }: FooterProps) {
           ))}
         </div>
 
-        <div className="mt-14 grid gap-6 border-t border-champagne-300/15 pt-10 sm:grid-cols-2 md:grid-cols-4">
+        <div className="mt-14 grid grid-cols-2 gap-6 border-t border-champagne-300/15 pt-10 md:grid-cols-4">
           <InfoBlock
             icon={MapPin}
             label={f.info.address}

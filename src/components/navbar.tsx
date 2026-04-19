@@ -274,9 +274,32 @@ function MobileSheet({
               }}
             >
               <nav aria-label="Navegação">
-                <ul className="flex flex-col">
+                <motion.ul
+                  className="flex flex-col"
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: {},
+                    show: {
+                      transition: { staggerChildren: 0.06, delayChildren: 0.1 },
+                    },
+                  }}
+                >
                   {dict.navbar.links.map((l) => (
-                    <li key={l.href}>
+                    <motion.li
+                      key={l.href}
+                      variants={{
+                        hidden: { opacity: 0, x: 16 },
+                        show: {
+                          opacity: 1,
+                          x: 0,
+                          transition: {
+                            duration: 0.5,
+                            ease: [0.22, 1, 0.36, 1],
+                          },
+                        },
+                      }}
+                    >
                       <Link
                         href={localePath(locale, l.href)}
                         onClick={onClose}
@@ -290,9 +313,9 @@ function MobileSheet({
                           →
                         </span>
                       </Link>
-                    </li>
+                    </motion.li>
                   ))}
-                </ul>
+                </motion.ul>
               </nav>
 
               <div className="mt-6">
