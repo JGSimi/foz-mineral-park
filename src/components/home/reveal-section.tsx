@@ -132,6 +132,12 @@ export function RevealSection({ dict }: { dict: Dictionary }) {
       className="relative overflow-hidden py-20 sm:py-28 md:py-36"
     >
       <div className="bg-geode absolute inset-0 -z-10" aria-hidden="true" />
+      {/* Fade do topo: mascara o radial imperial do geode pra casar
+          com o obsidian puro da QuickFacts acima, sem seam. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-obsidian-950 to-transparent sm:h-56"
+      />
 
       <Container size="md" className="text-center">
         <span className="ornament font-display text-[0.62rem] uppercase tracking-[0.3em] text-champagne-300">
