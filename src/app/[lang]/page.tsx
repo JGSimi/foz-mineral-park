@@ -125,14 +125,14 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 
         <AnimateIn className="relative isolate" y={30} delay={0.12}>
           <div className="absolute -inset-12 -z-10 rounded-[48px] bg-gradient-to-br from-imperial-400/25 via-transparent to-champagne-400/25 blur-3xl" />
-          <div className="float-a frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark sm:aspect-auto sm:rounded-[32px]">
+          <div className="float-a frame-gold relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-luxe-dark sm:rounded-[32px]">
             <Image
               src={attractionImages["gruta-de-ametista"]}
               alt={dict.attractions.items["gruta-de-ametista"].name}
               fill
               sizes="(max-width: 768px) 90vw, 480px"
               placeholder="blur"
-              className="object-cover sm:static sm:h-auto sm:w-full"
+              className="object-cover"
               priority
             />
             <div
