@@ -424,153 +424,19 @@ svg.lucide {
    Button styles (evitam arbitrary values com vírgulas que o
    Tailwind v4 não aceita em classes inline)
 ============================================================= */
-/* Gold CTA — cristal facetado (marquise).
-   A forma vem de clip-path em polygon de 6 pontos (ponta esquerda +
-   diagonais + ponta direita). A superfície é pintada por ::before
-   com duas conic-gradients empilhadas: uma rotativa que simula luz
-   catching facets, outra estática com hard stops que define 6
-   facetas radiais. ::after é um sparkle pontual. O <button> não
-   recebe clip-path — ele só é o stacking context, assim o focus
-   outline e o texto ficam livres. */
-
-@property --crystal-sheen-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-@keyframes crystal-sheen-rotate {
-  from { --crystal-sheen-angle: 0deg; }
-  to { --crystal-sheen-angle: 360deg; }
-}
-@keyframes crystal-sparkle {
-  0%, 100% { opacity: 0.95; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(1.6); }
-}
-
 .btn-gold-surface {
-  position: relative;
-  z-index: 0;
-  background: transparent;
-  border: none;
-  color: #2a1f0a;
-  /* Padding extra horizontal: texto tem que caber na zona plana da
-     marquise (14%–86%). */
-  padding-inline: 1.85em;
-  transition: transform 0.45s ease-out;
+  background-image:
+    linear-gradient(145deg, #f4ead1 0%, #dbb46e 40%, #c89347 60%, #915a25 100%);
+  /* inset 1px highlight on top = polished-metal feel */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 10px 28px -10px rgba(180, 119, 48, 0.55);
+  transition: box-shadow 0.5s ease-out, transform 0.5s ease-out;
 }
-
-.btn-gold-surface::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  clip-path: polygon(
-    0% 50%,
-    14% 0%,
-    86% 0%,
-    100% 50%,
-    86% 100%,
-    14% 100%
-  );
-  background:
-    /* Sheen rotativa — luz entrando por ângulos distintos ao longo do tempo */
-    conic-gradient(
-      from var(--crystal-sheen-angle) at 50% 50%,
-      rgba(255, 255, 255, 0.42) 0deg,
-      rgba(255, 255, 255, 0.08) 40deg,
-      transparent 80deg,
-      transparent 280deg,
-      rgba(255, 255, 255, 0.08) 320deg,
-      rgba(255, 255, 255, 0.42) 360deg
-    ),
-    /* Facets — hard stops em 60°, 120°, 180°, 240°, 300° criam
-       as arestas entre as 6 superfícies. Luz de topo-esquerda:
-       top + top-left brilhantes, bottom + bottom-right escuros.  */
-    conic-gradient(
-      from 270deg at 50% 50%,
-      /* topo (0–60°) */
-      #fae7ad 0deg,
-      #f0cc74 60deg,
-      /* top-right (60–120°) */
-      #d9a83c 60deg,
-      #a47c26 120deg,
-      /* bottom-right (120–180°) */
-      #7e5e1c 120deg,
-      #4f380d 180deg,
-      /* bottom (180–240°) */
-      #624510 180deg,
-      #8a6820 240deg,
-      /* bottom-left (240–300°) */
-      #ae8428 240deg,
-      #d9a83c 300deg,
-      /* top-left (300–360°) */
-      #f3d07a 300deg,
-      #fae7ad 360deg
-    );
-  animation: crystal-sheen-rotate 8s linear infinite;
-  filter: drop-shadow(0 8px 20px rgba(200, 135, 50, 0.5));
-  transition: filter 0.45s ease-out;
-}
-
-.btn-gold-surface::after {
-  content: "";
-  position: absolute;
-  top: 28%;
-  left: 68%;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 0%, transparent 70%);
-  animation: crystal-sparkle 2.8s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 1;
-}
-
 .btn-gold-surface:hover {
-  transform: translateY(-2px);
-}
-.btn-gold-surface:hover::before {
-  filter: drop-shadow(0 14px 32px rgba(200, 135, 50, 0.7)) brightness(1.08);
-}
-
-.btn-gold-surface:active {
-  transform: scale(0.985);
-  transition-duration: 0.12s;
-}
-.btn-gold-surface:active::before {
-  filter: drop-shadow(0 4px 10px rgba(200, 135, 50, 0.35)) brightness(0.94);
-}
-
-.btn-gold-surface:focus-visible {
-  outline: 3px solid rgba(246, 236, 210, 0.9);
-  outline-offset: 4px;
-}
-
-.btn-gold-surface:disabled,
-.btn-gold-surface[aria-disabled="true"] {
-  cursor: not-allowed;
-  color: rgba(42, 31, 10, 0.55);
-}
-.btn-gold-surface:disabled::before,
-.btn-gold-surface[aria-disabled="true"]::before {
-  filter: saturate(0.3) brightness(0.72);
-  animation: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .btn-gold-surface {
-    transition: none;
-  }
-  .btn-gold-surface::before {
-    animation: none;
-  }
-  .btn-gold-surface::after {
-    animation: none;
-    opacity: 0.65;
-  }
-  .btn-gold-surface:hover {
-    transform: none;
-  }
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 20px 50px -12px rgba(180, 119, 48, 0.8);
 }
 
 .btn-primary-surface {
