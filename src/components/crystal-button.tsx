@@ -18,8 +18,9 @@ const CENTER: Pt = [220, 54];
 
 type Pt = [number, number];
 
-// Âncoras canônicas do design C2. Cada botão desloca estes pontos
-// um pouco, seedado pelo useId da instância.
+// Âncoras canônicas — alinhadas à geometria do logo: 10 vértices
+// externos + UM apex central de onde irradiam as arestas. A variação
+// por instância desloca cada ponto seedado pelo useId.
 const DEFAULT_ANCHORS = {
   // Outer (clockwise da ponta esquerda)
   lt: [12, 46] as Pt,
@@ -32,23 +33,13 @@ const DEFAULT_ANCHORS = {
   bm: [240, 102] as Pt,
   bl2: [130, 100] as Pt,
   bl1: [28, 88] as Pt,
-  // Top facet internals (onde a face superior encontra a inferior)
-  ti_r: [260, 40] as Pt,
-  ti_m: [140, 44] as Pt,
-  ti_l: [80, 36] as Pt,
-  // Bottom facet internals
-  bi_r: [300, 78] as Pt,
-  bi_m: [140, 74] as Pt,
-  // Shine A (retângulo de luz à esquerda)
-  sa1: [70, 24] as Pt,
-  sa2: [130, 22] as Pt,
-  sa3: [110, 54] as Pt,
-  sa4: [55, 50] as Pt,
-  // Shine B (retângulo de luz à direita)
-  sb1: [350, 30] as Pt,
-  sb2: [380, 34] as Pt,
-  sb3: [370, 70] as Pt,
-  sb4: [335, 60] as Pt,
+  // Apex — ponto de convergência interno (no logo original é a
+  // junção dos 3 triângulos principais em ~32,26). Ligeiramente
+  // acima do eixo vertical do marquise.
+  apex: [220, 38] as Pt,
+  // Sparkle — micro-ponto brilhante no quadrante superior-esquerdo
+  // (no logo é (28,16) com r=0.7 opacity 0.9).
+  sparkle: [96, 28] as Pt,
 };
 
 type AnchorMap = typeof DEFAULT_ANCHORS;
@@ -78,9 +69,9 @@ function buildAnchors(seed: number): AnchorMap {
     base[0] + (rand() - 0.5) * 2 * mag,
     base[1] + (rand() - 0.5) * 2 * mag,
   ];
-  const BIG = 7; // outer — vértices do cristal (mais liberdade)
-  const MED = 4; // facet internals — menos (ou quebra alinhamento)
-  const SML = 2.5; // shine — quase nada
+  const BIG = 7; // outer — vértices do cristal
+  const MED = 6; // apex — pode oscilar horizontal, menos vertical
+  const SML = 4; // sparkle
   return {
     lt: j(DEFAULT_ANCHORS.lt, BIG),
     l1: j(DEFAULT_ANCHORS.l1, BIG),
@@ -92,19 +83,8 @@ function buildAnchors(seed: number): AnchorMap {
     bm: j(DEFAULT_ANCHORS.bm, BIG),
     bl2: j(DEFAULT_ANCHORS.bl2, BIG),
     bl1: j(DEFAULT_ANCHORS.bl1, BIG),
-    ti_r: j(DEFAULT_ANCHORS.ti_r, MED),
-    ti_m: j(DEFAULT_ANCHORS.ti_m, MED),
-    ti_l: j(DEFAULT_ANCHORS.ti_l, MED),
-    bi_r: j(DEFAULT_ANCHORS.bi_r, MED),
-    bi_m: j(DEFAULT_ANCHORS.bi_m, MED),
-    sa1: j(DEFAULT_ANCHORS.sa1, SML),
-    sa2: j(DEFAULT_ANCHORS.sa2, SML),
-    sa3: j(DEFAULT_ANCHORS.sa3, SML),
-    sa4: j(DEFAULT_ANCHORS.sa4, SML),
-    sb1: j(DEFAULT_ANCHORS.sb1, SML),
-    sb2: j(DEFAULT_ANCHORS.sb2, SML),
-    sb3: j(DEFAULT_ANCHORS.sb3, SML),
-    sb4: j(DEFAULT_ANCHORS.sb4, SML),
+    apex: j(DEFAULT_ANCHORS.apex, MED),
+    sparkle: j(DEFAULT_ANCHORS.sparkle, SML),
   };
 }
 
@@ -269,13 +249,28 @@ function CrystalBody({
       (p) => inflate(p, 1.04),
     ),
   );
-  const topFacetPts = toPoints(a.l1, a.l2, a.r1, a.ti_r, a.ti_m, a.ti_l);
-  const botFacetPts = toPoints(
-    a.bl1, a.bl2, a.bm, a.br1, a.bi_r, a.bi_m,
+  // Light overlay — pentágono do topo: o apex + borda superior.
+  // Equivalente ao triângulo "logo-light" do SVG do logo.
+  const lightPts = toPoints(a.l1, a.l2, a.r1, a.r2, a.apex);
+  // Shadow overlay — meia-face direita do apex até bm. Equivalente
+  // ao triângulo "logo-shadow" aplicado à metade direita.
+  const shadowPts = toPoints(
+    a.apex, a.r1, a.r2, a.rt, a.br1, a.bm,
   );
-  const edgePts = toPoints(a.ti_l, a.ti_m, a.ti_r, a.bi_r, a.bi_m);
-  const shineAPts = toPoints(a.sa1, a.sa2, a.sa3, a.sa4);
-  const shineBPts = toPoints(a.sb1, a.sb2, a.sb3, a.sb4);
+  // Spines — arestas finas em creme irradiando do apex, idênticas
+  // em função às <path> d="M32 6 L32 58..." do logo. Um único
+  // <path> com vários moveto mantém a marcação enxuta.
+  const pathPair = (p: Pt) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+  const spineD =
+    // eixo horizontal: ponta esquerda → apex → ponta direita
+    `M ${pathPair(a.lt)} L ${pathPair(a.apex)} L ${pathPair(a.rt)} ` +
+    // V do topo: vértices l1 e r2 convergindo no apex
+    `M ${pathPair(a.l1)} L ${pathPair(a.apex)} L ${pathPair(a.r2)} ` +
+    // Tridente inferior: apex descendo pros três pontos de baixo
+    `M ${pathPair(a.apex)} L ${pathPair(a.bl1)} ` +
+    `M ${pathPair(a.apex)} L ${pathPair(a.bl2)} ` +
+    `M ${pathPair(a.apex)} L ${pathPair(a.bm)} ` +
+    `M ${pathPair(a.apex)} L ${pathPair(a.br1)}`;
 
   const shadowFilterId = `${uid}-sh`;
 
@@ -390,50 +385,49 @@ function CrystalBody({
           />
         )}
 
-        {/* Corpo principal */}
+        {/* Corpo principal — gradiente roxo profundo sobre todo o
+            contorno. Equivalente ao "logo-core" do logo. */}
         <polygon
           points={outerPts}
           fill={`url(#${uid}-main)`}
           style={polyT}
         />
-        {/* Faceta superior clara */}
+        {/* Shadow overlay (meia-face direita) — equivalente ao
+            "logo-shadow" do logo: escurece o quadrante direito, onde
+            não bate a luz. */}
         <polygon
-          points={topFacetPts}
-          fill={`url(#${uid}-top)`}
-          opacity={0.95}
-          stroke={palette.innerStroke}
-          strokeWidth={0.8}
-          style={polyT}
-        />
-        {/* Faceta inferior escura */}
-        <polygon
-          points={botFacetPts}
+          points={shadowPts}
           fill={`url(#${uid}-bot)`}
-          opacity={0.75}
-          stroke={palette.innerStroke}
-          strokeWidth={0.8}
+          opacity={0.55}
           style={polyT}
         />
-        {/* Aresta central */}
-        <polyline
-          points={edgePts}
+        {/* Light overlay (pentágono do topo) — equivalente ao
+            "logo-light": o topo pega a luz direta e fica mais claro. */}
+        <polygon
+          points={lightPts}
+          fill={`url(#${uid}-top)`}
+          opacity={palette.shineOpacity * 0.85}
+          style={polyT}
+        />
+        {/* Spines — traços finos em creme irradiando do apex,
+            desenhando as facetas. Réplica estrutural das <path>
+            creme do logo (stroke #f4ead1, opacity 0.22). */}
+        <path
+          d={spineD}
           fill="none"
-          stroke="rgba(20,0,40,0.5)"
+          stroke="rgba(244,234,209,0.32)"
           strokeWidth={0.9}
+          strokeLinejoin="round"
+          strokeLinecap="round"
           style={lineT}
         />
-        {/* Highlights */}
-        <polygon
-          points={shineAPts}
-          fill={`url(#${uid}-shine)`}
-          opacity={palette.shineOpacity}
-          style={polyT}
-        />
-        <polygon
-          points={shineBPts}
-          fill={`url(#${uid}-shine)`}
-          opacity={palette.shineOpacity * 0.5}
-          style={polyT}
+        {/* Sparkle — micro-ponto de brilho, como a <circle> do logo. */}
+        <circle
+          cx={a.sparkle[0]}
+          cy={a.sparkle[1]}
+          r={1.6}
+          fill="#f4ead1"
+          opacity={0.9}
         />
         {/* Bezel dourado — espelha o filete gold do logo (stroke com
             o mesmo gradient). Fica debaixo do contorno dark pra ele
