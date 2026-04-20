@@ -279,6 +279,24 @@ function CrystalBody({
 
   const shadowFilterId = `${uid}-sh`;
 
+  // Transições comuns por tipo de elemento SVG — cor e opacidade
+  // fazem crossfade suave entre paletas de estado. Sem isso, tudo
+  // trocava em um frame quando o hover/active/focus virava true.
+  const stopT: React.CSSProperties = {
+    transition: "stop-color 260ms ease-out",
+  };
+  const polyT: React.CSSProperties = {
+    transition:
+      "fill 260ms ease-out, stroke 260ms ease-out, opacity 260ms ease-out",
+  };
+  const lineT: React.CSSProperties = {
+    transition: "stroke 260ms ease-out",
+  };
+  const dropT: React.CSSProperties = {
+    transition:
+      "flood-color 260ms ease-out, flood-opacity 260ms ease-out",
+  };
+
   return (
     <>
       <svg
@@ -290,7 +308,6 @@ function CrystalBody({
           inset: 0,
           overflow: "visible",
           pointerEvents: "none",
-          transition: "opacity 180ms ease",
         }}
         aria-hidden="true"
       >
@@ -312,32 +329,34 @@ function CrystalBody({
               stdDeviation={palette.shadow.blur}
               floodColor={palette.shadow.color}
               floodOpacity={palette.shadow.opacity}
+              style={dropT}
             />
             {palette.shadow2 && (
               <feDropShadow
-                dx={palette.shadow2.dy === 0 ? 0 : 0}
+                dx="0"
                 dy={palette.shadow2.dy}
                 stdDeviation={palette.shadow2.blur}
                 floodColor={palette.shadow2.color}
                 floodOpacity={palette.shadow2.opacity}
+                style={dropT}
               />
             )}
           </filter>
           <linearGradient id={`${uid}-main`} x1="20%" y1="0%" x2="80%" y2="100%">
-            <stop offset="0%" stopColor={palette.main.a} />
-            <stop offset="40%" stopColor={palette.main.b} />
-            <stop offset="100%" stopColor={palette.main.c} />
+            <stop offset="0%" stopColor={palette.main.a} style={stopT} />
+            <stop offset="40%" stopColor={palette.main.b} style={stopT} />
+            <stop offset="100%" stopColor={palette.main.c} style={stopT} />
           </linearGradient>
           <linearGradient id={`${uid}-top`} x1="0%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stopColor={palette.topLite.a} />
-            <stop offset="100%" stopColor={palette.topLite.b} />
+            <stop offset="0%" stopColor={palette.topLite.a} style={stopT} />
+            <stop offset="100%" stopColor={palette.topLite.b} style={stopT} />
           </linearGradient>
           <linearGradient id={`${uid}-bot`} x1="0%" y1="0%" x2="30%" y2="100%">
-            <stop offset="0%" stopColor={palette.botDark.a} />
-            <stop offset="100%" stopColor={palette.botDark.b} />
+            <stop offset="0%" stopColor={palette.botDark.a} style={stopT} />
+            <stop offset="100%" stopColor={palette.botDark.b} style={stopT} />
           </linearGradient>
           <linearGradient id={`${uid}-shine`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={palette.shine} />
+            <stop offset="0%" stopColor={palette.shine} style={stopT} />
             <stop offset="100%" stopColor="rgba(255,240,255,0)" />
           </linearGradient>
         </defs>
@@ -364,7 +383,11 @@ function CrystalBody({
         )}
 
         {/* Corpo principal */}
-        <polygon points={outerPts} fill={`url(#${uid}-main)`} />
+        <polygon
+          points={outerPts}
+          fill={`url(#${uid}-main)`}
+          style={polyT}
+        />
         {/* Faceta superior clara */}
         <polygon
           points={topFacetPts}
@@ -372,6 +395,7 @@ function CrystalBody({
           opacity={0.95}
           stroke={palette.innerStroke}
           strokeWidth={0.8}
+          style={polyT}
         />
         {/* Faceta inferior escura */}
         <polygon
@@ -380,6 +404,7 @@ function CrystalBody({
           opacity={0.75}
           stroke={palette.innerStroke}
           strokeWidth={0.8}
+          style={polyT}
         />
         {/* Aresta central */}
         <polyline
@@ -387,17 +412,20 @@ function CrystalBody({
           fill="none"
           stroke="rgba(20,0,40,0.5)"
           strokeWidth={0.9}
+          style={lineT}
         />
         {/* Highlights */}
         <polygon
           points={shineAPts}
           fill={`url(#${uid}-shine)`}
           opacity={palette.shineOpacity}
+          style={polyT}
         />
         <polygon
           points={shineBPts}
           fill={`url(#${uid}-shine)`}
           opacity={palette.shineOpacity * 0.5}
+          style={polyT}
         />
         {/* Contorno externo */}
         <polygon
@@ -405,6 +433,7 @@ function CrystalBody({
           fill="none"
           stroke={palette.stroke}
           strokeWidth={1.3}
+          style={polyT}
         />
       </svg>
 
@@ -422,7 +451,8 @@ function CrystalBody({
           letterSpacing: "0.3px",
           color: palette.text,
           textShadow: palette.textShadow,
-          transition: "color 180ms ease",
+          transition:
+            "color 260ms ease-out, text-shadow 260ms ease-out",
           whiteSpace: "nowrap",
           lineHeight: 1,
         }}
@@ -509,7 +539,8 @@ export function CrystalButton({
     fontFamily: 'var(--font-body), "Inter", system-ui, sans-serif',
     // Sombra agora está dentro do SVG (feDropShadow) — aqui só o lift/press
     transform: `translateY(${palette.translateY}px)`,
-    transition: "transform 180ms cubic-bezier(.2,.8,.2,1)",
+    // Overshoot suave no hover/active pra dar peso de cristal flutuando.
+    transition: "transform 260ms cubic-bezier(.34,1.3,.64,1)",
     outline: "none",
     WebkitTapHighlightColor: "transparent",
     verticalAlign: "middle",
