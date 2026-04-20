@@ -57,7 +57,9 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const showShine = variant === "gold" || variant === "onDark";
+  // Gold tem sheen rotativa própria via ::before; só onDark usa o
+  // sweep horizontal adicional.
+  const showShine = variant === "onDark";
   const classes = cn(buttonVariants({ variant, size, className }));
 
   // asChild: clona o elemento (normalmente um <Link>), aplica os
