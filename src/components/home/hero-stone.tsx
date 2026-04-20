@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -13,6 +13,83 @@ import {
 import { cn } from "@/lib/utils";
 import { reveal } from "@/lib/reveal-images";
 import type { Dictionary } from "@/i18n/dictionaries/pt";
+
+/**
+ * Camada de partículas atrás da pedra — poeira de cristal/ouro
+ * flutuando pra reforçar o efeito "levitando".
+ *
+ * O array é derivado de um PRNG com seed fixa por índice. Mesmos
+ * valores no server e no client, zero flicker de hidratação.
+ * `prefers-reduced-motion` desliga a camada inteira.
+ */
+const PARTICLE_COUNT = 26;
+
+function StoneParticles({ reduced }: { reduced: boolean | null }) {
+  const particles = useMemo(() => {
+    const rand = (i: number, salt: number) => {
+      const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+      return x - Math.floor(x);
+    };
+    return Array.from({ length: PARTICLE_COUNT }, (_, i) => {
+      const tintRoll = rand(i, 8);
+      // Mistura de tons: a maioria champagne (poeira dourada),
+      // algumas imperial (hint amethyst), poucas pearl (brilho).
+      const tint =
+        tintRoll < 0.55
+          ? "bg-champagne-300"
+          : tintRoll < 0.85
+            ? "bg-imperial-300"
+            : "bg-pearl-50";
+      return {
+        x: rand(i, 1) * 120 - 10, // -10% → 110%
+        startY: 55 + rand(i, 2) * 55, // 55% → 110%
+        travelY: 340 + rand(i, 3) * 260, // sobe 340–600 px
+        sway: (rand(i, 4) - 0.5) * 36, // ±18 px lateral
+        size: 1.5 + rand(i, 5) * 4.2, // 1.5–5.7 px
+        duration: 7 + rand(i, 6) * 9, // 7–16 s
+        delay: -rand(i, 7) * 10, // já no meio do ciclo no load
+        blur: rand(i, 9) * 1.3, // 0–1.3 px blur (profundidade)
+        maxOpacity: 0.3 + rand(i, 10) * 0.55, // 0.3–0.85
+        tint,
+      };
+    });
+  }, []);
+
+  if (reduced) return null;
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 -z-[1] overflow-visible"
+    >
+      {particles.map((p, i) => (
+        <motion.span
+          key={i}
+          className={cn("absolute block rounded-full", p.tint)}
+          style={{
+            left: `${p.x}%`,
+            top: `${p.startY}%`,
+            width: p.size,
+            height: p.size,
+            filter: p.blur ? `blur(${p.blur.toFixed(2)}px)` : undefined,
+          }}
+          animate={{
+            y: [0, -p.travelY],
+            x: [0, p.sway, -p.sway * 0.6, 0],
+            opacity: [0, p.maxOpacity, p.maxOpacity * 0.7, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+            times: [0, 0.2, 0.7, 1],
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 /**
  * Stone interativa pro hero.
@@ -138,6 +215,9 @@ export function HeroStone({
           !reduced && "animate-[float-shadow_9s_ease-in-out_infinite]",
         )}
       />
+
+      {/* Poeira de cristal flutuando ao redor */}
+      <StoneParticles reduced={reduced} />
 
       <div
         ref={wrapperRef}
