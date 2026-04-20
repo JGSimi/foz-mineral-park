@@ -75,10 +75,6 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 
       <Container className="grid items-center gap-12 md:grid-cols-[1.05fr_1fr] md:gap-16">
         <AnimateIn className="space-y-7 sm:space-y-8" y={24}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-champagne-400/40 bg-pearl-50/80 px-3.5 py-1.5 text-[0.58rem] uppercase tracking-[0.22em] text-champagne-700 backdrop-blur-sm sm:px-4 sm:text-[0.65rem] sm:tracking-[0.28em]">
-            <Sparkles className="size-3 sm:size-3.5" />
-            <span className="truncate">{h.locationBadge}</span>
-          </span>
           <h1 className="pr-2 text-balance font-display text-[2.4rem] leading-[1.02] text-obsidian-900 sm:text-[3.5rem] sm:leading-[1] md:text-[4rem]">
             {h.titleLead}{" "}
             <em className="italic text-champagne-600">{h.titleEm}</em>
