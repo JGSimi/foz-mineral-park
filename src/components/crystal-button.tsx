@@ -18,9 +18,8 @@ const CENTER: Pt = [220, 54];
 
 type Pt = [number, number];
 
-// Âncoras canônicas — alinhadas à geometria do logo: 10 vértices
-// externos + UM apex central de onde irradiam as arestas. A variação
-// por instância desloca cada ponto seedado pelo useId.
+// Âncoras canônicas do design C2. Cada botão desloca estes pontos
+// um pouco, seedado pelo useId da instância.
 const DEFAULT_ANCHORS = {
   // Outer (clockwise da ponta esquerda)
   lt: [12, 46] as Pt,
@@ -33,13 +32,23 @@ const DEFAULT_ANCHORS = {
   bm: [240, 102] as Pt,
   bl2: [130, 100] as Pt,
   bl1: [28, 88] as Pt,
-  // Apex — ponto de convergência interno (no logo original é a
-  // junção dos 3 triângulos principais em ~32,26). Ligeiramente
-  // acima do eixo vertical do marquise.
-  apex: [220, 38] as Pt,
-  // Sparkle — micro-ponto brilhante no quadrante superior-esquerdo
-  // (no logo é (28,16) com r=0.7 opacity 0.9).
-  sparkle: [96, 28] as Pt,
+  // Top facet internals (onde a face superior encontra a inferior)
+  ti_r: [260, 40] as Pt,
+  ti_m: [140, 44] as Pt,
+  ti_l: [80, 36] as Pt,
+  // Bottom facet internals
+  bi_r: [300, 78] as Pt,
+  bi_m: [140, 74] as Pt,
+  // Shine A (retângulo de luz à esquerda)
+  sa1: [70, 24] as Pt,
+  sa2: [130, 22] as Pt,
+  sa3: [110, 54] as Pt,
+  sa4: [55, 50] as Pt,
+  // Shine B (retângulo de luz à direita)
+  sb1: [350, 30] as Pt,
+  sb2: [380, 34] as Pt,
+  sb3: [370, 70] as Pt,
+  sb4: [335, 60] as Pt,
 };
 
 type AnchorMap = typeof DEFAULT_ANCHORS;
@@ -69,9 +78,9 @@ function buildAnchors(seed: number): AnchorMap {
     base[0] + (rand() - 0.5) * 2 * mag,
     base[1] + (rand() - 0.5) * 2 * mag,
   ];
-  const BIG = 7; // outer — vértices do cristal
-  const MED = 6; // apex — pode oscilar horizontal, menos vertical
-  const SML = 4; // sparkle
+  const BIG = 7; // outer — vértices do cristal (mais liberdade)
+  const MED = 4; // facet internals — menos (ou quebra alinhamento)
+  const SML = 2.5; // shine — quase nada
   return {
     lt: j(DEFAULT_ANCHORS.lt, BIG),
     l1: j(DEFAULT_ANCHORS.l1, BIG),
@@ -83,8 +92,19 @@ function buildAnchors(seed: number): AnchorMap {
     bm: j(DEFAULT_ANCHORS.bm, BIG),
     bl2: j(DEFAULT_ANCHORS.bl2, BIG),
     bl1: j(DEFAULT_ANCHORS.bl1, BIG),
-    apex: j(DEFAULT_ANCHORS.apex, MED),
-    sparkle: j(DEFAULT_ANCHORS.sparkle, SML),
+    ti_r: j(DEFAULT_ANCHORS.ti_r, MED),
+    ti_m: j(DEFAULT_ANCHORS.ti_m, MED),
+    ti_l: j(DEFAULT_ANCHORS.ti_l, MED),
+    bi_r: j(DEFAULT_ANCHORS.bi_r, MED),
+    bi_m: j(DEFAULT_ANCHORS.bi_m, MED),
+    sa1: j(DEFAULT_ANCHORS.sa1, SML),
+    sa2: j(DEFAULT_ANCHORS.sa2, SML),
+    sa3: j(DEFAULT_ANCHORS.sa3, SML),
+    sa4: j(DEFAULT_ANCHORS.sa4, SML),
+    sb1: j(DEFAULT_ANCHORS.sb1, SML),
+    sb2: j(DEFAULT_ANCHORS.sb2, SML),
+    sb3: j(DEFAULT_ANCHORS.sb3, SML),
+    sb4: j(DEFAULT_ANCHORS.sb4, SML),
   };
 }
 
@@ -128,80 +148,85 @@ type CrystalPalette = {
   shadow2?: { dy: number; blur: number; color: string; opacity: number };
 };
 
+// Palettes derivam das gradientes do logo (ver src/components/logo.tsx):
+//   logo-core:   #e1b9de → #b267ad → #553056 → #170e1a
+//   logo-shadow: #3d2840 → #0a0910
+//   logo-light:  #f0deee → #b267ad
+// O botão usa tons muted (wine/mauve/aubergine), não amethyst eletrico.
 const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
   default: {
-    main: { a: "#c088e8", b: "#6428a8", c: "#200638" },
-    topLite: { a: "#e0b8f0", b: "#8045c0" },
-    botDark: { a: "#3a1066", b: "#140425" },
-    shine: "rgba(255,240,255,0.7)",
-    stroke: "rgba(15,0,35,0.75)",
-    innerStroke: "rgba(20,0,40,0.4)",
-    text: "#f8e8ff",
+    main: { a: "#d8b0d2", b: "#7a4872", c: "#170e1a" },
+    topLite: { a: "#f0deee", b: "#b267ad" },
+    botDark: { a: "#3d2840", b: "#0a0910" },
+    shine: "rgba(240,222,238,0.7)",
+    stroke: "rgba(15,6,20,0.8)",
+    innerStroke: "rgba(23,14,26,0.45)",
+    text: "#f5ecd3",
     textShadow:
-      "0 1px 2px rgba(15,0,35,0.9), 0 0 14px rgba(200,140,240,0.3)",
+      "0 1px 2px rgba(15,6,20,0.9), 0 0 14px rgba(178,103,173,0.3)",
     translateY: 0,
     shineOpacity: 0.85,
     rim: null,
-    shadow: { dy: 18, blur: 15, color: "rgb(60,15,110)", opacity: 0.5 },
+    shadow: { dy: 18, blur: 15, color: "rgb(60,35,75)", opacity: 0.45 },
   },
   hover: {
-    main: { a: "#d8a0f0", b: "#7838b8", c: "#2e0850" },
-    topLite: { a: "#f0d4ff", b: "#9858d8" },
-    botDark: { a: "#4a1880", b: "#1c0538" },
-    shine: "rgba(255,250,255,0.95)",
-    stroke: "rgba(20,5,50,0.75)",
-    innerStroke: "rgba(20,0,40,0.4)",
-    text: "#ffffff",
+    main: { a: "#e6c4e2", b: "#8e5685", c: "#22132a" },
+    topLite: { a: "#f7ebf5", b: "#c47abc" },
+    botDark: { a: "#4d3450", b: "#14101a" },
+    shine: "rgba(245,235,240,0.9)",
+    stroke: "rgba(20,10,28,0.8)",
+    innerStroke: "rgba(30,20,34,0.45)",
+    text: "#faf3e1",
     textShadow:
-      "0 1px 2px rgba(15,0,35,0.9), 0 0 18px rgba(220,160,255,0.55)",
+      "0 1px 2px rgba(15,6,20,0.9), 0 0 18px rgba(194,124,187,0.5)",
     translateY: -2,
     shineOpacity: 1,
     rim: null,
-    shadow: { dy: 22, blur: 20, color: "rgb(80,20,140)", opacity: 0.58 },
-    shadow2: { dy: 0, blur: 20, color: "rgb(160,90,220)", opacity: 0.35 },
+    shadow: { dy: 22, blur: 20, color: "rgb(85,48,86)", opacity: 0.55 },
+    shadow2: { dy: 0, blur: 22, color: "rgb(178,103,173)", opacity: 0.3 },
   },
   pressed: {
-    main: { a: "#a060d0", b: "#4a1a80", c: "#180528" },
-    topLite: { a: "#b878d8", b: "#5a2090" },
-    botDark: { a: "#2a0a48", b: "#0c0218" },
-    shine: "rgba(255,240,255,0.4)",
-    stroke: "rgba(10,0,25,0.85)",
-    innerStroke: "rgba(15,0,35,0.55)",
-    text: "#e8d0ff",
-    textShadow: "0 1px 2px rgba(10,0,25,0.95)",
+    main: { a: "#a685a0", b: "#553457", c: "#0f070f" },
+    topLite: { a: "#c8a8c2", b: "#7a4572" },
+    botDark: { a: "#2a1b2d", b: "#050208" },
+    shine: "rgba(230,215,228,0.4)",
+    stroke: "rgba(8,3,12,0.85)",
+    innerStroke: "rgba(18,8,22,0.55)",
+    text: "#e6dcc1",
+    textShadow: "0 1px 2px rgba(8,3,12,0.95)",
     translateY: 3,
     shineOpacity: 0.45,
     rim: null,
-    shadow: { dy: 6, blur: 7, color: "rgb(40,10,80)", opacity: 0.5 },
+    shadow: { dy: 6, blur: 7, color: "rgb(40,22,48)", opacity: 0.5 },
   },
   disabled: {
-    main: { a: "#b0a0c0", b: "#7060a0", c: "#3a3048" },
-    topLite: { a: "#c8c0d4", b: "#8878a0" },
-    botDark: { a: "#4a4058", b: "#28202e" },
-    shine: "rgba(255,250,255,0.25)",
-    stroke: "rgba(30,20,40,0.5)",
-    innerStroke: "rgba(30,20,40,0.3)",
-    text: "rgba(240,230,250,0.55)",
+    main: { a: "#b0a4b0", b: "#6d606d", c: "#2c262c" },
+    topLite: { a: "#c8c0c8", b: "#887888" },
+    botDark: { a: "#453845", b: "#1d191e" },
+    shine: "rgba(240,230,240,0.25)",
+    stroke: "rgba(30,22,34,0.5)",
+    innerStroke: "rgba(30,22,34,0.3)",
+    text: "rgba(245,236,211,0.55)",
     textShadow: "none",
     translateY: 0,
     shineOpacity: 0.35,
     rim: null,
-    shadow: { dy: 6, blur: 5, color: "rgb(40,30,60)", opacity: 0.2 },
+    shadow: { dy: 6, blur: 5, color: "rgb(40,30,46)", opacity: 0.2 },
   },
   focus: {
-    main: { a: "#c088e8", b: "#6428a8", c: "#200638" },
-    topLite: { a: "#e0b8f0", b: "#8045c0" },
-    botDark: { a: "#3a1066", b: "#140425" },
-    shine: "rgba(255,240,255,0.7)",
-    stroke: "rgba(15,0,35,0.75)",
-    innerStroke: "rgba(20,0,40,0.4)",
-    text: "#f8e8ff",
+    main: { a: "#d8b0d2", b: "#7a4872", c: "#170e1a" },
+    topLite: { a: "#f0deee", b: "#b267ad" },
+    botDark: { a: "#3d2840", b: "#0a0910" },
+    shine: "rgba(240,222,238,0.7)",
+    stroke: "rgba(15,6,20,0.8)",
+    innerStroke: "rgba(23,14,26,0.45)",
+    text: "#f5ecd3",
     textShadow:
-      "0 1px 2px rgba(15,0,35,0.9), 0 0 14px rgba(200,140,240,0.3)",
+      "0 1px 2px rgba(15,6,20,0.9), 0 0 14px rgba(178,103,173,0.3)",
     translateY: 0,
     shineOpacity: 0.85,
-    rim: "#c078e8",
-    shadow: { dy: 18, blur: 15, color: "rgb(60,15,110)", opacity: 0.5 },
+    rim: "#b267ad",
+    shadow: { dy: 18, blur: 15, color: "rgb(60,35,75)", opacity: 0.45 },
   },
 };
 
@@ -249,28 +274,13 @@ function CrystalBody({
       (p) => inflate(p, 1.04),
     ),
   );
-  // Light overlay — pentágono do topo: o apex + borda superior.
-  // Equivalente ao triângulo "logo-light" do SVG do logo.
-  const lightPts = toPoints(a.l1, a.l2, a.r1, a.r2, a.apex);
-  // Shadow overlay — meia-face direita do apex até bm. Equivalente
-  // ao triângulo "logo-shadow" aplicado à metade direita.
-  const shadowPts = toPoints(
-    a.apex, a.r1, a.r2, a.rt, a.br1, a.bm,
+  const topFacetPts = toPoints(a.l1, a.l2, a.r1, a.ti_r, a.ti_m, a.ti_l);
+  const botFacetPts = toPoints(
+    a.bl1, a.bl2, a.bm, a.br1, a.bi_r, a.bi_m,
   );
-  // Spines — arestas finas em creme irradiando do apex, idênticas
-  // em função às <path> d="M32 6 L32 58..." do logo. Um único
-  // <path> com vários moveto mantém a marcação enxuta.
-  const pathPair = (p: Pt) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
-  const spineD =
-    // eixo horizontal: ponta esquerda → apex → ponta direita
-    `M ${pathPair(a.lt)} L ${pathPair(a.apex)} L ${pathPair(a.rt)} ` +
-    // V do topo: vértices l1 e r2 convergindo no apex
-    `M ${pathPair(a.l1)} L ${pathPair(a.apex)} L ${pathPair(a.r2)} ` +
-    // Tridente inferior: apex descendo pros três pontos de baixo
-    `M ${pathPair(a.apex)} L ${pathPair(a.bl1)} ` +
-    `M ${pathPair(a.apex)} L ${pathPair(a.bl2)} ` +
-    `M ${pathPair(a.apex)} L ${pathPair(a.bm)} ` +
-    `M ${pathPair(a.apex)} L ${pathPair(a.br1)}`;
+  const edgePts = toPoints(a.ti_l, a.ti_m, a.ti_r, a.bi_r, a.bi_m);
+  const shineAPts = toPoints(a.sa1, a.sa2, a.sa3, a.sa4);
+  const shineBPts = toPoints(a.sb1, a.sb2, a.sb3, a.sb4);
 
   const shadowFilterId = `${uid}-sh`;
 
@@ -385,49 +395,50 @@ function CrystalBody({
           />
         )}
 
-        {/* Corpo principal — gradiente roxo profundo sobre todo o
-            contorno. Equivalente ao "logo-core" do logo. */}
+        {/* Corpo principal */}
         <polygon
           points={outerPts}
           fill={`url(#${uid}-main)`}
           style={polyT}
         />
-        {/* Shadow overlay (meia-face direita) — equivalente ao
-            "logo-shadow" do logo: escurece o quadrante direito, onde
-            não bate a luz. */}
+        {/* Faceta superior clara */}
         <polygon
-          points={shadowPts}
-          fill={`url(#${uid}-bot)`}
-          opacity={0.55}
-          style={polyT}
-        />
-        {/* Light overlay (pentágono do topo) — equivalente ao
-            "logo-light": o topo pega a luz direta e fica mais claro. */}
-        <polygon
-          points={lightPts}
+          points={topFacetPts}
           fill={`url(#${uid}-top)`}
-          opacity={palette.shineOpacity * 0.85}
+          opacity={0.95}
+          stroke={palette.innerStroke}
+          strokeWidth={0.8}
           style={polyT}
         />
-        {/* Spines — traços finos em creme irradiando do apex,
-            desenhando as facetas. Réplica estrutural das <path>
-            creme do logo (stroke #f4ead1, opacity 0.22). */}
-        <path
-          d={spineD}
+        {/* Faceta inferior escura */}
+        <polygon
+          points={botFacetPts}
+          fill={`url(#${uid}-bot)`}
+          opacity={0.75}
+          stroke={palette.innerStroke}
+          strokeWidth={0.8}
+          style={polyT}
+        />
+        {/* Aresta central */}
+        <polyline
+          points={edgePts}
           fill="none"
-          stroke="rgba(244,234,209,0.32)"
+          stroke="rgba(20,0,40,0.5)"
           strokeWidth={0.9}
-          strokeLinejoin="round"
-          strokeLinecap="round"
           style={lineT}
         />
-        {/* Sparkle — micro-ponto de brilho, como a <circle> do logo. */}
-        <circle
-          cx={a.sparkle[0]}
-          cy={a.sparkle[1]}
-          r={1.6}
-          fill="#f4ead1"
-          opacity={0.9}
+        {/* Highlights */}
+        <polygon
+          points={shineAPts}
+          fill={`url(#${uid}-shine)`}
+          opacity={palette.shineOpacity}
+          style={polyT}
+        />
+        <polygon
+          points={shineBPts}
+          fill={`url(#${uid}-shine)`}
+          opacity={palette.shineOpacity * 0.5}
+          style={polyT}
         />
         {/* Bezel dourado — espelha o filete gold do logo (stroke com
             o mesmo gradient). Fica debaixo do contorno dark pra ele
