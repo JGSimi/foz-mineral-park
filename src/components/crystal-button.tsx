@@ -359,6 +359,14 @@ function CrystalBody({
             <stop offset="0%" stopColor={palette.shine} style={stopT} />
             <stop offset="100%" stopColor="rgba(255,240,255,0)" />
           </linearGradient>
+          {/* Gradient dourado idêntico ao do logo (champagne → ouro
+              → bronze). Aplicado como stroke do contorno pra dar
+              acabamento de bezel em joalheria. */}
+          <linearGradient id={`${uid}-bezel`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f4ead1" />
+            <stop offset="45%" stopColor="#dbb46e" />
+            <stop offset="100%" stopColor="#6c4120" />
+          </linearGradient>
         </defs>
 
         {/* Sombra aplicada numa cópia invisível do contorno — pinta
@@ -427,12 +435,23 @@ function CrystalBody({
           opacity={palette.shineOpacity * 0.5}
           style={polyT}
         />
-        {/* Contorno externo */}
+        {/* Bezel dourado — espelha o filete gold do logo (stroke com
+            o mesmo gradient). Fica debaixo do contorno dark pra ele
+            definir o limite interno sem cobrir o ouro visível. */}
+        <polygon
+          points={outerPts}
+          fill="none"
+          stroke={`url(#${uid}-bezel)`}
+          strokeWidth={3}
+          strokeLinejoin="round"
+        />
+        {/* Contorno interno escuro — mantém a silhueta crisp por
+            dentro das facetas, sem apagar o bezel. */}
         <polygon
           points={outerPts}
           fill="none"
           stroke={palette.stroke}
-          strokeWidth={1.3}
+          strokeWidth={0.9}
           style={polyT}
         />
       </svg>
