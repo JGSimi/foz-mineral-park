@@ -1,4 +1,4 @@
-import { Slot } from "@/components/slot";
+import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +35,20 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+type AsChildProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+function Shine() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-[1100ms] ease-out group-hover/btn:translate-x-full"
+    />
+  );
+}
+
 export function Button({
   className,
   variant,
@@ -43,25 +57,40 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const Comp = asChild ? Slot : "button";
   const showShine = variant === "gold" || variant === "onDark";
-  return (
-    <Comp
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    >
+  const classes = cn(buttonVariants({ variant, size, className }));
+
+  // asChild: clona o elemento (normalmente um <Link>), aplica os
+  // estilos do botão nele e reempacota os filhos dentro de um span
+  // z-10 — pra ficar acima da camada de brilho absoluta.
+  //
+  // A versão antiga usava um <Slot> que recebia um Fragment com
+  // o content span + shine span. Fragment não aceita className via
+  // cloneElement, então o Link ficava sem estilo nenhum. Agora
+  // manipulamos o child diretamente.
+  if (asChild && React.isValidElement<AsChildProps>(children)) {
+    const child = children;
+    return React.cloneElement(
+      child,
+      {
+        className: cn(classes, child.props.className),
+      } as AsChildProps,
       <>
         <span className="relative z-10 inline-flex items-center gap-2">
-          {children}
+          {child.props.children}
         </span>
-        {showShine && (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-[1100ms] ease-out group-hover/btn:translate-x-full"
-          />
-        )}
-      </>
-    </Comp>
+        {showShine && <Shine />}
+      </>,
+    );
+  }
+
+  return (
+    <button className={classes} {...props}>
+      <span className="relative z-10 inline-flex items-center gap-2">
+        {children}
+      </span>
+      {showShine && <Shine />}
+    </button>
   );
 }
 
