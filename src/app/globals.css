@@ -333,6 +333,36 @@ h4 {
   50% { background-position: 100% 50%; }
 }
 
+/* Partículas flutuando atrás da pedra no hero.
+   Cada <span> seta --pmax, --sway e --travel inline e usa este
+   keyframe; `animation-delay` negativo inline faz cada uma nascer em
+   uma fase distinta, sem pulso sincronizado. */
+@keyframes stone-particle {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--pmax);
+  }
+  50% {
+    transform: translate3d(var(--sway), calc(var(--travel) * -0.5), 0);
+  }
+  75% {
+    opacity: calc(var(--pmax) * 0.55);
+  }
+  100% {
+    transform: translate3d(calc(var(--sway) * -0.4), calc(var(--travel) * -1), 0);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-stone-particle] {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
 /* Shimmer elegante em hover */
 @keyframes shine {
   from { background-position: -200% 0; }

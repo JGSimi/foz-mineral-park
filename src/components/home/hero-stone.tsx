@@ -18,11 +18,19 @@ import type { Dictionary } from "@/i18n/dictionaries/pt";
  * Camada de partículas atrás da pedra — poeira de cristal/ouro
  * flutuando pra reforçar o efeito "levitando".
  *
- * O array é derivado de um PRNG com seed fixa por índice. Mesmos
- * valores no server e no client, zero flicker de hidratação.
- * `prefers-reduced-motion` desliga a camada inteira.
+ * CSS keyframe `stone-particle` (globals.css) faz o movimento —
+ * cada <span> seta suas próprias vars inline (--pmax, --sway,
+ * --travel) e um `animation-delay` negativo pra nascer em uma fase
+ * distinta do ciclo.
+ *
+ * Framer Motion não serve aqui: `transition.delay` negativo é
+ * clampado pra 0, então todas as partículas piscariam juntas em
+ * vez de cobrirem o tempo todo uniformemente.
+ *
+ * Valores vêm de um PRNG seedado por (índice, salt) — SSR e client
+ * produzem o mesmo array, zero flicker de hidratação.
  */
-const PARTICLE_COUNT = 26;
+const PARTICLE_COUNT = 28;
 
 function StoneParticles({ reduced }: { reduced: boolean | null }) {
   const particles = useMemo(() => {
@@ -31,25 +39,29 @@ function StoneParticles({ reduced }: { reduced: boolean | null }) {
       return x - Math.floor(x);
     };
     return Array.from({ length: PARTICLE_COUNT }, (_, i) => {
+      // Paleta calibrada pro hero claro: tons médios/escuros leem,
+      // tons claros sumiriam contra pearl-100.
       const tintRoll = rand(i, 8);
-      // Mistura de tons: a maioria champagne (poeira dourada),
-      // algumas imperial (hint amethyst), poucas pearl (brilho).
       const tint =
-        tintRoll < 0.55
-          ? "bg-champagne-300"
-          : tintRoll < 0.85
-            ? "bg-imperial-300"
-            : "bg-pearl-50";
+        tintRoll < 0.45
+          ? "bg-champagne-600"
+          : tintRoll < 0.7
+            ? "bg-imperial-500"
+            : tintRoll < 0.9
+              ? "bg-obsidian-700"
+              : "bg-champagne-700";
+      // 1 em cada ~3 ganha blur pra dar profundidade.
+      const blur = rand(i, 9) < 0.35 ? 0.4 + rand(i, 11) * 0.8 : 0;
       return {
         x: rand(i, 1) * 120 - 10, // -10% → 110%
         startY: 55 + rand(i, 2) * 55, // 55% → 110%
         travelY: 340 + rand(i, 3) * 260, // sobe 340–600 px
-        sway: (rand(i, 4) - 0.5) * 36, // ±18 px lateral
-        size: 1.5 + rand(i, 5) * 4.2, // 1.5–5.7 px
+        sway: (rand(i, 4) - 0.5) * 42, // ±21 px lateral
+        size: 2.5 + rand(i, 5) * 5.5, // 2.5–8 px
         duration: 7 + rand(i, 6) * 9, // 7–16 s
-        delay: -rand(i, 7) * 10, // já no meio do ciclo no load
-        blur: rand(i, 9) * 1.3, // 0–1.3 px blur (profundidade)
-        maxOpacity: 0.3 + rand(i, 10) * 0.55, // 0.3–0.85
+        delay: -rand(i, 7) * 12, // -12 → 0 s (mid-cycle no load)
+        blur,
+        maxOpacity: 0.45 + rand(i, 10) * 0.45, // 0.45–0.9
         tint,
       };
     });
@@ -63,28 +75,24 @@ function StoneParticles({ reduced }: { reduced: boolean | null }) {
       className="pointer-events-none absolute inset-0 -z-[1] overflow-visible"
     >
       {particles.map((p, i) => (
-        <motion.span
+        <span
           key={i}
+          data-stone-particle
           className={cn("absolute block rounded-full", p.tint)}
-          style={{
-            left: `${p.x}%`,
-            top: `${p.startY}%`,
-            width: p.size,
-            height: p.size,
-            filter: p.blur ? `blur(${p.blur.toFixed(2)}px)` : undefined,
-          }}
-          animate={{
-            y: [0, -p.travelY],
-            x: [0, p.sway, -p.sway * 0.6, 0],
-            opacity: [0, p.maxOpacity, p.maxOpacity * 0.7, 0],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-            times: [0, 0.2, 0.7, 1],
-          }}
+          style={
+            {
+              left: `${p.x.toFixed(2)}%`,
+              top: `${p.startY.toFixed(2)}%`,
+              width: `${p.size.toFixed(2)}px`,
+              height: `${p.size.toFixed(2)}px`,
+              filter: p.blur ? `blur(${p.blur.toFixed(2)}px)` : undefined,
+              willChange: "transform, opacity",
+              animation: `stone-particle ${p.duration.toFixed(2)}s ease-in-out ${p.delay.toFixed(2)}s infinite`,
+              "--pmax": p.maxOpacity.toFixed(3),
+              "--sway": `${p.sway.toFixed(2)}px`,
+              "--travel": `${p.travelY.toFixed(2)}px`,
+            } as React.CSSProperties
+          }
         />
       ))}
     </div>
