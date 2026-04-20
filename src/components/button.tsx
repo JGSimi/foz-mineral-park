@@ -1,7 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { CrystalButton } from "./crystal-button";
 
 const buttonVariants = cva(
   "group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden rounded-full text-sm font-medium tracking-wide transition-all duration-500 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
@@ -9,8 +8,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "btn-primary-surface active:scale-[0.985]",
-        // gold é delegado ao <CrystalButton> (client component).
-        gold: "",
+        gold: "btn-gold-surface active:scale-[0.985]",
         outline:
           "border border-pearl-400 bg-pearl-50/80 text-obsidian-900 backdrop-blur hover:border-champagne-500 hover:bg-pearl-50 hover:text-obsidian-950 active:scale-[0.985]",
         ghost: "text-obsidian-900 hover:bg-pearl-200 active:scale-[0.985]",
@@ -44,7 +42,7 @@ function Shine() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-[1100ms] ease-out group-hover/btn:translate-x-full"
+      className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-[1100ms] ease-out group-hover/btn:translate-x-full motion-reduce:hidden"
     />
   );
 }
@@ -57,21 +55,7 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  if (variant === "gold") {
-    return (
-      <CrystalButton
-        asChild={asChild}
-        size={size ?? "md"}
-        disabled={props.disabled}
-        className={className}
-        {...props}
-      >
-        {children}
-      </CrystalButton>
-    );
-  }
-
-  const showShine = variant === "onDark";
+  const showShine = variant === "gold" || variant === "onDark";
   const classes = cn(buttonVariants({ variant, size, className }));
 
   if (asChild && React.isValidElement<AsChildProps>(children)) {
