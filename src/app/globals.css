@@ -424,19 +424,84 @@ svg.lucide {
    Button styles (evitam arbitrary values com vírgulas que o
    Tailwind v4 não aceita em classes inline)
 ============================================================= */
+/* Gold CTA — metal polido.
+   Superfície = radial highlight curvo no topo + linear 5 stops no
+   corpo. Inset shadows em cima e embaixo dão o volume de "bombeado".
+   Borda 1px em bronze escuro define o contorno sem peso.
+   Estados: hover (lift + halo + brightness), active (indent invertido
+   + brightness−), focus-visible (anel duplo champagne/bronze),
+   disabled (dessaturado). Reduced-motion desliga lift e shine. */
 .btn-gold-surface {
-  background-image:
-    linear-gradient(145deg, #f4ead1 0%, #dbb46e 40%, #c89347 60%, #915a25 100%);
-  /* inset 1px highlight on top = polished-metal feel */
+  background:
+    radial-gradient(ellipse 110% 65% at 50% -18%,
+      rgba(255, 249, 230, 0.55) 0%,
+      transparent 58%),
+    linear-gradient(148deg,
+      #f6ecd2 0%,
+      #e6c587 28%,
+      #cb9a4d 52%,
+      #a56e2c 82%,
+      #754d1e 100%);
+  border: 1px solid rgba(120, 80, 30, 0.4);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.2) inset,
-    0 10px 28px -10px rgba(180, 119, 48, 0.55);
-  transition: box-shadow 0.5s ease-out, transform 0.5s ease-out;
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(70, 40, 10, 0.4),
+    0 1px 2px rgba(110, 70, 20, 0.2),
+    0 10px 26px -10px rgba(180, 119, 48, 0.55);
+  transition:
+    box-shadow 0.45s ease-out,
+    transform 0.45s ease-out,
+    filter 0.45s ease-out;
+  will-change: transform, box-shadow;
 }
 .btn-gold-surface:hover {
+  transform: translateY(-1px);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 20px 50px -12px rgba(180, 119, 48, 0.8);
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(70, 40, 10, 0.4),
+    0 2px 4px rgba(110, 70, 20, 0.24),
+    0 18px 40px -12px rgba(180, 119, 48, 0.8),
+    0 0 0 4px rgba(219, 180, 110, 0.16);
+  filter: brightness(1.04);
+}
+.btn-gold-surface:active {
+  transform: translateY(0) scale(0.985);
+  transition-duration: 0.12s;
+  box-shadow:
+    inset 0 1px 2px rgba(70, 40, 10, 0.32),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.28),
+    0 1px 1px rgba(110, 70, 20, 0.18);
+  filter: brightness(0.96);
+}
+.btn-gold-surface:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(70, 40, 10, 0.4),
+    0 1px 2px rgba(110, 70, 20, 0.2),
+    0 10px 26px -10px rgba(180, 119, 48, 0.55),
+    0 0 0 3px rgba(246, 236, 210, 0.7),
+    0 0 0 5px rgba(165, 110, 44, 0.7);
+}
+.btn-gold-surface:disabled,
+.btn-gold-surface[aria-disabled="true"] {
+  background:
+    linear-gradient(148deg, #d9ccb0 0%, #b59c6f 50%, #8e7144 100%);
+  color: rgba(26, 22, 16, 0.5);
+  border-color: rgba(120, 80, 30, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  filter: saturate(0.55);
+  cursor: not-allowed;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold-surface {
+    transition: none;
+  }
+  .btn-gold-surface:hover {
+    transform: none;
+    filter: none;
+  }
 }
 
 .btn-primary-surface {

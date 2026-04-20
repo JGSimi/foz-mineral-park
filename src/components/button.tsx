@@ -9,8 +9,8 @@ const buttonVariants = cva(
       variant: {
         primary:
           "btn-primary-surface active:scale-[0.985]",
-        gold:
-          "btn-gold-surface text-obsidian-950 active:scale-[0.985]",
+        // Estados do gold vêm todos de .btn-gold-surface (globals.css).
+        gold: "btn-gold-surface text-obsidian-950",
         outline:
           "border border-pearl-400 bg-pearl-50/80 text-obsidian-900 backdrop-blur hover:border-champagne-500 hover:bg-pearl-50 hover:text-obsidian-950 active:scale-[0.985]",
         ghost: "text-obsidian-900 hover:bg-pearl-200 active:scale-[0.985]",
@@ -44,7 +44,7 @@ function Shine() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-[1100ms] ease-out group-hover/btn:translate-x-full"
+      className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-[1400ms] ease-out group-hover/btn:translate-x-full motion-reduce:hidden"
     />
   );
 }
