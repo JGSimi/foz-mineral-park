@@ -5,26 +5,123 @@ import { cn } from "@/lib/utils";
 
 /**
  * Gold variant — cristal bruto de ametista (design "Botao Cristal"
- * variação C2 do handoff Claude Design). 10-point polygon, 5 estados
- * interativos (default/hover/pressed/focus/disabled), todos os valores
- * de paleta, facetas, shine e transições vêm verbatim do protótipo.
- *
- * Isolado em um arquivo com "use client" por usar React.useState pra
- * trackar hover/active/focus. O componente pai (Button) permanece
- * importável de Server Components.
+ * variação C2 do handoff Claude Design). Polígono assimétrico de 10
+ * vértices, 5 estados interativos (default/hover/pressed/focus/
+ * disabled). Cada instância sorteia uma variação de forma seedada
+ * pelo useId — todo botão na página parece um cristal único.
  */
 
+// Tamanho do viewBox. Todas as posições são em coordenadas do viewBox.
 const CRYSTAL_W = 440;
 const CRYSTAL_H = 108;
-const CRYSTAL_OUTER =
-  "12,46 48,14 180,6 280,10 400,16 428,54 388,96 240,102 130,100 28,88";
-const CRYSTAL_RIM =
-  "8,46 46,10 178,2 280,6 402,12 432,54 390,100 240,106 130,104 26,92";
-const CRYSTAL_TOP_FACET = "48,14 180,6 280,10 260,40 140,44 80,36";
-const CRYSTAL_BOT_FACET = "28,88 130,100 240,102 388,96 300,78 140,74";
-const CRYSTAL_EDGE = "80,36 140,44 260,40 300,78 140,74";
-const CRYSTAL_SHINE_A = "70,24 130,22 110,54 55,50";
-const CRYSTAL_SHINE_B = "350,30 380,34 370,70 335,60";
+const CENTER: Pt = [220, 54];
+
+type Pt = [number, number];
+
+// Âncoras canônicas do design C2. Cada botão desloca estes pontos
+// um pouco, seedado pelo useId da instância.
+const DEFAULT_ANCHORS = {
+  // Outer (clockwise da ponta esquerda)
+  lt: [12, 46] as Pt,
+  l1: [48, 14] as Pt,
+  l2: [180, 6] as Pt,
+  r1: [280, 10] as Pt,
+  r2: [400, 16] as Pt,
+  rt: [428, 54] as Pt,
+  br1: [388, 96] as Pt,
+  bm: [240, 102] as Pt,
+  bl2: [130, 100] as Pt,
+  bl1: [28, 88] as Pt,
+  // Top facet internals (onde a face superior encontra a inferior)
+  ti_r: [260, 40] as Pt,
+  ti_m: [140, 44] as Pt,
+  ti_l: [80, 36] as Pt,
+  // Bottom facet internals
+  bi_r: [300, 78] as Pt,
+  bi_m: [140, 74] as Pt,
+  // Shine A (retângulo de luz à esquerda)
+  sa1: [70, 24] as Pt,
+  sa2: [130, 22] as Pt,
+  sa3: [110, 54] as Pt,
+  sa4: [55, 50] as Pt,
+  // Shine B (retângulo de luz à direita)
+  sb1: [350, 30] as Pt,
+  sb2: [380, 34] as Pt,
+  sb3: [370, 70] as Pt,
+  sb4: [335, 60] as Pt,
+};
+
+type AnchorMap = typeof DEFAULT_ANCHORS;
+
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(a: number): () => number {
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function buildAnchors(seed: number): AnchorMap {
+  const rand = mulberry32(seed);
+  const j = (base: Pt, mag: number): Pt => [
+    base[0] + (rand() - 0.5) * 2 * mag,
+    base[1] + (rand() - 0.5) * 2 * mag,
+  ];
+  const BIG = 7; // outer — vértices do cristal (mais liberdade)
+  const MED = 4; // facet internals — menos (ou quebra alinhamento)
+  const SML = 2.5; // shine — quase nada
+  return {
+    lt: j(DEFAULT_ANCHORS.lt, BIG),
+    l1: j(DEFAULT_ANCHORS.l1, BIG),
+    l2: j(DEFAULT_ANCHORS.l2, BIG),
+    r1: j(DEFAULT_ANCHORS.r1, BIG),
+    r2: j(DEFAULT_ANCHORS.r2, BIG),
+    rt: j(DEFAULT_ANCHORS.rt, BIG),
+    br1: j(DEFAULT_ANCHORS.br1, BIG),
+    bm: j(DEFAULT_ANCHORS.bm, BIG),
+    bl2: j(DEFAULT_ANCHORS.bl2, BIG),
+    bl1: j(DEFAULT_ANCHORS.bl1, BIG),
+    ti_r: j(DEFAULT_ANCHORS.ti_r, MED),
+    ti_m: j(DEFAULT_ANCHORS.ti_m, MED),
+    ti_l: j(DEFAULT_ANCHORS.ti_l, MED),
+    bi_r: j(DEFAULT_ANCHORS.bi_r, MED),
+    bi_m: j(DEFAULT_ANCHORS.bi_m, MED),
+    sa1: j(DEFAULT_ANCHORS.sa1, SML),
+    sa2: j(DEFAULT_ANCHORS.sa2, SML),
+    sa3: j(DEFAULT_ANCHORS.sa3, SML),
+    sa4: j(DEFAULT_ANCHORS.sa4, SML),
+    sb1: j(DEFAULT_ANCHORS.sb1, SML),
+    sb2: j(DEFAULT_ANCHORS.sb2, SML),
+    sb3: j(DEFAULT_ANCHORS.sb3, SML),
+    sb4: j(DEFAULT_ANCHORS.sb4, SML),
+  };
+}
+
+function inflate(p: Pt, factor: number): Pt {
+  return [
+    CENTER[0] + (p[0] - CENTER[0]) * factor,
+    CENTER[1] + (p[1] - CENTER[1]) * factor,
+  ];
+}
+
+function toPoints(...pts: Pt[]): string {
+  return pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+}
+
+// =============================================================================
+// Paletas por estado — exatas do design C2.
+// =============================================================================
 
 type CrystalStateKey =
   | "default"
@@ -41,11 +138,14 @@ type CrystalPalette = {
   stroke: string;
   innerStroke: string;
   text: string;
-  shadow: string;
   textShadow: string;
   translateY: number;
   shineOpacity: number;
   rim: string | null;
+  // Drop-shadow principal (feDropShadow dentro do SVG)
+  shadow: { dy: number; blur: number; color: string; opacity: number };
+  // Shadow secundária opcional (glow/halo pro hover)
+  shadow2?: { dy: number; blur: number; color: string; opacity: number };
 };
 
 const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
@@ -57,12 +157,12 @@ const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
     stroke: "rgba(15,0,35,0.75)",
     innerStroke: "rgba(20,0,40,0.4)",
     text: "#f8e8ff",
-    shadow: "0 18px 30px rgba(60,15,110,0.5), 0 4px 8px rgba(40,5,80,0.35)",
     textShadow:
       "0 1px 2px rgba(15,0,35,0.9), 0 0 14px rgba(200,140,240,0.3)",
     translateY: 0,
     shineOpacity: 0.85,
     rim: null,
+    shadow: { dy: 18, blur: 15, color: "rgb(60,15,110)", opacity: 0.5 },
   },
   hover: {
     main: { a: "#d8a0f0", b: "#7838b8", c: "#2e0850" },
@@ -72,13 +172,13 @@ const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
     stroke: "rgba(20,5,50,0.75)",
     innerStroke: "rgba(20,0,40,0.4)",
     text: "#ffffff",
-    shadow:
-      "0 22px 40px rgba(80,20,140,0.58), 0 6px 14px rgba(50,10,100,0.4), 0 0 40px rgba(160,90,220,0.35)",
     textShadow:
       "0 1px 2px rgba(15,0,35,0.9), 0 0 18px rgba(220,160,255,0.55)",
     translateY: -2,
     shineOpacity: 1,
     rim: null,
+    shadow: { dy: 22, blur: 20, color: "rgb(80,20,140)", opacity: 0.58 },
+    shadow2: { dy: 0, blur: 20, color: "rgb(160,90,220)", opacity: 0.35 },
   },
   pressed: {
     main: { a: "#a060d0", b: "#4a1a80", c: "#180528" },
@@ -88,11 +188,11 @@ const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
     stroke: "rgba(10,0,25,0.85)",
     innerStroke: "rgba(15,0,35,0.55)",
     text: "#e8d0ff",
-    shadow: "0 6px 14px rgba(40,10,80,0.5), 0 2px 4px rgba(30,5,60,0.35)",
     textShadow: "0 1px 2px rgba(10,0,25,0.95)",
     translateY: 3,
     shineOpacity: 0.45,
     rim: null,
+    shadow: { dy: 6, blur: 7, color: "rgb(40,10,80)", opacity: 0.5 },
   },
   disabled: {
     main: { a: "#b0a0c0", b: "#7060a0", c: "#3a3048" },
@@ -102,11 +202,11 @@ const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
     stroke: "rgba(30,20,40,0.5)",
     innerStroke: "rgba(30,20,40,0.3)",
     text: "rgba(240,230,250,0.55)",
-    shadow: "0 6px 10px rgba(40,30,60,0.2)",
     textShadow: "none",
     translateY: 0,
     shineOpacity: 0.35,
     rim: null,
+    shadow: { dy: 6, blur: 5, color: "rgb(40,30,60)", opacity: 0.2 },
   },
   focus: {
     main: { a: "#c088e8", b: "#6428a8", c: "#200638" },
@@ -116,12 +216,12 @@ const CRYSTAL_PALETTES: Record<CrystalStateKey, CrystalPalette> = {
     stroke: "rgba(15,0,35,0.75)",
     innerStroke: "rgba(20,0,40,0.4)",
     text: "#f8e8ff",
-    shadow: "0 18px 30px rgba(60,15,110,0.5), 0 4px 8px rgba(40,5,80,0.35)",
     textShadow:
       "0 1px 2px rgba(15,0,35,0.9), 0 0 14px rgba(200,140,240,0.3)",
     translateY: 0,
     shineOpacity: 0.85,
     rim: "#c078e8",
+    shadow: { dy: 18, blur: 15, color: "rgb(60,15,110)", opacity: 0.5 },
   },
 };
 
@@ -132,24 +232,7 @@ const CRYSTAL_SCALE: Record<"sm" | "md" | "lg" | "icon", number> = {
   icon: 0.48,
 };
 
-/** Split de uma lista de box-shadows sem quebrar vírgulas de rgba(). */
-function buildShadowFilter(shadow: string): string {
-  const parts: string[] = [];
-  let depth = 0;
-  let buf = "";
-  for (const ch of shadow) {
-    if (ch === "(") depth++;
-    else if (ch === ")") depth--;
-    if (ch === "," && depth === 0) {
-      parts.push(buf.trim());
-      buf = "";
-    } else {
-      buf += ch;
-    }
-  }
-  if (buf.trim()) parts.push(buf.trim());
-  return parts.map((p) => `drop-shadow(${p})`).join(" ");
-}
+// =============================================================================
 
 type AsChildProps = {
   children?: React.ReactNode;
@@ -161,14 +244,41 @@ type CrystalBodyProps = {
   palette: CrystalPalette;
   scale: number;
   uid: string;
+  anchors: AnchorMap;
   children: React.ReactNode;
 };
 
-function CrystalBody({ palette, scale, uid, children }: CrystalBodyProps) {
+function CrystalBody({
+  palette,
+  scale,
+  uid,
+  anchors,
+  children,
+}: CrystalBodyProps) {
   const w = CRYSTAL_W * scale;
   const h = CRYSTAL_H * scale;
   const fontSize = Math.max(11, Math.round(19 * scale));
   const iconGap = Math.max(6, Math.round(14 * scale));
+
+  const a = anchors;
+  const outerPts = toPoints(
+    a.lt, a.l1, a.l2, a.r1, a.r2, a.rt, a.br1, a.bm, a.bl2, a.bl1,
+  );
+  const rimPts = toPoints(
+    ...[a.lt, a.l1, a.l2, a.r1, a.r2, a.rt, a.br1, a.bm, a.bl2, a.bl1].map(
+      (p) => inflate(p, 1.04),
+    ),
+  );
+  const topFacetPts = toPoints(a.l1, a.l2, a.r1, a.ti_r, a.ti_m, a.ti_l);
+  const botFacetPts = toPoints(
+    a.bl1, a.bl2, a.bm, a.br1, a.bi_r, a.bi_m,
+  );
+  const edgePts = toPoints(a.ti_l, a.ti_m, a.ti_r, a.bi_r, a.bi_m);
+  const shineAPts = toPoints(a.sa1, a.sa2, a.sa3, a.sa4);
+  const shineBPts = toPoints(a.sb1, a.sb2, a.sb3, a.sb4);
+
+  const shadowFilterId = `${uid}-sh`;
+
   return (
     <>
       <svg
@@ -180,10 +290,39 @@ function CrystalBody({ palette, scale, uid, children }: CrystalBodyProps) {
           inset: 0,
           overflow: "visible",
           pointerEvents: "none",
+          transition: "opacity 180ms ease",
         }}
         aria-hidden="true"
       >
         <defs>
+          {/* Sombra dentro do SVG — segue o alpha dos polígonos, não
+              o rect do <button>. Resolve a "sombra quadrada" que
+              aparecia quando o filter estava no elemento pai. */}
+          <filter
+            id={shadowFilterId}
+            x="-30%"
+            y="-30%"
+            width="160%"
+            height="180%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feDropShadow
+              dx="0"
+              dy={palette.shadow.dy}
+              stdDeviation={palette.shadow.blur}
+              floodColor={palette.shadow.color}
+              floodOpacity={palette.shadow.opacity}
+            />
+            {palette.shadow2 && (
+              <feDropShadow
+                dx={palette.shadow2.dy === 0 ? 0 : 0}
+                dy={palette.shadow2.dy}
+                stdDeviation={palette.shadow2.blur}
+                floodColor={palette.shadow2.color}
+                floodOpacity={palette.shadow2.opacity}
+              />
+            )}
+          </filter>
           <linearGradient id={`${uid}-main`} x1="20%" y1="0%" x2="80%" y2="100%">
             <stop offset="0%" stopColor={palette.main.a} />
             <stop offset="40%" stopColor={palette.main.b} />
@@ -203,9 +342,19 @@ function CrystalBody({ palette, scale, uid, children }: CrystalBodyProps) {
           </linearGradient>
         </defs>
 
+        {/* Sombra aplicada numa cópia invisível do contorno — pinta
+            só a silhueta externa do cristal, sem o alpha das facetas. */}
+        <polygon
+          points={outerPts}
+          fill="#000"
+          filter={`url(#${shadowFilterId})`}
+          style={{ opacity: 0 }}
+        />
+
+        {/* Anel de foco — offsetado do outer por inflate(1.04) */}
         {palette.rim && (
           <polygon
-            points={CRYSTAL_RIM}
+            points={rimPts}
             fill="none"
             stroke={palette.rim}
             strokeWidth={2}
@@ -214,39 +363,45 @@ function CrystalBody({ palette, scale, uid, children }: CrystalBodyProps) {
           />
         )}
 
-        <polygon points={CRYSTAL_OUTER} fill={`url(#${uid}-main)`} />
+        {/* Corpo principal */}
+        <polygon points={outerPts} fill={`url(#${uid}-main)`} />
+        {/* Faceta superior clara */}
         <polygon
-          points={CRYSTAL_TOP_FACET}
+          points={topFacetPts}
           fill={`url(#${uid}-top)`}
           opacity={0.95}
           stroke={palette.innerStroke}
           strokeWidth={0.8}
         />
+        {/* Faceta inferior escura */}
         <polygon
-          points={CRYSTAL_BOT_FACET}
+          points={botFacetPts}
           fill={`url(#${uid}-bot)`}
           opacity={0.75}
           stroke={palette.innerStroke}
           strokeWidth={0.8}
         />
+        {/* Aresta central */}
         <polyline
-          points={CRYSTAL_EDGE}
+          points={edgePts}
           fill="none"
           stroke="rgba(20,0,40,0.5)"
           strokeWidth={0.9}
         />
+        {/* Highlights */}
         <polygon
-          points={CRYSTAL_SHINE_A}
+          points={shineAPts}
           fill={`url(#${uid}-shine)`}
           opacity={palette.shineOpacity}
         />
         <polygon
-          points={CRYSTAL_SHINE_B}
+          points={shineBPts}
           fill={`url(#${uid}-shine)`}
           opacity={palette.shineOpacity * 0.5}
         />
+        {/* Contorno externo */}
         <polygon
-          points={CRYSTAL_OUTER}
+          points={outerPts}
           fill="none"
           stroke={palette.stroke}
           strokeWidth={1.3}
@@ -298,6 +453,11 @@ export function CrystalButton({
   ...rest
 }: CrystalButtonProps) {
   const uid = React.useId();
+  const anchors = React.useMemo(
+    () => buildAnchors(hashString(uid)),
+    [uid],
+  );
+
   const [hover, setHover] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
@@ -334,8 +494,6 @@ export function CrystalButton({
     onBlur: () => setFocused(false),
   };
 
-  const shadowFilter = buildShadowFilter(palette.shadow);
-
   const baseStyle: React.CSSProperties = {
     position: "relative",
     display: "inline-flex",
@@ -349,10 +507,9 @@ export function CrystalButton({
     padding: 0,
     cursor: disabled ? "not-allowed" : "pointer",
     fontFamily: 'var(--font-body), "Inter", system-ui, sans-serif',
-    filter: shadowFilter,
+    // Sombra agora está dentro do SVG (feDropShadow) — aqui só o lift/press
     transform: `translateY(${palette.translateY}px)`,
-    transition:
-      "transform 180ms cubic-bezier(.2,.8,.2,1), filter 220ms ease",
+    transition: "transform 180ms cubic-bezier(.2,.8,.2,1)",
     outline: "none",
     WebkitTapHighlightColor: "transparent",
     verticalAlign: "middle",
@@ -372,7 +529,12 @@ export function CrystalButton({
         style: mergedStyle,
         "aria-disabled": disabled || undefined,
       } as AsChildProps & Record<string, unknown>,
-      <CrystalBody palette={palette} scale={scale} uid={uid}>
+      <CrystalBody
+        palette={palette}
+        scale={scale}
+        uid={uid}
+        anchors={anchors}
+      >
         {child.props.children}
       </CrystalBody>,
     );
@@ -387,7 +549,12 @@ export function CrystalButton({
       className={className}
       style={baseStyle}
     >
-      <CrystalBody palette={palette} scale={scale} uid={uid}>
+      <CrystalBody
+        palette={palette}
+        scale={scale}
+        uid={uid}
+        anchors={anchors}
+      >
         {children}
       </CrystalBody>
     </button>
