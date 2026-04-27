@@ -11,6 +11,8 @@ interface HeroVideoProps {
   posterAlt?: string;
   /** Minimum viewport width (px) before the video element is mounted. */
   minWidth?: number;
+  /** Quando true, o vídeo responde ao progresso de rolagem da seção. */
+  scrollInteractive?: boolean;
 }
 
 /**
@@ -27,10 +29,13 @@ export function HeroVideo({
   className,
   posterAlt = "",
   minWidth = 768,
+  scrollInteractive = true,
 }: HeroVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [shouldMount, setShouldMount] = useState(false);
   const [ready, setReady] = useState(false);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const reduced = window.matchMedia(
@@ -47,7 +52,7 @@ export function HeroVideo({
 
   useEffect(() => {
     const v = ref.current;
-    if (!v || !shouldMount) return;
+    if (!v || !shouldMount || scrollInteractive) return;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -65,10 +70,51 @@ export function HeroVideo({
     );
     io.observe(v);
     return () => io.disconnect();
-  }, [shouldMount]);
+  }, [scrollInteractive, shouldMount]);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || !shouldMount || !scrollInteractive || !duration) return;
+
+    let raf = 0;
+
+    const updateByScroll = () => {
+      const wrapper = containerRef.current;
+      if (!wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      const rawProgress = (viewport - rect.top) / (viewport + rect.height);
+      const progress = Math.max(0, Math.min(1, rawProgress));
+      const targetTime = progress * duration;
+
+      if (Math.abs(v.currentTime - targetTime) > 0.033) {
+        v.currentTime = targetTime;
+      }
+      if (!v.paused) v.pause();
+    };
+
+    const onScroll = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(updateByScroll);
+    };
+
+    updateByScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [duration, scrollInteractive, shouldMount]);
 
   return (
-    <div className={cn("relative h-full w-full overflow-hidden", className)}>
+    <div
+      ref={containerRef}
+      className={cn("relative h-full w-full overflow-hidden", className)}
+    >
       <Image
         src={poster}
         alt={posterAlt}
@@ -84,10 +130,13 @@ export function HeroVideo({
           src={src}
           poster={typeof poster === "string" ? poster : poster.src}
           muted
-          loop
+          loop={!scrollInteractive}
           playsInline
-          preload="none"
+          preload={scrollInteractive ? "metadata" : "none"}
           onCanPlay={() => setReady(true)}
+          onLoadedMetadata={(event) => {
+            setDuration(event.currentTarget.duration || 0);
+          }}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
             ready ? "opacity-100" : "opacity-0",
