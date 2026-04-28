@@ -18,10 +18,11 @@ interface HeroVideoProps {
 /**
  * Background mídia que:
  * - sempre renderiza a foto como primeiro frame (sem flash escuro);
- * - só monta o <video> em viewports >= `minWidth` (padrão 768 px), porque em
- *   mobile 4G o custo do vídeo raramente compensa;
+ * - monta o <video> só em viewports >= `minWidth` (padrão 768 px), salvo
+ *   quando a página chama com `minWidth={0}`;
  * - respeita prefers-reduced-motion (não inicia playback);
- * - toca só quando visível (IntersectionObserver).
+ * - no modo interativo, fixa o vídeo na tela e usa o progresso da seção para
+ *   controlar o frame, como uma cena de scroll-scrub.
  */
 export function HeroVideo({
   src,
@@ -84,9 +85,10 @@ export function HeroVideo({
 
       const rect = wrapper.getBoundingClientRect();
       const viewport = window.innerHeight;
-      const rawProgress = (viewport - rect.top) / (viewport + rect.height);
-      const progress = Math.max(0, Math.min(1, rawProgress));
-      const targetTime = progress * duration;
+      const scrollDistance = Math.max(1, rect.height - viewport);
+      const progress = Math.max(0, Math.min(1, -rect.top / scrollDistance));
+      const safeDuration = Math.max(0, duration - 0.05);
+      const targetTime = progress * safeDuration;
 
       if (Math.abs(v.currentTime - targetTime) > 0.033) {
         v.currentTime = targetTime;
@@ -110,11 +112,8 @@ export function HeroVideo({
     };
   }, [duration, scrollInteractive, shouldMount]);
 
-  return (
-    <div
-      ref={containerRef}
-      className={cn("relative h-full w-full overflow-hidden", className)}
-    >
+  const media = (
+    <>
       <Image
         src={poster}
         alt={posterAlt}
@@ -132,10 +131,12 @@ export function HeroVideo({
           muted
           loop={!scrollInteractive}
           playsInline
-          preload={scrollInteractive ? "metadata" : "none"}
+          preload={scrollInteractive ? "auto" : "none"}
+          onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}
           onLoadedMetadata={(event) => {
             setDuration(event.currentTarget.duration || 0);
+            if (scrollInteractive) setReady(true);
           }}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
@@ -144,6 +145,28 @@ export function HeroVideo({
           aria-hidden="true"
         />
       )}
+    </>
+  );
+
+  if (scrollInteractive) {
+    return (
+      <div
+        ref={containerRef}
+        className={cn("relative h-[320svh] bg-obsidian-950", className)}
+      >
+        <div className="sticky top-0 h-screen overflow-hidden bg-obsidian-950">
+          <div className="relative h-full w-full">{media}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn("relative h-full w-full overflow-hidden", className)}
+    >
+      {media}
     </div>
   );
 }
