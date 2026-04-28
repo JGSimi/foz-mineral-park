@@ -34,6 +34,8 @@ export function HeroVideo({
 }: HeroVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const displayedTimeRef = useRef(0);
+  const targetTimeRef = useRef(0);
   const [shouldMount, setShouldMount] = useState(false);
   const [ready, setReady] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -78,30 +80,45 @@ export function HeroVideo({
     if (!v || !shouldMount || !scrollInteractive || !duration) return;
 
     let raf = 0;
+    const safeDuration = Math.max(0, duration - 0.05);
 
-    const updateByScroll = () => {
+    const readTargetTime = () => {
       const wrapper = containerRef.current;
-      if (!wrapper) return;
+      if (!wrapper) return targetTimeRef.current;
 
       const rect = wrapper.getBoundingClientRect();
       const viewport = window.innerHeight;
       const scrollDistance = Math.max(1, rect.height - viewport);
       const progress = Math.max(0, Math.min(1, -rect.top / scrollDistance));
-      const safeDuration = Math.max(0, duration - 0.05);
-      const targetTime = progress * safeDuration;
+      targetTimeRef.current = progress * safeDuration;
+      return targetTimeRef.current;
+    };
 
-      if (Math.abs(v.currentTime - targetTime) > 0.033) {
-        v.currentTime = targetTime;
+    const tick = () => {
+      const targetTime = targetTimeRef.current;
+      const currentTime = displayedTimeRef.current;
+      const diff = targetTime - currentTime;
+      const nextTime =
+        Math.abs(diff) < 0.006
+          ? targetTime
+          : currentTime +
+            Math.sign(diff) * Math.min(Math.abs(diff) * 0.22, 0.1);
+
+      displayedTimeRef.current = nextTime;
+      if (Math.abs(v.currentTime - nextTime) > 0.006) {
+        v.currentTime = nextTime;
       }
       if (!v.paused) v.pause();
+      raf = requestAnimationFrame(tick);
     };
 
     const onScroll = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(updateByScroll);
+      readTargetTime();
     };
 
-    updateByScroll();
+    displayedTimeRef.current = readTargetTime();
+    v.currentTime = displayedTimeRef.current;
+    raf = requestAnimationFrame(tick);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
 
