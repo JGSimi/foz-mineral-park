@@ -38,7 +38,7 @@ export default async function Home({ params }: { params: Promise<Params> }) {
   return (
     <>
       <Hero dict={dict} locale={locale} />
-      <ExperienceSection dict={dict} locale={locale} />
+      <ExperienceSection dict={dict} />
       <AttractionsSection dict={dict} locale={locale} />
       <WhyVisit dict={dict} />
       <Testimonials dict={dict} />
