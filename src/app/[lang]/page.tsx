@@ -26,6 +26,7 @@ import { AnimateIn, Stagger, StaggerItem } from "@/components/animate";
 import { AttractionsSection } from "@/components/home/attractions-section";
 import { HeroStone } from "@/components/home/hero-stone";
 import { ExperienceSection } from "@/components/home/experience-section";
+import { HeroTitle } from "@/components/home/hero-title";
 import { notFound } from "next/navigation";
 
 type Params = { lang: string };
@@ -60,6 +61,8 @@ const iconMap = {
 function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const h = dict.hero;
   const icons = [Clock, MapPin, Accessibility];
+  const compactHero = h.description.length < 80;
+
   return (
     <section className="relative isolate overflow-hidden pb-20 pt-24 sm:pb-24 sm:pt-28 md:min-h-[100svh] md:pt-32">
       <div
@@ -76,17 +79,28 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
       />
 
       <Container size="xl">
-        <AnimateIn className="mx-auto max-w-5xl text-center" y={22}>
-          <p className="mx-auto inline-flex items-center gap-2 rounded-full border border-champagne-400/40 bg-pearl-50/75 px-4 py-2 text-[0.62rem] uppercase tracking-[0.28em] text-champagne-700 shadow-luxe backdrop-blur">
+        <AnimateIn className="group/hero-copy mx-auto max-w-5xl text-center" y={22}>
+          <p className="mx-auto inline-flex items-center gap-2 text-[0.62rem] font-medium uppercase tracking-[0.28em] text-champagne-700">
             <MapPin className="size-3.5" />
             {h.locationBadge}
           </p>
-          <h1 className="mx-auto mt-7 max-w-5xl text-balance font-display text-[2.75rem] leading-[0.96] text-obsidian-900 sm:text-[4.8rem] md:text-[6rem]">
-            {h.titleLead}{" "}
-            <em className="italic text-champagne-600">{h.titleEm}</em>
-            {h.titleTail}
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-pearl-700 sm:text-lg">
+          <HeroTitle
+            compact={compactHero}
+            titleEm={h.titleEm}
+            titleLead={h.titleLead}
+            titleTail={h.titleTail}
+          />
+          <div
+            aria-hidden="true"
+            className="mx-auto mt-5 h-px w-full max-w-lg bg-gradient-to-r from-transparent via-champagne-400/55 to-transparent"
+          />
+          <p
+            className={`mx-auto max-w-2xl text-pretty leading-relaxed text-pearl-700 ${
+              compactHero
+                ? "mt-5 font-display text-[1.45rem] text-pearl-800 sm:text-[1.9rem]"
+                : "mt-6 text-base sm:text-lg"
+            }`}
+          >
             {h.description}
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

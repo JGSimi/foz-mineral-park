@@ -50,15 +50,18 @@ export function AsideNavigation() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         whileTap={{ scale: 0.97 }}
-        className="fixed left-4 top-4 z-50 inline-flex items-center gap-3 rounded-full border border-champagne-300/30 bg-obsidian-950/82 px-3 py-2 text-pearl-100 shadow-luxe-dark backdrop-blur-xl transition-colors hover:border-champagne-300/70 sm:left-6 sm:top-6"
+        className={cn(
+          "fixed left-4 top-4 z-50 inline-flex size-11 items-center justify-center rounded-full border border-obsidian-900/10 bg-pearl-50/60 text-obsidian-800 shadow-luxe backdrop-blur-md transition-colors hover:border-champagne-500/35 hover:bg-pearl-50/85 sm:left-6 sm:top-6",
+          open &&
+            "border-champagne-300/35 bg-obsidian-950/80 text-pearl-100 shadow-luxe-dark",
+        )}
         onClick={() => setOpen((value) => !value)}
       >
-        <span className="inline-flex size-10 items-center justify-center rounded-full border border-pearl-100/10 bg-pearl-100/[0.06]">
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </span>
-        <span className="hidden pr-2 text-[0.62rem] font-medium uppercase tracking-[0.28em] text-champagne-200 sm:inline">
-          Menu
-        </span>
+        {open ? (
+          <X className="size-[1.125rem]" />
+        ) : (
+          <Menu className="size-[1.125rem]" />
+        )}
       </motion.button>
 
       <NavigationAside
@@ -120,7 +123,7 @@ function NavigationAside({
     );
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    first?.focus();
+    panel.focus({ preventScroll: true });
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -155,7 +158,7 @@ function NavigationAside({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.24 }}
-            className="fixed inset-0 z-[58] bg-obsidian-950/55 backdrop-blur-sm"
+            className="fixed inset-0 z-[58] bg-obsidian-950/35 backdrop-blur-md"
             onClick={onClose}
           />
 
@@ -166,57 +169,54 @@ function NavigationAside({
             role="dialog"
             aria-modal="true"
             aria-label={dict.navbar.menuOpen}
+            tabIndex={-1}
             initial={{ opacity: 0, x: -32, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -28, scale: 0.985 }}
             transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-y-3 left-3 z-[59] flex w-[calc(100vw-1.5rem)] max-w-[25rem] flex-col overflow-hidden rounded-[28px] border border-champagne-300/20 bg-obsidian-950/94 text-pearl-100 shadow-luxe-dark backdrop-blur-2xl sm:inset-y-5 sm:left-5"
+            className="fixed inset-y-3 left-3 z-[59] flex w-[calc(100vw-1.5rem)] max-w-[25rem] flex-col overflow-hidden rounded-[30px] border border-champagne-400/35 bg-[linear-gradient(180deg,rgba(250,246,239,0.94),rgba(245,239,228,0.9))] text-obsidian-900 shadow-[0_28px_90px_-40px_rgba(16,14,22,0.65)] backdrop-blur-2xl focus:outline-none sm:inset-y-5 sm:left-5"
           >
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-10 right-0 w-px bg-gradient-to-b from-transparent via-champagne-300/50 to-transparent"
-            />
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-24 top-20 size-52 rounded-full bg-imperial-500/20 blur-3xl"
+              className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-champagne-500/50 to-transparent"
             />
 
-            <div className="flex items-center justify-between gap-4 border-b border-champagne-300/10 p-5">
+            <div className="flex items-center justify-between gap-4 border-b border-champagne-500/15 px-5 py-5">
               <Link href={localePath(locale, "/")} onClick={onClose}>
-                <Logo tone="dark" />
+                <Logo />
               </Link>
               <button
                 type="button"
                 aria-label={dict.navbar.menuClose}
-                className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/25 text-pearl-100 transition-colors hover:border-champagne-300/70"
+                className="inline-flex size-10 items-center justify-center rounded-full border border-obsidian-900/10 bg-pearl-50/60 text-obsidian-700 shadow-luxe transition-colors hover:border-champagne-500/35 hover:text-obsidian-950"
                 onClick={onClose}
               >
-                <X className="size-5" />
+                <X className="size-[1.125rem]" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-5">
+            <div className="menu-panel-scroll flex-1 overflow-y-auto px-5 py-5">
               <a
                 href={site.social.googleMaps}
                 target="_blank"
                 rel="noreferrer"
                 onClick={onClose}
-                className="group flex items-start gap-3 rounded-2xl border border-champagne-300/15 bg-pearl-100/[0.06] p-4 text-sm text-pearl-100/78 transition-colors hover:border-champagne-300/45"
+                className="group flex items-start gap-3 px-1 py-2 text-sm text-pearl-700 transition-colors hover:text-obsidian-900"
               >
-                <MapPin className="mt-0.5 size-4 shrink-0 text-champagne-300" />
+                <MapPin className="mt-0.5 size-4 shrink-0 text-champagne-700" />
                 <span>
-                  <span className="block text-[0.58rem] uppercase tracking-[0.26em] text-champagne-200">
+                  <span className="block text-[0.58rem] uppercase tracking-[0.26em] text-champagne-700">
                     {dict.utility.addressLabel}
                   </span>
-                  <span className="mt-1 block leading-relaxed">
+                  <span className="mt-1 block leading-relaxed text-obsidian-800">
                     {site.address.street}, {site.address.city}
                   </span>
                 </span>
               </a>
 
-              <nav className="mt-6" aria-label="Navegação principal">
+              <nav className="mt-7" aria-label="Navegação principal">
                 <motion.ul
-                  className="grid gap-2"
+                  className="border-y border-champagne-500/15"
                   initial="hidden"
                   animate="show"
                   variants={{
@@ -245,7 +245,7 @@ function NavigationAside({
               </nav>
 
               <div className="mt-7">
-                <Button asChild className="w-full" size="lg" variant="gold">
+                <Button asChild className="w-full shadow-luxe" size="lg" variant="primary">
                   <Link href={ticketsPath} onClick={onClose}>
                     <Ticket className="size-4" />
                     {dict.navbar.ctaBuy}
@@ -254,7 +254,7 @@ function NavigationAside({
                 </Button>
               </div>
 
-              <div className="mt-7 grid grid-cols-3 gap-2">
+              <div className="mt-6 grid grid-cols-3 gap-2">
                 <QuickAction
                   href={`https://wa.me/${site.contact.whatsapp.replace("+", "")}`}
                   label="WhatsApp"
@@ -278,8 +278,8 @@ function NavigationAside({
                 />
               </div>
 
-              <div className="mt-7 rounded-2xl border border-champagne-300/15 bg-pearl-100/[0.04] p-4">
-                <div className="flex items-center gap-2 text-[0.58rem] uppercase tracking-[0.26em] text-champagne-200">
+              <div className="mt-7 border-t border-champagne-500/15 pt-5">
+                <div className="flex items-center gap-2 text-[0.58rem] uppercase tracking-[0.26em] text-champagne-700">
                   <Languages className="size-3.5" />
                   Idioma
                 </div>
@@ -333,15 +333,17 @@ function NavItem({
       <Link
         href={href}
         onClick={onClose}
-        className="group flex items-center justify-between gap-4 rounded-2xl border border-transparent px-3 py-3 text-pearl-100/82 transition-colors hover:border-champagne-300/20 hover:bg-pearl-100/[0.06] hover:text-pearl-100"
+        className="group flex items-center justify-between gap-4 border-b border-champagne-500/15 px-1 py-4 text-obsidian-800 transition-colors last:border-b-0 hover:text-obsidian-950"
       >
         <span className="inline-flex min-w-0 items-center gap-3">
-          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-champagne-300/20 bg-pearl-100/[0.04] text-champagne-200 transition-colors group-hover:border-champagne-300/50">
+          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-champagne-500/25 bg-pearl-50/45 text-champagne-700 transition-colors group-hover:border-champagne-500/55 group-hover:bg-champagne-50/70">
             {icon}
           </span>
-          <span className="truncate font-display text-lg">{label}</span>
+          <span className="truncate font-display text-[1.25rem] leading-none">
+            {label}
+          </span>
         </span>
-        <ArrowRight className="size-4 shrink-0 text-champagne-300/60 transition-transform group-hover:translate-x-0.5" />
+        <ArrowRight className="size-4 shrink-0 text-champagne-700/55 transition-transform group-hover:translate-x-1 group-hover:text-champagne-700" />
       </Link>
     </motion.li>
   );
@@ -362,10 +364,10 @@ function QuickAction({
 }) {
   const tone =
     tint === "jade"
-      ? "border-jade-500/25 bg-jade-500/10 text-jade-300"
+      ? "border-jade-500/25 bg-jade-500/[0.06] text-jade-600 hover:border-jade-500/45"
       : tint === "imperial"
-        ? "border-imperial-400/25 bg-imperial-500/10 text-imperial-200"
-        : "border-champagne-400/25 bg-champagne-400/10 text-champagne-200";
+        ? "border-imperial-500/20 bg-imperial-500/[0.05] text-imperial-700 hover:border-imperial-500/40"
+        : "border-champagne-500/25 bg-champagne-400/[0.07] text-champagne-700 hover:border-champagne-500/45";
 
   return (
     <a
@@ -374,7 +376,7 @@ function QuickAction({
       rel="noreferrer"
       onClick={onClose}
       className={cn(
-        "flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-transform active:scale-[0.98]",
+        "flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all hover:bg-pearl-50/70 active:scale-[0.98]",
         tone,
       )}
     >
@@ -404,10 +406,10 @@ function LocaleChip({
       hrefLang={locale}
       onClick={onClose}
       className={cn(
-        "flex h-11 items-center justify-center rounded-full border text-sm font-medium tracking-[0.18em] transition-all duration-300 active:scale-[0.97]",
+        "flex h-10 items-center justify-center rounded-full border text-sm font-medium tracking-[0.18em] transition-all duration-300 active:scale-[0.97]",
         active
-          ? "border-champagne-400/70 bg-champagne-400/12 text-champagne-200"
-          : "border-champagne-400/15 bg-white/[0.03] text-pearl-100/60 hover:border-champagne-400/40 hover:text-pearl-100",
+          ? "border-champagne-500/55 bg-champagne-400/12 text-champagne-800"
+          : "border-champagne-500/18 bg-pearl-50/35 text-pearl-700 hover:border-champagne-500/40 hover:text-obsidian-900",
       )}
     >
       {localeLabel[locale]}

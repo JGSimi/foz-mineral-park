@@ -102,11 +102,10 @@ const dict = {
 
   hero: {
     locationBadge: "Av. das Cataratas, 6025 — Foz do Iguaçu/PR",
-    titleLead: "Onde a Terra guarda seus",
-    titleEm: "tesouros mais antigos",
-    titleTail: ".",
-    description:
-      "Três experiências em um só lugar, no caminho das Cataratas. Atravesse uma gruta de ametista, percorra um acervo de minerais e leve para casa peças lapidadas à mão por artesãos da região.",
+    titleLead: "Foz Mineral Park",
+    titleEm: "",
+    titleTail: "",
+    description: "Do garimpo direto para suas mãos.",
     ctaBuy: "Comprar ingresso",
     ctaHowTo: "Como chegar",
     stats: [
