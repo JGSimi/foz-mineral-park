@@ -16,6 +16,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CookieBanner } from "@/components/cookie-banner";
 import { WhatsAppFloating } from "@/components/whatsapp-floating";
+import { MobileQuickActions } from "@/components/mobile-quick-actions";
 import { PageTransition } from "@/components/page-transition";
 
 type LangParams = { lang: string };
@@ -147,10 +148,11 @@ export default async function LocaleLayout({
         {dict.common.skipToContent}
       </a>
       <Navbar />
-      <main id="conteudo" tabIndex={-1} className="flex-1">
+      <main id="conteudo" tabIndex={-1} className="flex-1 pb-24 md:pb-0">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer locale={locale} dict={dict} />
+      <MobileQuickActions />
       <WhatsAppFloating />
       <CookieBanner />
       <Script

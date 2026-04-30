@@ -39,7 +39,7 @@ export function WhatsAppFloating() {
       }}
       className={cn(
         "fixed right-5 z-30 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 transition-all duration-500 active:scale-95 hover:scale-105 focus-visible:scale-105",
-        consentResolved ? "bottom-5" : "bottom-44 sm:bottom-5",
+        consentResolved ? "bottom-24 sm:bottom-5" : "bottom-44 sm:bottom-5",
       )}
     >
       <svg
