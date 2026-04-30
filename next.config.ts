@@ -1,9 +1,17 @@
 import type { NextConfig } from "next";
 
+const isDevelopment = process.env.NODE_ENV !== "production";
+
 const csp = [
   "default-src 'self'",
   // Next.js usa inline JSON para RSC hydration; 'unsafe-inline' é necessário em HTML inline. Em produção, migrar para nonces via middleware.
-  "script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://va.vercel-scripts.com https://vercel.live",
+  [
+    "script-src 'self' 'unsafe-inline'",
+    isDevelopment ? "'unsafe-eval'" : "",
+    "https://*.vercel-insights.com https://va.vercel-scripts.com https://vercel.live",
+  ]
+    .filter(Boolean)
+    .join(" "),
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https://*.google.com https://*.googleusercontent.com https://maps.gstatic.com",

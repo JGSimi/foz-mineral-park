@@ -289,7 +289,7 @@ export function HeroStone({
               fill
               sizes="(max-width: 768px) 80vw, 620px"
               placeholder="blur"
-              quality={74}
+              quality={75}
               className="object-contain"
             />
           </motion.div>
