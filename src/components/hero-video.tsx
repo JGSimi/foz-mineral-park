@@ -13,6 +13,7 @@ interface HeroVideoProps {
   minWidth?: number;
   /** Quando true, o vídeo responde ao progresso de rolagem da seção. */
   scrollInteractive?: boolean;
+  posterPriority?: boolean;
   children?: ReactNode;
 }
 
@@ -31,6 +32,7 @@ export function HeroVideo({
   posterAlt = "",
   minWidth = 768,
   scrollInteractive = false,
+  posterPriority = false,
   children,
 }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -38,6 +40,7 @@ export function HeroVideo({
   const targetTimeRef = useRef(0);
   const displayedTimeRef = useRef(0);
   const [shouldMount, setShouldMount] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const [ready, setReady] = useState(false);
   const [duration, setDuration] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -57,6 +60,34 @@ export function HeroVideo({
       reduced.removeEventListener("change", update);
     };
   }, [minWidth]);
+
+  useEffect(() => {
+    if (!shouldMount) return;
+
+    const wrapper = containerRef.current;
+    if (!wrapper || !("IntersectionObserver" in window)) {
+      const frame = window.requestAnimationFrame(() => {
+        setShouldLoadVideo(true);
+      });
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShouldLoadVideo(true);
+          io.disconnect();
+        }
+      },
+      {
+        rootMargin: scrollInteractive ? "0px" : "300px 0px",
+        threshold: 0,
+      },
+    );
+
+    io.observe(wrapper);
+    return () => io.disconnect();
+  }, [scrollInteractive, shouldMount]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -157,7 +188,7 @@ export function HeroVideo({
       src={poster}
       alt={posterAlt}
       fill
-      priority
+      priority={posterPriority}
       sizes="100vw"
       placeholder={typeof poster === "string" ? "empty" : "blur"}
       className="object-cover"
@@ -173,7 +204,7 @@ export function HeroVideo({
         <div className="sticky top-0 h-screen overflow-hidden bg-obsidian-950">
           <div className="relative h-full w-full">
             {posterImage}
-            {shouldMount && (
+            {shouldMount && shouldLoadVideo && (
               <video
                 ref={videoRef}
                 src={src}
@@ -210,7 +241,7 @@ export function HeroVideo({
       className={cn("relative h-full w-full overflow-hidden", className)}
     >
       {posterImage}
-      {shouldMount && (
+      {shouldMount && shouldLoadVideo && (
         <video
           ref={videoRef}
           src={src}
