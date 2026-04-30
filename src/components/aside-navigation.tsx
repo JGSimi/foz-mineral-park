@@ -34,7 +34,7 @@ function WhatsAppGlyph(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function Navbar() {
+export function AsideNavigation() {
   const { locale, dict } = useLocale();
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
