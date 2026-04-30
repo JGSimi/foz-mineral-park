@@ -6,8 +6,6 @@ import { createPortal } from "react-dom";
 import {
   AnimatePresence,
   motion,
-  useMotionValueEvent,
-  useScroll,
 } from "motion/react";
 import { Menu, X, MapPin, Phone, Navigation } from "lucide-react";
 
@@ -19,9 +17,6 @@ import { localePath, stripLocale } from "@/i18n/routing";
 import { Container } from "./container";
 import { Logo } from "./logo";
 import { Button } from "./button";
-import { UtilityStrip } from "./utility-strip";
-
-const HIDE_THRESHOLD = 140;
 
 function WhatsAppGlyph(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -58,95 +53,34 @@ function FacebookGlyph(props: React.SVGProps<SVGSVGElement>) {
 
 export function Navbar() {
   const { locale, dict } = useLocale();
-  const { scrollY } = useScroll();
-  const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0;
-    setScrolled(latest > 12);
-    if (open) {
-      setHidden(false);
-      return;
-    }
-    if (latest > previous && latest > HIDE_THRESHOLD) setHidden(true);
-    else if (latest < previous) setHidden(false);
-  });
 
   const homePath = localePath(locale, "/");
   const ticketsPath = localePath(locale, "/ingressos");
 
   return (
     <>
-      <motion.header
-        initial={{ y: 0 }}
-        animate={{ y: hidden ? "-110%" : 0 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className={cn(
-          "fixed inset-x-0 top-0 z-40 w-full transition-colors duration-500",
-          scrolled
-            ? "navbar-shadow bg-obsidian-950/92 backdrop-blur-md"
-            : "bg-obsidian-950/85 backdrop-blur-md",
-        )}
-      >
-        <UtilityStrip />
-        <Container className="flex h-16 items-center justify-between sm:h-20">
-          <Link
-            href={homePath}
-            aria-label="Foz Mineral Park"
-            className="group"
-          >
-            <Logo tone="dark" />
-          </Link>
-
-          <nav
-            className="hidden items-center gap-1 md:flex"
-            aria-label="Navegação principal"
-          >
-            {dict.navbar.links.map((l) => (
-              <Link
-                key={l.href}
-                href={localePath(locale, l.href)}
-                className="relative rounded-full px-4 py-2 text-[0.8rem] uppercase tracking-[0.18em] text-pearl-100/80 transition-colors duration-300 hover:text-champagne-300"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Button
-              asChild
-              size="sm"
-              variant="gold"
-              className="hidden sm:inline-flex"
-            >
-              <Link href={ticketsPath}>{dict.navbar.ctaBuy}</Link>
-            </Button>
-            <button
-              ref={triggerRef}
-              type="button"
-              aria-label={open ? dict.navbar.menuClose : dict.navbar.menuOpen}
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-              className="inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/30 text-pearl-100 transition-colors active:scale-95 hover:border-champagne-300/60 md:hidden"
-              onClick={() => setOpen((v) => !v)}
-            >
-              {open ? <X className="size-5" /> : <Menu className="size-5" />}
-            </button>
-          </div>
-        </Container>
-
-        <div
-          aria-hidden="true"
-          className={cn(
-            "mx-auto h-px max-w-6xl bg-gradient-to-r from-transparent via-champagne-400/50 to-transparent transition-opacity duration-500",
-            scrolled ? "opacity-100" : "opacity-70",
-          )}
-        />
-      </motion.header>
+      <Container className="pointer-events-none fixed inset-x-0 top-0 z-40 flex h-16 items-center sm:h-20">
+        <Link
+          href={homePath}
+          aria-label="Foz Mineral Park"
+          className="pointer-events-auto group"
+        >
+          <Logo tone="dark" />
+        </Link>
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-label={open ? dict.navbar.menuClose : dict.navbar.menuOpen}
+          aria-expanded={open}
+          aria-controls="nav-aside"
+          className="pointer-events-auto ml-auto inline-flex size-11 items-center justify-center rounded-full border border-champagne-300/30 bg-obsidian-950/85 text-pearl-100 backdrop-blur-md transition-colors active:scale-95 hover:border-champagne-300/60"
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
+      </Container>
 
       <MobileSheet
         open={open}
@@ -233,7 +167,7 @@ function MobileSheet({
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="md:hidden">
+        <div>
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -245,22 +179,22 @@ function MobileSheet({
           />
           <motion.div
             ref={sheetRef}
-            id="mobile-menu"
+            id="nav-aside"
             key="sheet"
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             role="dialog"
             aria-modal="true"
             aria-label={dict.navbar.menuOpen}
-            className="fixed inset-x-0 bottom-0 z-[61] flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[32px] border-t border-champagne-400/20 bg-obsidian-950 text-pearl-100 shadow-luxe-dark"
+            className="fixed inset-y-0 left-0 z-[61] flex h-dvh w-full max-w-md flex-col overflow-hidden border-r border-champagne-400/20 bg-obsidian-950 text-pearl-100 shadow-luxe-dark"
           >
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-champagne-400/70 to-transparent"
             />
-            <div className="flex justify-center pt-3">
+            <div className="flex justify-center pt-3 md:hidden">
               <span
                 aria-hidden="true"
                 className="h-1 w-10 rounded-full bg-pearl-100/20"
