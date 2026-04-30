@@ -27,6 +27,8 @@ const dict: Dictionary = {
     whatsapp: "Hablar por WhatsApp",
     loading: "Cargando...",
     back: "Volver",
+    callNow: "Llamar ahora",
+    mapsShort: "Maps",
   },
 
   navbar: {
