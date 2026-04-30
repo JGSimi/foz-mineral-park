@@ -39,23 +39,37 @@ export function HeroVideo({
   const [shouldMount, setShouldMount] = useState(false);
   const [ready, setReady] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [allowScrollInteractive, setAllowScrollInteractive] = useState(scrollInteractive);
 
   useEffect(() => {
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduced) return;
+    const widthMq = window.matchMedia(`(min-width: ${minWidth}px)`);
+    const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktopMq = window.matchMedia("(min-width: 1024px)");
 
-    const mq = window.matchMedia(`(min-width: ${minWidth}px)`);
-    const update = () => setShouldMount(mq.matches);
+    const update = () => {
+      setShouldMount(widthMq.matches);
+      setReducedMotion(reducedMq.matches);
+      setAllowScrollInteractive(
+        scrollInteractive && !reducedMq.matches && desktopMq.matches,
+      );
+    };
+
     update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, [minWidth]);
+    widthMq.addEventListener("change", update);
+    reducedMq.addEventListener("change", update);
+    desktopMq.addEventListener("change", update);
+
+    return () => {
+      widthMq.removeEventListener("change", update);
+      reducedMq.removeEventListener("change", update);
+      desktopMq.removeEventListener("change", update);
+    };
+  }, [minWidth, scrollInteractive]);
 
   useEffect(() => {
     const v = ref.current;
-    if (!v || !shouldMount || scrollInteractive) return;
+    if (!v || !shouldMount || allowScrollInteractive || reducedMotion) return;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -73,11 +87,11 @@ export function HeroVideo({
     );
     io.observe(v);
     return () => io.disconnect();
-  }, [scrollInteractive, shouldMount]);
+  }, [allowScrollInteractive, reducedMotion, shouldMount]);
 
   useEffect(() => {
     const v = ref.current;
-    if (!v || !shouldMount || !scrollInteractive || !duration) return;
+    if (!v || !shouldMount || !allowScrollInteractive || !duration) return;
 
     let raf = 0;
     const safeDuration = Math.max(0, duration - 0.05);
@@ -127,7 +141,7 @@ export function HeroVideo({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [duration, scrollInteractive, shouldMount]);
+  }, [allowScrollInteractive, duration, shouldMount]);
 
   const media = (
     <>
@@ -146,14 +160,15 @@ export function HeroVideo({
           src={src}
           poster={typeof poster === "string" ? poster : poster.src}
           muted
-          loop={!scrollInteractive}
+          autoPlay={!allowScrollInteractive && !reducedMotion}
+          loop={!allowScrollInteractive}
           playsInline
-          preload={scrollInteractive ? "auto" : "none"}
+          preload={allowScrollInteractive ? "auto" : "metadata"}
           onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}
           onLoadedMetadata={(event) => {
             setDuration(event.currentTarget.duration || 0);
-            if (scrollInteractive) setReady(true);
+            if (allowScrollInteractive) setReady(true);
           }}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
@@ -165,7 +180,7 @@ export function HeroVideo({
     </>
   );
 
-  if (scrollInteractive) {
+  if (allowScrollInteractive) {
     return (
       <div
         ref={containerRef}
