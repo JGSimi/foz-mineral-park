@@ -33,5 +33,18 @@
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "description": "Site institucional e de vendas do **Foz Mineral Park** (Foz do Iguaçu, PR). Reconstrução completa do site anterior, com foco em SEO real, conformidade com LGPD e funil de conversão funcional.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JGSimi/foz-mineral-park.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JGSimi/foz-mineral-park/issues"
+  },
+  "homepage": "https://github.com/JGSimi/foz-mineral-park#readme"
 }

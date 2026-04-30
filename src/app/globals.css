@@ -137,6 +137,8 @@
 }
 
 html {
+  max-width: 100%;
+  overflow-x: clip;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
@@ -226,6 +228,8 @@ textarea {
 }
 
 body {
+  max-width: 100%;
+  overflow-x: clip;
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
@@ -242,7 +246,7 @@ h3,
 h4 {
   font-family: var(--font-display), ui-serif, Georgia, serif;
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   line-height: 1.05;
 }
 
@@ -508,6 +512,27 @@ svg.lucide {
     rgba(200, 147, 71, 0.25) 0%,
     transparent 55%
   );
+}
+
+/* Scroll story: MP4 scrub + texto por progresso. O vídeo fica escuro por
+   padrão para segurar contraste sem precisar duplicar overlays em cada painel. */
+.story-stage video,
+.story-stage img {
+  filter: saturate(1.08) contrast(1.04);
+}
+.story-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 45% at 72% 42%,
+      rgba(200, 147, 71, 0.16),
+      transparent 58%),
+    linear-gradient(180deg,
+      rgba(5, 5, 8, 0.25),
+      rgba(5, 5, 8, 0.05) 42%,
+      rgba(5, 5, 8, 0.4));
 }
 
 /* Overlay das páginas internas (PageHero) */

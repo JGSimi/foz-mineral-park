@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { site } from "@/lib/site";
 import { Container } from "@/components/container";
@@ -27,9 +28,9 @@ export default function TermosPage() {
             <Block title="1. Aceitação">
               <p>
                 Ao acessar este site, você concorda com estes Termos e com a{" "}
-                <a href="/politica-de-privacidade" className="underline">
+                <Link href="/politica-de-privacidade" className="underline">
                   Política de Privacidade
-                </a>
+                </Link>
                 . Se não concordar, por favor não utilize os serviços.
               </p>
             </Block>

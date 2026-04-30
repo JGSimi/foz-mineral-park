@@ -13,15 +13,20 @@ export function WhatsAppFloating() {
   const [consentResolved, setConsentResolved] = useState(true);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(CONSENT_KEY);
-      setConsentResolved(Boolean(stored));
-    } catch {
-      setConsentResolved(true);
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        const stored = localStorage.getItem(CONSENT_KEY);
+        setConsentResolved(Boolean(stored));
+      } catch {
+        setConsentResolved(true);
+      }
+    }, 0);
     const onResolve = () => setConsentResolved(true);
     window.addEventListener(CONSENT_EVENT, onResolve);
-    return () => window.removeEventListener(CONSENT_EVENT, onResolve);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener(CONSENT_EVENT, onResolve);
+    };
   }, []);
 
   const message = encodeURIComponent(dict.whatsappMessage);
@@ -39,7 +44,7 @@ export function WhatsAppFloating() {
       }}
       className={cn(
         "fixed right-5 z-30 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 transition-all duration-500 active:scale-95 hover:scale-105 focus-visible:scale-105",
-        consentResolved ? "bottom-24 sm:bottom-5" : "bottom-44 sm:bottom-5",
+        consentResolved ? "bottom-5" : "bottom-44 sm:bottom-5",
       )}
     >
       <svg

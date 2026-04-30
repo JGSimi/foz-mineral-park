@@ -109,6 +109,7 @@ export const site = {
 
   hero: {
     video: "/media/video/hero-1.mp4",
+    scrollVideo: "/media/video/hero-scroll.mp4",
     poster: "/media/attractions/gruta-de-ametista.jpg",
   },
 

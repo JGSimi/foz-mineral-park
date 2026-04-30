@@ -68,6 +68,8 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const enableVercelInsights = process.env.VERCEL === "1";
+
   return (
     <html
       lang="pt-BR"
@@ -80,8 +82,12 @@ export default function RootLayout({
           position="bottom-right"
           toastOptions={{ className: "font-sans" }}
         />
-        <Analytics />
-        <SpeedInsights />
+        {enableVercelInsights && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );

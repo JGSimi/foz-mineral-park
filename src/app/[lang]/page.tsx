@@ -38,7 +38,7 @@ export default async function Home({ params }: { params: Promise<Params> }) {
   return (
     <>
       <Hero dict={dict} locale={locale} />
-      <ExperienceSection dict={dict} />
+      <ExperienceSection dict={dict} locale={locale} />
       <AttractionsSection dict={dict} locale={locale} />
       <WhyVisit dict={dict} />
       <Testimonials dict={dict} />
@@ -61,29 +61,35 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const h = dict.hero;
   const icons = [Clock, MapPin, Accessibility];
   return (
-    <section className="relative -mt-16 overflow-hidden pb-24 pt-32 sm:-mt-20 sm:pb-28 sm:pt-48">
-      {/* Textura parchment sutil sobre o pearl-100 do body. */}
+    <section className="relative isolate overflow-hidden pb-20 pt-24 sm:pb-24 sm:pt-28 md:min-h-[100svh] md:pt-32">
       <div
-        className="bg-parchment-grid absolute inset-0 -z-10 opacity-50"
+        className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_0%,rgba(200,149,71,0.2),transparent_34%),linear-gradient(180deg,var(--color-pearl-50)_0%,var(--color-pearl-100)_48%,var(--color-pearl-200)_100%)]"
         aria-hidden="true"
       />
-      {/* Halo quente no canto da pedra, bem diluído no fundo claro. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-15%] top-[8%] -z-10 h-[70vh] w-[70vw] rounded-full bg-gradient-to-br from-imperial-400/12 via-champagne-300/8 to-transparent blur-3xl"
+        className="bg-parchment-grid absolute inset-0 -z-10 opacity-45"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[22rem] -z-10 h-[34rem] w-[82rem] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(89,47,126,0.18),rgba(200,149,71,0.1)_38%,transparent_70%)] blur-3xl"
       />
 
-      <Container className="grid items-center gap-12 md:grid-cols-[1.05fr_1fr] md:gap-16">
-        <AnimateIn className="space-y-7 sm:space-y-8" y={24}>
-          <h1 className="pr-2 text-balance font-display text-[2.4rem] leading-[1.02] text-obsidian-900 sm:text-[3.5rem] sm:leading-[1] md:text-[4rem]">
+      <Container size="xl">
+        <AnimateIn className="mx-auto max-w-5xl text-center" y={22}>
+          <p className="mx-auto inline-flex items-center gap-2 rounded-full border border-champagne-400/40 bg-pearl-50/75 px-4 py-2 text-[0.62rem] uppercase tracking-[0.28em] text-champagne-700 shadow-luxe backdrop-blur">
+            <MapPin className="size-3.5" />
+            {h.locationBadge}
+          </p>
+          <h1 className="mx-auto mt-7 max-w-5xl text-balance font-display text-[2.75rem] leading-[0.96] text-obsidian-900 sm:text-[4.8rem] md:text-[6rem]">
             {h.titleLead}{" "}
             <em className="italic text-champagne-600">{h.titleEm}</em>
             {h.titleTail}
           </h1>
-          <p className="max-w-xl text-pretty text-[0.95rem] leading-relaxed text-pearl-700 sm:text-base">
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-pearl-700 sm:text-lg">
             {h.description}
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button
               asChild
               size="lg"
@@ -108,47 +114,54 @@ function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               </Link>
             </Button>
           </div>
-          <dl className="grid max-w-xl grid-cols-3 gap-4 border-t border-champagne-400/30 pt-6 text-sm sm:gap-6 sm:pt-8">
+        </AnimateIn>
+
+        <AnimateIn className="relative mx-auto mt-6 max-w-6xl" y={30} delay={0.12}>
+          <div className="pointer-events-none absolute inset-x-8 bottom-8 h-28 rounded-[50%] bg-obsidian-950/18 blur-3xl" />
+          <HeroStone
+            dict={dict}
+            className="w-[min(84vw,520px)] sm:w-[min(60vw,620px)]"
+          />
+        </AnimateIn>
+
+        <Container size="lg" className="relative z-10 -mt-4 px-0 sm:-mt-8">
+          <Stagger className="relative grid overflow-hidden rounded-[28px] border border-champagne-400/30 bg-pearl-50/78 p-1 shadow-[0_24px_80px_-42px_rgba(10,9,16,0.45)] backdrop-blur-xl sm:grid-cols-3">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-6 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/35 to-transparent sm:block"
+            />
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-6 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/35 to-transparent sm:block"
+            />
             {h.stats.map((s) => (
-              <div key={s.k}>
-                <dt className="text-[0.56rem] uppercase tracking-[0.24em] text-champagne-700 sm:text-[0.6rem] sm:tracking-[0.3em]">
+              <StaggerItem
+                key={s.k}
+                className="flex items-baseline justify-between gap-4 px-6 py-5 sm:block sm:px-8 sm:py-7"
+              >
+                <p className="text-[0.58rem] uppercase tracking-[0.26em] text-champagne-700">
                   {s.k}
-                </dt>
-                <dd className="mt-1.5 font-display text-2xl text-obsidian-900 sm:mt-2 sm:text-3xl">
+                </p>
+                <p className="font-display text-4xl leading-none text-obsidian-900 sm:mt-3 sm:text-5xl">
                   {s.v}
-                </dd>
-                <dd className="text-[0.7rem] text-pearl-700 sm:text-xs">
+                </p>
+                <p className="text-right text-[0.75rem] text-pearl-700 sm:mt-2 sm:text-left sm:text-xs">
                   {s.d}
-                </dd>
-              </div>
+                </p>
+              </StaggerItem>
             ))}
-          </dl>
-        </AnimateIn>
+          </Stagger>
+        </Container>
 
-        <AnimateIn className="relative" y={30} delay={0.12}>
-          <HeroStone dict={dict} />
-        </AnimateIn>
-      </Container>
-
-      {/* Strip de quick facts integrada como rodapé do hero. */}
-      <Container className="mt-16 sm:mt-20">
-        <Stagger className="relative grid gap-0 overflow-hidden rounded-2xl border border-champagne-400/30 bg-pearl-50/70 p-1 shadow-[0_10px_40px_-12px_rgba(30,20,10,0.15)] backdrop-blur-md sm:grid-cols-3">
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-6 left-1/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/35 to-transparent sm:block"
-          />
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-6 left-2/3 hidden w-px bg-gradient-to-b from-transparent via-champagne-400/35 to-transparent sm:block"
-          />
+        <Stagger className="mx-auto mt-8 grid max-w-5xl gap-3 text-sm sm:grid-cols-3">
           {dict.quickFacts.map((f, i) => {
             const Icon = icons[i];
             return (
               <StaggerItem
                 key={f.label}
-                className="relative flex items-start gap-4 px-6 py-6"
+                className="flex items-start gap-3 rounded-2xl border border-pearl-300/70 bg-pearl-50/55 px-4 py-4 backdrop-blur"
               >
-                <div className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne-400/60 bg-pearl-100 text-champagne-700">
+                <div className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-champagne-400/45 bg-pearl-100 text-champagne-700">
                   <Icon className="size-4" />
                 </div>
                 <div className="min-w-0">
@@ -274,12 +287,46 @@ function Testimonials({ dict }: { dict: Dictionary }) {
 
 function VisitPlan({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const v = dict.visitPlan;
+  const detail = dict.attractions.detail;
+  const cards = [
+    {
+      icon: Clock,
+      k: v.labels.hours,
+      val: `${site.hours.summary}. ${site.hours.lastEntry}.`,
+    },
+    {
+      icon: MapPin,
+      k: v.labels.address,
+      val: site.address.full,
+    },
+    {
+      icon: Accessibility,
+      k: v.labels.accessibility,
+      val: v.values.accessibility,
+    },
+    {
+      icon: Sparkles,
+      k: detail.audienceKey,
+      val: detail.audienceDetail,
+    },
+  ];
+
   return (
-    <section className="py-20 sm:py-28 md:py-36">
-      <Container>
+    <section className="relative overflow-hidden py-20 sm:py-28 md:py-36">
+      <div
+        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,var(--color-pearl-100),var(--color-pearl-50)_50%,var(--color-pearl-100))]"
+        aria-hidden="true"
+      />
+      <Container size="xl">
         <AnimateIn>
-          <div className="relative isolate grid overflow-hidden rounded-3xl border border-champagne-400/15 bg-aurora text-pearl-100 md:grid-cols-[1.1fr_1fr]">
-            <div className="relative z-10 space-y-7 p-8 sm:space-y-8 sm:p-12 md:p-16">
+          <div className="grid gap-4 md:grid-cols-4 md:grid-rows-[auto_auto]">
+            <div className="relative isolate overflow-hidden rounded-[28px] border border-champagne-400/20 bg-aurora p-8 text-pearl-100 shadow-luxe-dark sm:p-10 md:col-span-2 md:row-span-3 md:p-12">
+              <span
+                aria-hidden="true"
+                className="absolute right-8 top-8 font-display text-8xl italic leading-none text-champagne-300/10"
+              >
+                03
+              </span>
               <SectionHeading
                 eyebrow={v.eyebrow}
                 title={
@@ -292,30 +339,7 @@ function VisitPlan({ dict, locale }: { dict: Dictionary; locale: Locale }) {
                 description={v.description}
                 tone="dark"
               />
-              <div className="grid gap-5 sm:grid-cols-2">
-                {[
-                  { k: v.labels.address, val: site.address.full },
-                  {
-                    k: v.labels.hours,
-                    val: `${site.hours.summary}. ${site.hours.lastEntry}.`,
-                  },
-                  { k: v.labels.parking, val: v.values.parking },
-                  { k: v.labels.accessibility, val: v.values.accessibility },
-                ].map((item) => (
-                  <div
-                    key={item.k}
-                    className="border-l border-champagne-300/40 pl-4"
-                  >
-                    <p className="text-[0.6rem] uppercase tracking-[0.3em] text-champagne-300">
-                      {item.k}
-                    </p>
-                    <p className="mt-1.5 text-sm text-pearl-200/90">
-                      {item.val}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-col gap-3 pt-3 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild variant="gold">
                   <Link href={localePath(locale, "/ingressos")}>
                     <Ticket className="size-4" />
@@ -335,20 +359,48 @@ function VisitPlan({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               </div>
             </div>
 
-            <div className="relative aspect-[16/11] overflow-hidden md:aspect-auto md:h-full md:min-h-[420px]">
+            <div className="relative min-h-[280px] overflow-hidden rounded-[28px] border border-pearl-300 bg-pearl-50 shadow-luxe md:col-span-2">
               <Image
                 src={attractionImages["museu-de-minerais"]}
                 alt={dict.attractions.items["museu-de-minerais"].name}
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
                 placeholder="blur"
-                className="object-cover"
+                className="object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.04]"
               />
               <div
                 className="image-split-overlay absolute inset-0"
                 aria-hidden="true"
               />
+              <div className="absolute bottom-5 left-5 rounded-2xl border border-pearl-100/20 bg-obsidian-950/65 px-4 py-3 text-pearl-100 backdrop-blur">
+                <p className="text-[0.58rem] uppercase tracking-[0.28em] text-champagne-200">
+                  {dict.attractions.items["museu-de-minerais"].badge}
+                </p>
+                <p className="mt-1 font-display text-2xl">
+                  {dict.attractions.items["museu-de-minerais"].name}
+                </p>
+              </div>
             </div>
+
+            {cards.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.k}
+                  className="relative overflow-hidden rounded-[28px] border border-pearl-300 bg-pearl-50 p-6 shadow-luxe transition-all duration-500 hover:-translate-y-0.5 hover:border-champagne-300 hover:shadow-luxe-lift"
+                >
+                  <div className="inline-flex size-10 items-center justify-center rounded-full border border-champagne-400/40 bg-obsidian-900 text-champagne-200">
+                    <Icon className="size-4" />
+                  </div>
+                  <p className="mt-5 text-[0.58rem] uppercase tracking-[0.28em] text-champagne-700">
+                    {item.k}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-pearl-700">
+                    {item.val}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </AnimateIn>
       </Container>
