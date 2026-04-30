@@ -8,7 +8,7 @@ import { GemIllustration } from "@/components/gem-illustration";
 /**
  * not-found desta rota é client-ignorant ao locale (params não estão
  * disponíveis em error boundaries). Texto em PT por default; quando o
- * user recarregar via link do Navbar, já vai para o locale correto.
+ * user recarregar via link do menu, já vai para o locale correto.
  */
 export default function NotFound() {
   return (

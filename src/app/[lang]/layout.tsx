@@ -12,7 +12,7 @@ import {
 } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { LocaleProvider } from "@/i18n/provider";
-import { Navbar } from "@/components/navbar";
+import { AsideNavigation } from "@/components/aside-navigation";
 import { Footer } from "@/components/footer";
 import { CookieBanner } from "@/components/cookie-banner";
 import { WhatsAppFloating } from "@/components/whatsapp-floating";
@@ -139,14 +139,13 @@ export default async function LocaleLayout({
 
   return (
     <LocaleProvider locale={locale} dict={dict}>
-      {/* next/html lang já foi setado no root. Aqui só ajustamos no cliente via Navbar/providers. */}
       <a
         href="#conteudo"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-imperial-700 focus:px-4 focus:py-2 focus:text-white"
       >
         {dict.common.skipToContent}
       </a>
-      <Navbar />
+      <AsideNavigation />
       <main id="conteudo" tabIndex={-1} className="flex-1">
         <PageTransition>{children}</PageTransition>
       </main>
