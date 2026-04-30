@@ -1,15 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { submitContact } from "@/lib/actions/contact";
 import { useLocale } from "@/i18n/provider";
-import { localePath } from "@/i18n/routing";
 import { Button } from "./button";
 
 export function ContactForm() {
-  const { locale, dict } = useLocale();
+  const { dict } = useLocale();
   const f = dict.contact.form;
   const [isPending, start] = useTransition();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -113,16 +113,9 @@ export function ContactForm() {
         />
         <span>
           {f.consent.split(" ").slice(0, -2).join(" ")}{" "}
-          <a
-            href={
-              locale === "pt"
-                ? "/politica-de-privacidade"
-                : "/politica-de-privacidade"
-            }
-            className="underline"
-          >
+          <Link href="/politica-de-privacidade" className="underline">
             {dict.footer.privacyLink}
-          </a>
+          </Link>
           .
         </span>
       </label>

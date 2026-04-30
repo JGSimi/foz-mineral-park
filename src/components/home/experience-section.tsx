@@ -1,25 +1,13 @@
-import { site } from "@/lib/site";
-import { heroPoster } from "@/lib/images";
 import type { Dictionary } from "@/i18n/dictionaries/pt";
-import { HeroVideo } from "@/components/hero-video";
+import type { Locale } from "@/i18n/config";
+import { ScrollStory } from "@/components/home/scroll-story";
 
 export function ExperienceSection({
   dict,
+  locale,
 }: {
   dict: Dictionary;
+  locale: Locale;
 }) {
-  const e = dict.experience;
-
-  return (
-    <section
-      aria-labelledby="video-experience-title"
-      className="relative bg-obsidian-950"
-    >
-      <h2 id="video-experience-title" className="sr-only">
-        {e.titleLead} {e.titleEm}
-        {e.titleTail}
-      </h2>
-      <HeroVideo src={site.hero.video} poster={heroPoster} minWidth={0} />
-    </section>
-  );
+  return <ScrollStory dict={dict} locale={locale} />;
 }

@@ -13,15 +13,20 @@ export function WhatsAppFloating() {
   const [consentResolved, setConsentResolved] = useState(true);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(CONSENT_KEY);
-      setConsentResolved(Boolean(stored));
-    } catch {
-      setConsentResolved(true);
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        const stored = localStorage.getItem(CONSENT_KEY);
+        setConsentResolved(Boolean(stored));
+      } catch {
+        setConsentResolved(true);
+      }
+    }, 0);
     const onResolve = () => setConsentResolved(true);
     window.addEventListener(CONSENT_EVENT, onResolve);
-    return () => window.removeEventListener(CONSENT_EVENT, onResolve);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener(CONSENT_EVENT, onResolve);
+    };
   }, []);
 
   const message = encodeURIComponent(dict.whatsappMessage);
