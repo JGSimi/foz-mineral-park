@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
+  useMotionTemplate,
   useMotionValue,
   useReducedMotion,
   useSpring,
@@ -149,6 +150,12 @@ export function HeroStone({
     stiffness: 140,
     mass: 0.6,
   });
+  const maskX = useTransform(sx, (value) => `${value}%`);
+  const maskY = useTransform(sy, (value) => `${(value / 125) * 100}%`);
+  const maskInner = useTransform(sr, (value) => `${Math.max(0, value)}%`);
+  const maskOuter = useTransform(sr, (value) => `${Math.max(0, value + 7)}%`);
+  const revealOpacity = useTransform(sr, (value) => (value > 0.5 ? 1 : 0));
+  const revealMask = useMotionTemplate`radial-gradient(circle at ${maskX} ${maskY}, #000 0%, #000 ${maskInner}, transparent ${maskOuter})`;
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: none)");
@@ -265,76 +272,27 @@ export function HeroStone({
             />
           </div>
 
-          <svg
-            viewBox="0 0 100 125"
-            preserveAspectRatio="none"
-            className="pointer-events-none absolute inset-0 h-full w-full"
+          <motion.div
             aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              opacity: revealOpacity,
+              WebkitMaskImage: revealMask,
+              maskImage: revealMask,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+            }}
           >
-            <defs>
-              <filter
-                id="fmp-liquid"
-                x="-50%"
-                y="-50%"
-                width="200%"
-                height="200%"
-                colorInterpolationFilters="sRGB"
-              >
-                <feTurbulence
-                  type="fractalNoise"
-                  baseFrequency="0.018 0.022"
-                  numOctaves="2"
-                  seed="3"
-                  result="turb"
-                >
-                  {!reduced && (
-                    <animate
-                      attributeName="seed"
-                      values="3;5;7;5;3"
-                      dur="12s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    />
-                  )}
-                </feTurbulence>
-                <feDisplacementMap
-                  in="SourceGraphic"
-                  in2="turb"
-                  scale="12"
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                />
-              </filter>
-
-              <mask
-                id="fmp-reveal-mask"
-                maskUnits="userSpaceOnUse"
-                x="0"
-                y="0"
-                width="100"
-                height="125"
-              >
-                <rect x="0" y="0" width="100" height="125" fill="black" />
-                <motion.circle
-                  cx={sx}
-                  cy={sy}
-                  r={sr}
-                  fill="white"
-                  filter="url(#fmp-liquid)"
-                />
-              </mask>
-            </defs>
-
-            <image
-              href={reveal.opened.src}
-              x="0"
-              y="0"
-              width="100"
-              height="125"
-              preserveAspectRatio="xMidYMid meet"
-              mask="url(#fmp-reveal-mask)"
+            <Image
+              src={reveal.opened}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 80vw, 620px"
+              placeholder="blur"
+              quality={74}
+              className="object-contain"
             />
-          </svg>
+          </motion.div>
         </motion.div>
       </div>
     </div>
